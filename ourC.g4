@@ -86,19 +86,9 @@ dec_val
 string_val
     : STRING_DEC;
 
-types
-    : BOOL
-    | INT
-    | STRING;
-
 sign_whole_num
     : OP_PLUS
     | OP_MINUS;
-
-values_pos_assign
-    : STRING_DEC
-    | bool_val
-    | sign_whole_num? DEC_NUM;
 
 multi_assign
     : ASSIGN identifier_var;
@@ -119,10 +109,10 @@ expr_dec_bool
     | OP_MINUS expr_dec_bool;
 
 expr_string
-    : string_val
-    | identifier_var
-    | expr_string OP_PLUS expr_string
-    | LEFT_BASIC_BRACK expr_string RIGHT_BASIC_BRACK
+    : string_val #stateStringVal
+    | identifier_var #stateIdentifierVar
+    | expr_string OP_PLUS expr_string #stateExprString
+    | LEFT_BASIC_BRACK expr_string RIGHT_BASIC_BRACK #stateLeftString
     ;
 
 bool_var_dec
