@@ -110,9 +110,9 @@ expr_dec_bool
 
 expr_string
     : string_val #stateStringVal
-    | identifier_var #stateIdentifierVar
-    | expr_string OP_PLUS expr_string #stateExprString
-    | LEFT_BASIC_BRACK expr_string RIGHT_BASIC_BRACK #stateLeftString
+    | identifier_var #toReplace1
+    | expr_string OP_PLUS expr_string #toReplace2
+    | LEFT_BASIC_BRACK expr_string RIGHT_BASIC_BRACK #toReplace3
     ;
 
 bool_var_dec
