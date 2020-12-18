@@ -1,5 +1,4 @@
 package visitors;
-
 import generated.ourCBaseVisitor;
 import generated.ourCParser;
 
@@ -7,6 +6,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on int declaration, */
     @Override
     public Object visitCode_block(ourCParser.Code_blockContext ctx) {
+        System.out.println("code block");
         return super.visitCode_block(ctx);
     }
 
