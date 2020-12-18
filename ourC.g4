@@ -1,5 +1,11 @@
 grammar ourC;
 
+/* SKIP COMMENTS AND WHITESPACES - START */
+COMMENT_START: '//' ~[\r\n]* -> skip; // todo moved these rules to the beginning - else extraneous char error?
+BLANK_SPACE: [ \r\t\n]+ -> skip ;
+/* SKIP COMMENTS AND WHITESPACES - END */
+
+
 /* --- LEXICAL RULES - START --- */
 /* OPERATORS - START */
 OP_MULTIPLICATION : '*';
@@ -65,10 +71,7 @@ IDENT: [a-zA-Z_][0-9a-zA-Z_]*;
 STRING_DEC: '"'('\\'[btnfr"'\\] | ~[\r\n\\"] )*'"';
 /* DATA TYPES - END */
 
-/* SKIP COMMENTS AND WHITESPACES - START */
-COMMENT_START: '//' ~[\r\n]* -> skip;
-BLANK_SPACE: [ \r\t\n]+ -> skip ;
-/* SKIP COMMENTS AND WHITESPACES - END */
+
 
 /* --- LEXICAL RULES - END --- */
 
