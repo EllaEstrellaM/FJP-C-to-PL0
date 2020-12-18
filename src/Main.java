@@ -8,7 +8,7 @@ import visitors.VarAssVisitor;
 
 public class Main {
 
-    static String testStr = "string cau = \"ahoj\";\n" +
+    static String testStr = "int cislo = 2; string new = \"here\";\n" +
             "\n" +
             "for(i = 0 to 5){\n" +
             "\n" +

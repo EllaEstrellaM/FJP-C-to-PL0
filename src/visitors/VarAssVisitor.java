@@ -4,40 +4,45 @@ import generated.ourCBaseVisitor;
 import generated.ourCParser;
 
 public class VarAssVisitor extends ourCBaseVisitor {
-
-    @Override
-    public Object visitStart(ourCParser.StartContext ctx) {
-        System.out.println("start");
-        return super.visitStart(ctx);
-    }
-
-    @Override
-    public Object visitArr_assignment(ourCParser.Arr_assignmentContext ctx) {
-        System.out.println("ass");
-        return super.visitArr_assignment(ctx);
-    }
-
-    @Override
-    public Object visitVar_assignment(ourCParser.Var_assignmentContext ctx) {
-        System.out.println("Visited var assignment...");
-        return super.visitVar_assignment(ctx);
-    }
-
-    @Override
-    public Object visitVar_declaration(ourCParser.Var_declarationContext ctx) {
-        System.out.println("Visited var declaration...");
-        return super.visitVar_declaration(ctx);
-    }
-
+    /* visited on int declaration, */
     @Override
     public Object visitCode_block(ourCParser.Code_blockContext ctx) {
-        System.out.println("code block");
         return super.visitCode_block(ctx);
     }
 
+    /* visited on int declaration, */
     @Override
-    public Object visitStateStringVal(ourCParser.StateStringValContext ctx) {
-        System.out.println("Into state string");
-        return super.visitStateStringVal(ctx);
+    public Object visitVar_declaration(ourCParser.Var_declarationContext ctx) {
+        return super.visitVar_declaration(ctx);
+    }
+
+    /* visited on int declaration, */
+    @Override
+    public Object visitVar_non_const_dec_command(ourCParser.Var_non_const_dec_commandContext ctx) {
+        return super.visitVar_non_const_dec_command(ctx);
+    }
+
+    /* visited on int declaration, */
+    @Override
+    public Object visitDecimal_var_dec(ourCParser.Decimal_var_decContext ctx) {
+        return super.visitDecimal_var_dec(ctx);
+    }
+
+    /* visited on int declaration, */
+    @Override
+    public Object visitIdentifier_var(ourCParser.Identifier_varContext ctx) {
+        return super.visitIdentifier_var(ctx);
+    }
+
+    /* visited on int declaration, */
+    @Override
+    public Object visitExpr_dec_bool(ourCParser.Expr_dec_boolContext ctx) {
+        return super.visitExpr_dec_bool(ctx);
+    }
+
+    /* visited on int declaration, */
+    @Override
+    public Object visitDec_val(ourCParser.Dec_valContext ctx) {
+        return super.visitDec_val(ctx);
     }
 }
