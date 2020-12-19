@@ -11,10 +11,16 @@ public class ifCondition implements Istatement, ImultiLineStatement {
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
 
+    /* relevant statement info to keep - START */
+    String exprDecBoolCont; //conditions written in if between brackets
+    /* relevant statement info to keep - END */
+
     public ifCondition(){
         setOperationType();
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
+
+        exprDecBoolCont = "";
     }
 
     @Override
@@ -45,5 +51,13 @@ public class ifCondition implements Istatement, ImultiLineStatement {
     @Override
     public ArrayList<Istatement> getInnerStatement() {
         return innerStatementsList;
+    }
+
+    public String getExprDecBoolCont() {
+        return exprDecBoolCont;
+    }
+
+    public void setExprDecBoolCont(String exprDecBoolCont) {
+        this.exprDecBoolCont = exprDecBoolCont;
     }
 }

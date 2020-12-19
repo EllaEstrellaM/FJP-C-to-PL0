@@ -7,6 +7,18 @@ import statementInterEnum.Istatement;
 public class arrBoolDeclaration implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    /* relevant statement info to keep - START */
+    String identifierVar; //name of the NEW array
+    int decNum; //size of the NEW array
+    /* relevant statement info to keep - END */
+
+    public arrBoolDeclaration(){
+        setOperationType();
+        wholeContent = "";
+
+        identifierVar = "";
+        decNum = 0;
+    }
 
     @Override
     public void setOperationType() {
@@ -26,5 +38,21 @@ public class arrBoolDeclaration implements Istatement, IoneLineStatement {
     @Override
     public String getWholeContent() {
         return this.wholeContent;
+    }
+
+    public String getIdentifierVar() {
+        return identifierVar;
+    }
+
+    public void setIdentifierVar(String identifierVar) {
+        this.identifierVar = identifierVar;
+    }
+
+    public int getDecNum() {
+        return decNum;
+    }
+
+    public void setDecNum(int decNum) {
+        this.decNum = decNum;
     }
 }

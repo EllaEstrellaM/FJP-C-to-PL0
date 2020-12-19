@@ -11,10 +11,15 @@ public class doWhileCycle implements Istatement, ImultiLineStatement {
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
 
+    /* relevant statement info to keep - START */
+    String exprDecBoolCont; //conditions written in between brackets after while
+    /* relevant statement info to keep - END */
+
     public doWhileCycle(){
         setOperationType();
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
+        exprDecBoolCont = "";
     }
 
     @Override
@@ -45,5 +50,13 @@ public class doWhileCycle implements Istatement, ImultiLineStatement {
     @Override
     public ArrayList<Istatement> getInnerStatement() {
         return innerStatementsList;
+    }
+
+    public String getExprDecBoolCont() {
+        return exprDecBoolCont;
+    }
+
+    public void setExprDecBoolCont(String exprDecBoolCont) {
+        this.exprDecBoolCont = exprDecBoolCont;
     }
 }

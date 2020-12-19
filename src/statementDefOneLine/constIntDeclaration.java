@@ -8,6 +8,11 @@ public class constIntDeclaration implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
 
+    public constIntDeclaration(){
+        setOperationType();
+        wholeContent = "";
+    }
+
     @Override
     public void setOperationType() {
         operationType = EoneLineStatementType.CONST_INT_DECLARATION;

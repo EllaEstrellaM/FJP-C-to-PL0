@@ -8,6 +8,11 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
 
+    public constBoolDeclaration(){
+        setOperationType();
+        wholeContent = "";
+    }
+
     @Override
     public void setOperationType() {
         operationType = EoneLineStatementType.CONST_BOOL_DECLARATION;

@@ -11,10 +11,18 @@ public class procedureDefinition implements Istatement, ImultiLineStatement {
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
 
+    /* relevant statement info to keep - START */
+    String identifierVar; //name of the NEW procedure
+    String parameters; //contains parameters (content in brackets after procedure name)
+    /* relevant statement info to keep - END */
+
     public procedureDefinition(){
         setOperationType();
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
+
+        identifierVar = "";
+        parameters = "";
     }
 
     @Override
@@ -45,5 +53,21 @@ public class procedureDefinition implements Istatement, ImultiLineStatement {
     @Override
     public ArrayList<Istatement> getInnerStatement() {
         return innerStatementsList;
+    }
+
+    public String getIdentifierVar() {
+        return identifierVar;
+    }
+
+    public void setIdentifierVar(String identifierVar) {
+        this.identifierVar = identifierVar;
+    }
+
+    public String getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
     }
 }
