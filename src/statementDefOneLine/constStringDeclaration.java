@@ -5,23 +5,26 @@ import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
 public class constStringDeclaration implements Istatement, IoneLineStatement {
+    EoneLineStatementType operationType;
+    String wholeContent;
+
     @Override
     public void setOperationType() {
-
+        operationType = EoneLineStatementType.CONST_STRING_DECLARATION;
     }
 
     @Override
     public EoneLineStatementType getOperationType() {
-        return null;
+        return operationType;
     }
 
     @Override
-    public void setWholeContent() {
-
+    public void setWholeContent(String content) {
+        this.wholeContent = content;
     }
 
     @Override
     public String getWholeContent() {
-        return null;
+        return this.wholeContent;
     }
 }

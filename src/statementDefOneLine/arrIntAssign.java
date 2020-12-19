@@ -5,19 +5,22 @@ import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
 public class arrIntAssign implements Istatement, IoneLineStatement {
+    EoneLineStatementType operationType;
+    String wholeContent;
+
     @Override
     public void setOperationType() {
-
+        operationType = EoneLineStatementType.ARR_INT_ASSIGN;
     }
 
     @Override
     public EoneLineStatementType getOperationType() {
-        return null;
+        return operationType;
     }
 
     @Override
-    public void setWholeContent() {
-
+    public void setWholeContent(String content) {
+        this.wholeContent = content;
     }
 
     @Override
