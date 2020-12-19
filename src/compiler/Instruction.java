@@ -1,34 +1,36 @@
 package compiler;
 
 public class Instruction {
-    private String instruction;
-    private int firstNumber;
-    private int secondNumber;
+    private EInstrSet instruction;
+    private int level;
+    private int address;
 
+    public Instruction(EInstrSet instr, int first, int second){
 
+    }
 
     // getters and setters:
-    public int getFirstNumber() {
-        return firstNumber;
+    public int getLevel() {
+        return level;
     }
 
-    public void setFirstNumber(int firstNumber) {
-        this.firstNumber = firstNumber;
+    public void setLevel(int level) {
+        this.level = level;
     }
 
-    public String getInstruction() {
+    public EInstrSet getInstruction() {
         return instruction;
     }
 
-    public void setInstruction(String instruction) {
+    public void setInstruction(EInstrSet instruction) {
         this.instruction = instruction;
     }
 
-    public int getSecondNumber() {
-        return secondNumber;
+    public int getAddress() {
+        return address;
     }
 
-    public void setSecondNumber(int secondNumber) {
-        this.secondNumber = secondNumber;
+    public void setAddress(int address) {
+        this.address = address;
     }
 }

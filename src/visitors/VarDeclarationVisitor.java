@@ -1,10 +1,13 @@
 package visitors;
 
+import compiler.ESymbolType;
 import compiler.Symbol;
 import generated.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 public class VarDeclarationVisitor extends ourCBaseVisitor<Symbol> {
+
+
     @Override
     public Symbol visitVar_declaration(ourCParser.Var_declarationContext ctx) {
         System.out.println("declaration");
@@ -27,17 +30,18 @@ public class VarDeclarationVisitor extends ourCBaseVisitor<Symbol> {
 
         // what type is it:
         if(text.startsWith("int")){
-            s.setType("int");
+            s.setType(ESymbolType.INT);
             text = text.replaceFirst("int", "");
         }
         else if(text.startsWith("bool")){
-            s.setType("bool");
+            s.setType(ESymbolType.BOOL);
             text = text.replaceFirst("bool", "");
         }
         else if(text.startsWith("string")){
-            s.setType("string");
+            s.setType(ESymbolType.STRING);
             text = text.replaceFirst("string", "");
         }
+        // todo else if array
 
         // get the name and the value
         text = text.replace(";", "");
@@ -49,6 +53,19 @@ public class VarDeclarationVisitor extends ourCBaseVisitor<Symbol> {
 //        System.out.println(splits[0]);
 //        System.out.println(splits[1]);
 
-        return s;
+
+        return s; // todo were does it go?
     }
+
+//    @Override
+//    protected Symbol aggregateResult(Symbol aggregate, Symbol nextResult) {
+//        if(aggregate == null){
+//            return nextResult;
+//        }
+//        if(nextResult == null){
+//            return aggregate;
+//        }
+//
+//        return aggregate;
+//    }
 }

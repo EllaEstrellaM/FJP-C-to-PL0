@@ -5,8 +5,11 @@ public class Symbol {
     private int lev;
     private int adr;
     private int size;
-    private String type; // todo enum?
+    private ESymbolType type;
     private boolean isConst;
+
+    // save everything as a string - all ints, bools, strings and arrays
+    // todo is this a good idea?
     private String value;
 
 
@@ -46,11 +49,11 @@ public class Symbol {
         this.size = size;
     }
 
-    public String getType() {
+    public ESymbolType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ESymbolType type) {
         this.type = type;
     }
 
@@ -65,6 +68,7 @@ public class Symbol {
     public String getValue() {
         return value;
     }
+
 
     public void setValue(String value) {
         this.value = value;
