@@ -10,7 +10,7 @@ public class intDeclaration implements Istatement, IoneLineStatement {
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
     boolean minus_sign; //true if value of NEW variable is <= 0, ie minus sign is present ; else false (if ommited or plus sign present)
-    int decVal; //value of the NEW variable
+    String decVal; //value of the NEW variable (could be name of the identifier or direct value...)
     /* relevant statement info to keep - END */
 
     public intDeclaration(){
@@ -19,7 +19,7 @@ public class intDeclaration implements Istatement, IoneLineStatement {
 
         identifierVar = "";
         minus_sign = false;
-        decVal = 0;
+        decVal = "";
     }
 
     @Override
@@ -58,11 +58,11 @@ public class intDeclaration implements Istatement, IoneLineStatement {
         this.minus_sign = minus_sign;
     }
 
-    public int getDecVal() {
+    public String getDecVal() {
         return decVal;
     }
 
-    public void setDecVal(int decVal) {
+    public void setDecVal(String decVal) {
         this.decVal = decVal;
     }
 }

@@ -2,8 +2,38 @@ package visitors;
 
 import generated.ourCBaseVisitor;
 import generated.ourCParser;
+import org.antlr.v4.runtime.tree.ParseTree;
+import statementDefOneLine.boolDeclaration;
+import statementDefOneLine.intDeclaration;
+import statementDefOneLine.stringDeclaration;
+import statementInterEnum.Istatement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class VarAssVisitor extends ourCBaseVisitor {
+    ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
+
+    /* info relevant to variable assign - START */
+    boolean inVarAssignment; //true when var_assignment visited
+
+    String assignVarName; //name of the variable
+    boolean assignVarMinusSign; //true if minus sign is present; else false
+    String assignVarValue; //newly assigned value of the  variable (int, bool or string) -> convert after...
+    /* info relevant to variable assign - END */
+
+    public VarAssVisitor(){
+        encounteredStatements = new ArrayList<Istatement>();
+
+        /* init info relevant to variable assign - START */
+        inVarAssignment = false;
+
+        assignVarName = ""; //name of the variable
+        assignVarValue = ""; //newly assigned value of the  variable (int, bool or string) -> convert after...
+        assignVarMinusSign = false;
+        /* init info relevant to variable assign - END */
+    }
+
     /* visited on int assign, string assign, bool assign, arr int assign, arr bool assign, int declaration, bool declaration, string declaration, arr int declaration, arr bool declaration,
     const int declaration, const bool declaration, const string declaration, if condition, do-while cycle, while cycle, repeat-until cycle, for cycle, foreach cycle, procedure definition,
     ternar assign */
@@ -55,8 +85,6 @@ public class VarAssVisitor extends ourCBaseVisitor {
     * while cycle */
     @Override
     public Object visitVar_declaration(ourCParser.Var_declarationContext ctx) {
-        System.out.println("Var declaration children: " + ctx.getChild(0).getText());
-        System.out.println("var_declaration visited");
         return super.visitVar_declaration(ctx);
     }
 
@@ -105,7 +133,59 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on int declaration, bool declaration, string declaration, arr int declaration, arr bool declaration, while cycle */
     @Override
     public Object visitVar_non_const_dec_command(ourCParser.Var_non_const_dec_commandContext ctx) {
-        System.out.println("var_non_const_dec_command visited");
+        /* info relevant to variable declaration - START */
+        String declVarName; //name of the NEW variable
+        boolean declVarMinusSign; //true if minus sign is present; else false
+        String declVarValue; //value of the NEW variable (int, bool or string) -> convert after...
+        /* info relevant to variable declaration - END */
+
+        if(ctx.decimal_var_dec() != null){ //decimal value
+            ourCParser.Decimal_var_decContext treeItem1 = ctx.decimal_var_dec();
+
+            declVarName = treeItem1.identifier_var().IDENT().getText(); //name of the variable
+            declVarValue = treeItem1.expr_dec_bool().getText(); //value of the variable
+
+            if(treeItem1.sign_whole_num() != null){ //plus or minus sign
+                if(treeItem1.sign_whole_num().getText().equals("+")){
+                    declVarMinusSign = false;
+                }else{
+                    declVarMinusSign = true;
+                }
+            }else{
+                declVarMinusSign = false;
+            }
+
+            intDeclaration intDeclar = new intDeclaration();
+            intDeclar.setIdentifierVar(declVarName);
+            intDeclar.setMinus_sign(declVarMinusSign);
+            intDeclar.setDecVal(declVarValue);
+
+            encounteredStatements.add(intDeclar);
+        }else if(ctx.bool_var_dec() != null){ //bool value
+            ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
+
+            declVarName = treeItem1.identifier_var().IDENT().getText(); //name of BOOL the variable
+            declVarValue = treeItem1.expr_dec_bool().getText(); //value of the BOOL variable
+
+            boolDeclaration boolDeclar = new boolDeclaration();
+            boolDeclar.setIdentifierVar(declVarName);
+            boolDeclar.setBoolVal(declVarValue);
+
+            encounteredStatements.add(boolDeclar);
+        }else if(ctx.string_var_dec() != null){ //string value
+            ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
+
+            declVarName = treeItem1.identifier_var().IDENT().getText(); //name of STRING the variable
+            declVarValue = treeItem1.expr_string().getText(); //value of the STRING variable
+
+            stringDeclaration stringDeclar = new stringDeclaration();
+            stringDeclar.setIdentifierVar(declVarName);
+            stringDeclar.setStringVal(declVarValue);
+
+            encounteredStatements.add(stringDeclar);
+        }else{
+            //error, tbd
+        }
         return super.visitVar_non_const_dec_command(ctx);
     }
 
