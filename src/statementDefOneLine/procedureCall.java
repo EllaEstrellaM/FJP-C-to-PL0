@@ -4,26 +4,24 @@ import statementInterEnum.EoneLineStatementType;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
-public class constStringDeclaration implements Istatement, IoneLineStatement {
+public class procedureCall implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
 
     /* relevant statement info to keep - START */
-    String identifierVar; //name of the NEW variable
-    String stringVal; //value of the NEW variable
+    String arguments; //arguments given in between brackets after procedure name
     /* relevant statement info to keep - END */
 
-    public constStringDeclaration(){
+    public procedureCall(){
         setOperationType();
         wholeContent = "";
 
-        identifierVar = "";
-        stringVal = "";
+        arguments = "";
     }
 
     @Override
     public void setOperationType() {
-        operationType = EoneLineStatementType.CONST_STRING_DECLARATION;
+        operationType = EoneLineStatementType.PROCEDURE_CALL;
     }
 
     @Override
@@ -41,19 +39,11 @@ public class constStringDeclaration implements Istatement, IoneLineStatement {
         return this.wholeContent;
     }
 
-    public String getIdentifierVar() {
-        return identifierVar;
+    public String getArguments() {
+        return arguments;
     }
 
-    public void setIdentifierVar(String identifierVar) {
-        this.identifierVar = identifierVar;
-    }
-
-    public String getStringVal() {
-        return stringVal;
-    }
-
-    public void setStringVal(String stringVal) {
-        this.stringVal = stringVal;
+    public void setArguments(String arguments) {
+        this.arguments = arguments;
     }
 }

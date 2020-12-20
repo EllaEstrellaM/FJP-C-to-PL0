@@ -8,9 +8,17 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
 
+    /* relevant statement info to keep - START */
+    String identifierVar; //name of the NEW variable
+    boolean boolVal; //value of the NEW variable
+    /* relevant statement info to keep - END */
+
     public constBoolDeclaration(){
         setOperationType();
         wholeContent = "";
+
+        identifierVar = "";
+        boolVal = false;
     }
 
     @Override
@@ -31,5 +39,21 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement {
     @Override
     public String getWholeContent() {
         return this.wholeContent;
+    }
+
+    public String getIdentifierVar() {
+        return identifierVar;
+    }
+
+    public void setIdentifierVar(String identifierVar) {
+        this.identifierVar = identifierVar;
+    }
+
+    public boolean isBoolVal() {
+        return boolVal;
+    }
+
+    public void setBoolVal(boolean boolVal) {
+        this.boolVal = boolVal;
     }
 }
