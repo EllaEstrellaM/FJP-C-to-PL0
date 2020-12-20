@@ -6,6 +6,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefOneLine.boolDeclaration;
 import statementDefOneLine.intDeclaration;
 import statementDefOneLine.stringDeclaration;
+import statementDefOneLine.unknownAssign;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
@@ -14,24 +15,8 @@ import java.util.List;
 public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
 
-    /* info relevant to variable assign - START */
-    boolean inVarAssignment; //true when var_assignment visited
-
-    String assignVarName; //name of the variable
-    boolean assignVarMinusSign; //true if minus sign is present; else false
-    String assignVarValue; //newly assigned value of the  variable (int, bool or string) -> convert after...
-    /* info relevant to variable assign - END */
-
     public VarAssVisitor(){
         encounteredStatements = new ArrayList<Istatement>();
-
-        /* init info relevant to variable assign - START */
-        inVarAssignment = false;
-
-        assignVarName = ""; //name of the variable
-        assignVarValue = ""; //newly assigned value of the  variable (int, bool or string) -> convert after...
-        assignVarMinusSign = false;
-        /* init info relevant to variable assign - END */
     }
 
     /* visited on int assign, string assign, bool assign, arr int assign, arr bool assign, int declaration, bool declaration, string declaration, arr int declaration, arr bool declaration,
@@ -52,7 +37,28 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on int assign, string assign, bool assign, if condition, do-while cycle, repeat-until cycle, for cycle, foreach cycle, procedure definition */
     @Override
     public Object visitVar_assignment(ourCParser.Var_assignmentContext ctx) {
-        System.out.println("var_assignment visited");
+        /* info relevant to variable assign - START */
+        String assignVarName; //name of the variable
+        boolean assignVarMinusSign; //true if minus sign is present; else false ; used just on int assign...
+        String assignVarValue; //newly assigned value of the  variable (int, bool or string) -> convert after...
+        /* info relevant to variable assign - END */
+
+        assignVarName = ctx.identifier_var().getText();
+        ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool();
+        if(treeItem1.OP_MINUS() != null){ //minus sign present
+            assignVarMinusSign = true;
+        }else{ //plus or no sign present in assignment...
+            assignVarMinusSign = false;
+        }
+        assignVarValue = treeItem1.getText(); //value of the variable
+
+        unknownAssign unkAssign = new unknownAssign();
+        unkAssign.setIdentifierVar(assignVarName);
+        unkAssign.setMinusSign(assignVarMinusSign);
+        unkAssign.setValueVar(assignVarValue);
+
+        encounteredStatements.add(unkAssign);
+
         return super.visitVar_assignment(ctx);
     }
 
