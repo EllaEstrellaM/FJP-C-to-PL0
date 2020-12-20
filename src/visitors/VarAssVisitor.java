@@ -2,12 +2,10 @@ package visitors;
 
 import generated.ourCBaseVisitor;
 import generated.ourCParser;
-import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefOneLine.*;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
@@ -27,6 +25,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on arr int assign, arr bool assign */
     @Override
     public Object visitArr_assignment(ourCParser.Arr_assignmentContext ctx) {
+        /* info relevant to variable assign - START */
+        String assignVarName; //name of the variable
+        boolean assignVarMinusSign = false; //true if minus sign is present; else false ; used just on int assign...
+        String assignVarValue; //newly assigned value of the variable (bool or int)
+        int indexToInsert; //to which index value should be inserted
+        /* info relevant to variable assign - END */
+
+        assignVarName = ctx.identifier_var().getText();
+
         return super.visitArr_assignment(ctx);
     }
 
@@ -146,6 +153,11 @@ public class VarAssVisitor extends ourCBaseVisitor {
         String declVarValue; //value of the NEW variable (int, bool or string) -> convert after...
         /* info relevant to variable declaration - END */
 
+        /* info relevant to array declaration - START */
+        String declArrName; //name of the NEW array
+        int declArrsize; //size of the NEW array
+        /* info relevant to array declaration - END */
+
         if(ctx.decimal_var_dec() != null){ //decimal value
             ourCParser.Decimal_var_decContext treeItem1 = ctx.decimal_var_dec();
 
@@ -190,6 +202,25 @@ public class VarAssVisitor extends ourCBaseVisitor {
             stringDeclar.setStringVal(declVarValue);
             System.out.println("STRING declaration\n");
             encounteredStatements.add(stringDeclar);
+        }else if(ctx.array_var_dec() != null){
+            ourCParser.Array_var_decContext treeItem1 = ctx.array_var_dec();
+
+            declArrName = treeItem1.identifier_var().IDENT().getText();
+            declArrsize = Integer.valueOf(treeItem1.DEC_NUM().getText());
+
+            if(ctx.array_var_dec().INT() != null){ //want to declare int array
+                arrIntDeclaration arrIntDeclar = new arrIntDeclaration();
+                arrIntDeclar.setIdentifierVar(declArrName);
+                arrIntDeclar.setDecNum(declArrsize);
+                System.out.println("INT ARR declaration\n");
+                encounteredStatements.add(arrIntDeclar);
+            }else{ //want to declare bool array
+                arrBoolDeclaration arrBoolDeclar = new arrBoolDeclaration();
+                arrBoolDeclar.setIdentifierVar(declArrName);
+                arrBoolDeclar.setDecNum(declArrsize);
+                System.out.println("BOOL ARR declaration\n");
+                encounteredStatements.add(arrBoolDeclar);
+            }
         }else{
             //error, tbd
         }
