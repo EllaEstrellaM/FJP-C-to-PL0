@@ -1,4 +1,9 @@
-package compiler;
+package compiler.instructions_generators;
+
+import compiler.EInstrSet;
+import compiler.ESymbolType;
+import compiler.Instruction;
+import compiler.Symbol;
 
 import java.util.ArrayList;
 
