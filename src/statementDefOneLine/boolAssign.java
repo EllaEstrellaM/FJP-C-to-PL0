@@ -9,7 +9,7 @@ public class boolAssign implements Istatement, IoneLineStatement {
     String wholeContent;
     /* relevant statement info to keep - START */
     String identifierVar; //name of the variable
-    boolean boolVal; //value of the variable
+    String boolVal; //value of the variable
     /* relevant statement info to keep - END */
 
     public boolAssign(){
@@ -17,7 +17,7 @@ public class boolAssign implements Istatement, IoneLineStatement {
         wholeContent = "";
 
         identifierVar = "";
-        boolVal = false;
+        boolVal = "";
     }
 
     @Override
@@ -48,11 +48,11 @@ public class boolAssign implements Istatement, IoneLineStatement {
         this.identifierVar = identifierVar;
     }
 
-    public boolean isBoolVal() {
+    public String getBoolVal() {
         return boolVal;
     }
 
-    public void setBoolVal(boolean boolVal) {
+    public void setBoolVal(String boolVal) {
         this.boolVal = boolVal;
     }
 }

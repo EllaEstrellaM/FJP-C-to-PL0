@@ -10,7 +10,7 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement {
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
-    boolean boolVal; //value of the NEW variable
+    String boolVal; //value of the NEW variable
     /* relevant statement info to keep - END */
 
     public constBoolDeclaration(){
@@ -18,7 +18,7 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement {
         wholeContent = "";
 
         identifierVar = "";
-        boolVal = false;
+        boolVal = "";
     }
 
     @Override
@@ -49,11 +49,11 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement {
         this.identifierVar = identifierVar;
     }
 
-    public boolean isBoolVal() {
+    public String getBoolVal() {
         return boolVal;
     }
 
-    public void setBoolVal(boolean boolVal) {
+    public void setBoolVal(String boolVal) {
         this.boolVal = boolVal;
     }
 }
