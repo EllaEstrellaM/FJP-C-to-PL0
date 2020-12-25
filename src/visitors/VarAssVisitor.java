@@ -3,15 +3,67 @@ package visitors;
 import generated.ourCBaseVisitor;
 import generated.ourCParser;
 import statementDefOneLine.*;
+import statementInterEnum.ImultiLineStatement;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
 public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
+    ArrayList<Integer> toPutInsideArr; //on each index holds number of one-line statements which should be added into respective multi-line "ArrayList<Istatement> innerStatementsList"
+
+    /**
+     * Adds given statements to ArrayList<Istatement> encounteredStatements or binds the statement to multiline statement which is already present in the mentioned array.
+     * @param statement statements (implements Istatement), which should be added to statement list
+     */
+    void addStatement(Istatement statement){
+        ImultiLineStatement nonFilledMultiStatement = findMultiStatementToAssign();
+
+        if(nonFilledMultiStatement != null){ //not null -> assign new statement to already existing one
+            nonFilledMultiStatement.addInnerStatement(statement);
+            System.out.println("Adding to inner!!");
+        }else{ //null -> statement is NOT inside any multistatement, stands alone ; put to ArrayList<Istatement> encounteredStatements
+            System.out.println("Adding to NEW!!");
+            encounteredStatements.add(statement);
+        }
+    }
+
+    /**
+     * Finds multiline element to which newly encountered statement should be assigned (ArrayList<Istatement> innerStatementsList).
+     * @return instance of ImultiLineStatement which represents wanted multiline statement to which new statements should be assigned
+     */
+    ImultiLineStatement findMultiStatementToAssign(){
+        ArrayList<ImultiLineStatement> foundMultiStatements = new ArrayList<ImultiLineStatement>(); //list of multiline statements which exists inside list encounteredStatements with all statements
+
+        for(int i = 0; i < encounteredStatements.size(); i++){ //go through all statements
+            Istatement statement = encounteredStatements.get(i); //get one statement
+
+            if(statement instanceof ImultiLineStatement){ //check if instance of multiline statement
+                System.out.println("Size of multiline is: " + foundMultiStatements.size());
+                foundMultiStatements.add((ImultiLineStatement)statement); //if multiline statement -> add to found multiline statements list
+            }
+        }
+
+        System.out.println("Size of multiline is: " + foundMultiStatements.size());
+
+        ImultiLineStatement toReturn = null; //instance of ImultiLineStatement which should be returned
+
+        for(int i = foundMultiStatements.size() - 1; i >= 0; i--){ //got list of multiline statements, go from end and find last one which value in toPutInsideArr is != 0
+            ImultiLineStatement multiStatement = foundMultiStatements.get(i); //get one multistatement
+
+            if(toPutInsideArr.get(i) != 0){ //OK, got target, value -1 ; return
+                toPutInsideArr.set(i, toPutInsideArr.get(i) - 1);
+                toReturn = multiStatement;
+                break;
+            }
+        }
+
+        return toReturn;
+    }
 
     public VarAssVisitor(){
         encounteredStatements = new ArrayList<Istatement>();
+        toPutInsideArr = new ArrayList<Integer>(); //how many statements (ie. code_blocks should be attached to last multistatement)
     }
 
     /* visited on int assign, string assign, bool assign, arr int assign, arr bool assign, int declaration, bool declaration, string declaration, arr int declaration, arr bool declaration,
@@ -179,7 +231,10 @@ public class VarAssVisitor extends ourCBaseVisitor {
             intDeclar.setMinus_sign(declVarMinusSign);
             intDeclar.setDecVal(declVarValue);
             System.out.println("INT declaration \n");
-            encounteredStatements.add(intDeclar);
+
+            addStatement(intDeclar);
+
+            //encounteredStatements.add(intDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
             ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
 
@@ -295,6 +350,12 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on if condition, do-while cycle, while cycle, repeat-until cycle, for cycle, foreach cycle, procedure definition */
     @Override
     public Object visitBlock_body(ourCParser.Block_bodyContext ctx) {
+        if(ctx.code_block() != null){ //could be more code_block in block_body
+            int codeBlockCount = ctx.code_block().size();
+            System.out.println("Code block count is: " + codeBlockCount);
+            toPutInsideArr.add(codeBlockCount);
+        }
+
         return super.visitBlock_body(ctx);
     }
 
