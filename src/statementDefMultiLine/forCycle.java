@@ -13,8 +13,8 @@ public class forCycle implements Istatement, ImultiLineStatement {
 
     /* relevant statement info to keep - START */
     String identifierVar;//name of the variable, from which will cycle begin
-    int exprDecBool1;//value of the variable in the beginning of the cycle
-    int exprDecBool2;//value of the variable in the end of the cycle (value after TO)
+    String exprDecBool1;//value of the variable in the beginning of the cycle
+    String exprDecBool2;//value of the variable in the end of the cycle (value after TO)
     /* relevant statement info to keep - END */
 
     public forCycle(){
@@ -23,8 +23,8 @@ public class forCycle implements Istatement, ImultiLineStatement {
         innerStatementsList = new ArrayList<Istatement>();
 
         identifierVar = "";
-        exprDecBool1 = 0;
-        exprDecBool2 = 0;
+        exprDecBool1 = "";
+        exprDecBool2 = "";
     }
 
     @Override
@@ -65,19 +65,19 @@ public class forCycle implements Istatement, ImultiLineStatement {
         this.identifierVar = identifierVar;
     }
 
-    public int getExprDecBool1() {
+    public String getExprDecBool1() {
         return exprDecBool1;
     }
 
-    public void setExprDecBool1(int exprDecBool1) {
+    public void setExprDecBool1(String exprDecBool1) {
         this.exprDecBool1 = exprDecBool1;
     }
 
-    public int getExprDecBool2() {
+    public String getExprDecBool2() {
         return exprDecBool2;
     }
 
-    public void setExprDecBool2(int exprDecBool2) {
+    public void setExprDecBool2(String exprDecBool2) {
         this.exprDecBool2 = exprDecBool2;
     }
 }

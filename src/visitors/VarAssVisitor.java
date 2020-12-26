@@ -2,11 +2,17 @@ package visitors;
 
 import generated.ourCBaseVisitor;
 import generated.ourCParser;
+import statementDefMultiLine.doWhileCycle;
+import statementDefMultiLine.forCycle;
+import statementDefMultiLine.ifCondition;
 import statementDefOneLine.*;
+import statementInterEnum.EmultiLineStatementType;
 import statementInterEnum.ImultiLineStatement;
+import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
@@ -39,7 +45,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             Istatement statement = encounteredStatements.get(i); //get one statement
 
             if(statement instanceof ImultiLineStatement){ //check if instance of multiline statement
-                System.out.println("Size of multiline is: " + foundMultiStatements.size());
+                System.out.println("Found multiline statement!");
                 foundMultiStatements.add((ImultiLineStatement)statement); //if multiline statement -> add to found multiline statements list
             }
         }
@@ -71,6 +77,69 @@ public class VarAssVisitor extends ourCBaseVisitor {
     ternar assign */
     @Override
     public Object visitCode_block(ourCParser.Code_blockContext ctx) {
+        if(ctx.CON_IF() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //if statement
+            /* relevant statement info to keep - START */
+            String exprDecBoolCont; //conditions written in between brackets after while
+            /* relevant statement info to keep - END */
+
+            if(ctx.expr_dec_bool() != null){
+                ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool().get(0);
+                exprDecBoolCont = treeItem1.getText();
+
+                ifCondition ifCond = new ifCondition();
+                ifCond.setExprDecBoolCont(exprDecBoolCont);
+                encounteredStatements.add(ifCond);
+
+                System.out.println("If statement created with " + exprDecBoolCont);
+            }
+        }else if(ctx.CYC_DO() != null && ctx.CYC_WHILE() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //do-while cycle
+            /* relevant statement info to keep - START */
+            String exprDecBoolCont; //conditions written in between brackets after while
+            /* relevant statement info to keep - END */
+
+            if(ctx.expr_dec_bool() != null){
+                ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool().get(0);
+                exprDecBoolCont = treeItem1.getText();
+
+                doWhileCycle doWhileCyc = new doWhileCycle();
+                doWhileCyc.setExprDecBoolCont(exprDecBoolCont);
+                encounteredStatements.add(doWhileCyc);
+
+                System.out.println("Do while cycle created with " + exprDecBoolCont);
+            }
+        }else if(ctx.CYC_FOR() != null && ctx.TO() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //for cycle
+            /* relevant statement info to keep - START */
+            String identifierVar;//name of the variable, from which will cycle begin
+            String exprDecBool1;//value of the variable in the beginning of the cycle
+            String exprDecBool2;//value of the variable in the end of the cycle (value after TO)
+            /* relevant statement info to keep - END */
+
+            if(ctx.identifier_var() != null && ctx.expr_dec_bool() != null){ //name of the variable
+                ourCParser.Identifier_varContext treeItem1 = ctx.identifier_var().get(0);
+                identifierVar = treeItem1.getText();
+
+                List<ourCParser.Expr_dec_boolContext> treeItem2 = ctx.expr_dec_bool();
+
+                exprDecBool1 = treeItem2.get(0).getText();
+                exprDecBool2 = treeItem2.get(1).getText();
+
+                forCycle forCyc = new forCycle();
+                forCyc.setIdentifierVar(identifierVar);
+                forCyc.setExprDecBool1(exprDecBool1);
+                forCyc.setExprDecBool2(exprDecBool2);
+
+                encounteredStatements.add(forCyc);
+
+                System.out.println("For cycle created with start: " + exprDecBool1 + " and end: " + exprDecBool2 + ", variable name is: " + identifierVar);
+            }
+        }else if(ctx.CYC_FOREACH() != null && ctx.COLON() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //foreach cycle
+
+        }else if(ctx.CYC_REPEAT() != null && ctx.CYC_UNTIL() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //repeat-until cycle
+
+        }else if(ctx.CYC_WHILE() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //while cycle
+
+        }
+
         return super.visitCode_block(ctx);
     }
 
@@ -233,7 +302,6 @@ public class VarAssVisitor extends ourCBaseVisitor {
             System.out.println("INT declaration \n");
 
             addStatement(intDeclar);
-
             //encounteredStatements.add(intDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
             ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
@@ -362,6 +430,10 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on procedure definition */
     @Override
     public Object visitDef_proc(ourCParser.Def_procContext ctx) {
+        if(ctx.PROC_DEF() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //procedure definition
+
+        }
+
         return super.visitDef_proc(ctx);
     }
 
