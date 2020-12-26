@@ -9,6 +9,7 @@ public class procedureCall implements Istatement, IoneLineStatement {
     String wholeContent;
 
     /* relevant statement info to keep - START */
+    String identifierVar; //name of the called procedure
     String arguments; //arguments given in between brackets after procedure name
     /* relevant statement info to keep - END */
 
@@ -16,6 +17,7 @@ public class procedureCall implements Istatement, IoneLineStatement {
         setOperationType();
         wholeContent = "";
 
+        identifierVar = "";
         arguments = "";
     }
 
@@ -37,6 +39,14 @@ public class procedureCall implements Istatement, IoneLineStatement {
     @Override
     public String getWholeContent() {
         return this.wholeContent;
+    }
+
+    public String getIdentifierVar() {
+        return identifierVar;
+    }
+
+    public void setIdentifierVar(String identifierVar) {
+        this.identifierVar = identifierVar;
     }
 
     public String getArguments() {

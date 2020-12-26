@@ -469,6 +469,40 @@ public class VarAssVisitor extends ourCBaseVisitor {
         return super.visitBlock_body(ctx);
     }
 
+    /* visited on procedure call */
+    @Override
+    public Object visitCall_proc(ourCParser.Call_procContext ctx) {
+        /* relevant statement info to keep - START */
+        String identifierVar = ""; //name of the called procedure
+        String arguments = ""; //arguments given in between brackets after procedure name
+        /* relevant statement info to keep - END */
+
+        if(ctx.identifier_var() != null){ //name of the procedure
+            identifierVar = ctx.identifier_var().getText();
+        }
+
+        if(ctx.expr_dec_bool() != null){ //names of parameters in parentheses
+            List<ourCParser.Expr_dec_boolContext> treeItem1 = ctx.expr_dec_bool();
+
+            for(int i = 0; i < treeItem1.size(); i++){
+                if(i != 0){ //first item traversed, dnt add comma
+                    arguments += ",";
+                }
+
+                arguments += treeItem1.get(i).getText();
+            }
+        }
+
+        procedureCall procCall = new procedureCall();
+        procCall.setIdentifierVar(identifierVar);
+        procCall.setArguments(arguments);
+
+        encounteredStatements.add(procCall);
+        System.out.println("Procedure called: name: " + identifierVar + ", args: " + arguments);
+
+        return super.visitCall_proc(ctx);
+    }
+
     /* visited on procedure definition */
     @Override
     public Object visitDef_proc(ourCParser.Def_procContext ctx) {
@@ -508,6 +542,42 @@ public class VarAssVisitor extends ourCBaseVisitor {
     /* visited on ternar assignment */
     @Override
     public Object visitTernar_assignment(ourCParser.Ternar_assignmentContext ctx) {
+        /* relevant statement info to keep - START */
+        String identifierVar = ""; //name of the variable, which we want to assign value
+        String exprDecBoolCont = ""; //conditions written in between brackets before ?
+        String exprDecBoolTrueVal = ""; //value, which will be assigned to identifierVar if condition equals TRUE
+        String exprDecBoolFalseVal = ""; //value, which will be assigned to identifierVar if condition equals FALSE
+        /* relevant statement info to keep - END */
+
+        if(ctx.identifier_var() != null){ //name of the variable, which value should be assigned
+            identifierVar = ctx.identifier_var().getText();
+        }
+
+        if(ctx.expr_dec_bool() != null){
+            List<ourCParser.Expr_dec_boolContext> treeItem1 = ctx.expr_dec_bool();
+
+            exprDecBoolCont = treeItem1.get(0).getText(); //first is condition
+
+            if(treeItem1.size() == 3){ //ok, want to assign bool or dec
+                exprDecBoolTrueVal = treeItem1.get(1).getText(); //second value which is assigned if true
+                exprDecBoolFalseVal = treeItem1.get(2).getText(); //last is value assigned if false
+            }else{ //want to assign string
+                List<ourCParser.Expr_stringContext> treeItem2 = ctx.expr_string();
+
+                exprDecBoolTrueVal = treeItem1.get(0).getText(); //first value which is assigned if true
+                exprDecBoolFalseVal = treeItem1.get(1).getText(); //second is value assigned if false
+            }
+        }
+
+        ternarAssign ternarAss = new ternarAssign();
+        ternarAss.setIdentifierVar(identifierVar);
+        ternarAss.setExprDecBoolCont(exprDecBoolCont);
+        ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+        ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+
+        encounteredStatements.add(ternarAss);
+        System.out.println("Added ternar assignment: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+
         return super.visitTernar_assignment(ctx);
     }
 }
