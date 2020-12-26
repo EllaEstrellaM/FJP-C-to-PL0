@@ -279,12 +279,6 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
     /* visited on string assign, string declaration, const string declaration */
     @Override
-    public Object visitStateStringVal(ourCParser.StateStringValContext ctx) {
-        return super.visitStateStringVal(ctx);
-    }
-
-    /* visited on string assign, string declaration, const string declaration */
-    @Override
     public Object visitString_val(ourCParser.String_valContext ctx) {
         return super.visitString_val(ctx);
     }

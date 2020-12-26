@@ -1,6 +1,5 @@
 // Generated from C:/Users/Ondrej/IdeaProjects/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
 package generated;
-
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
@@ -67,28 +66,7 @@ public class ourCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements o
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitStateIdentifierVar(ourCParser.StateIdentifierVarContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitStateExprString(ourCParser.StateExprStringContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitStateLeftString(ourCParser.StateLeftStringContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitStateStringVal(ourCParser.StateStringValContext ctx) { return visitChildren(ctx); }
+	@Override public T visitExpr_string(ourCParser.Expr_stringContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -159,6 +137,13 @@ public class ourCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements o
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitTernar_assignment(ourCParser.Ternar_assignmentContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitTernar_declaration(ourCParser.Ternar_declarationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,6 +1,5 @@
 // Generated from C:/Users/Ondrej/IdeaProjects/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
 package generated;
-
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**
@@ -48,39 +47,17 @@ public interface ourCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMulti_assign(ourCParser.Multi_assignContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ourCParser}.
+	 * Visit a parse tree produced by {@link ourCParser#expr_dec_bool}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExpr_dec_bool(ourCParser.Expr_dec_boolContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code stateIdentifierVar}
-	 * labeled alternative in {@link ourCParser}.
+	 * Visit a parse tree produced by {@link ourCParser#expr_string}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStateIdentifierVar(ourCParser.StateIdentifierVarContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code stateExprString}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStateExprString(ourCParser.StateExprStringContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code stateLeftString}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStateLeftString(ourCParser.StateLeftStringContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code stateStringVal}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStateStringVal(ourCParser.StateStringValContext ctx);
+	T visitExpr_string(ourCParser.Expr_stringContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ourCParser#bool_var_dec}.
 	 * @param ctx the parse tree
@@ -141,6 +118,12 @@ public interface ourCVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTernar_assignment(ourCParser.Ternar_assignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ourCParser#ternar_declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTernar_declaration(ourCParser.Ternar_declarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ourCParser#call_proc}.
 	 * @param ctx the parse tree

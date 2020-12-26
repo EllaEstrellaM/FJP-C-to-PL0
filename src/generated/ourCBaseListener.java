@@ -100,49 +100,13 @@ public class ourCBaseListener implements ourCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStateIdentifierVar(ourCParser.StateIdentifierVarContext ctx) { }
+	@Override public void enterExpr_string(ourCParser.Expr_stringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitStateIdentifierVar(ourCParser.StateIdentifierVarContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStateExprString(ourCParser.StateExprStringContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStateExprString(ourCParser.StateExprStringContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStateLeftString(ourCParser.StateLeftStringContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStateLeftString(ourCParser.StateLeftStringContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStateStringVal(ourCParser.StateStringValContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStateStringVal(ourCParser.StateStringValContext ctx) { }
+	@Override public void exitExpr_string(ourCParser.Expr_stringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -263,6 +227,18 @@ public class ourCBaseListener implements ourCListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTernar_assignment(ourCParser.Ternar_assignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTernar_declaration(ourCParser.Ternar_declarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTernar_declaration(ourCParser.Ternar_declarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

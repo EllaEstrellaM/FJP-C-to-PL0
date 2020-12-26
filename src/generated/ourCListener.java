@@ -1,6 +1,5 @@
 // Generated from C:/Users/Ondrej/IdeaProjects/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
 package generated;
-
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -69,63 +68,25 @@ public interface ourCListener extends ParseTreeListener {
 	 */
 	void exitMulti_assign(ourCParser.Multi_assignContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ourCParser}.
+	 * Enter a parse tree produced by {@link ourCParser#expr_dec_bool}.
 	 * @param ctx the parse tree
 	 */
 	void enterExpr_dec_bool(ourCParser.Expr_dec_boolContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ourCParser}.
+	 * Exit a parse tree produced by {@link ourCParser#expr_dec_bool}.
 	 * @param ctx the parse tree
 	 */
 	void exitExpr_dec_bool(ourCParser.Expr_dec_boolContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code stateIdentifierVar}
-	 * labeled alternative in {@link ourCParser}.
+	 * Enter a parse tree produced by {@link ourCParser#expr_string}.
 	 * @param ctx the parse tree
 	 */
-	void enterStateIdentifierVar(ourCParser.StateIdentifierVarContext ctx);
+	void enterExpr_string(ourCParser.Expr_stringContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code stateIdentifierVar}
-	 * labeled alternative in {@link ourCParser}.
+	 * Exit a parse tree produced by {@link ourCParser#expr_string}.
 	 * @param ctx the parse tree
 	 */
-	void exitStateIdentifierVar(ourCParser.StateIdentifierVarContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code stateExprString}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 */
-	void enterStateExprString(ourCParser.StateExprStringContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code stateExprString}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 */
-	void exitStateExprString(ourCParser.StateExprStringContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code stateLeftString}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 */
-	void enterStateLeftString(ourCParser.StateLeftStringContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code stateLeftString}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 */
-	void exitStateLeftString(ourCParser.StateLeftStringContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code stateStringVal}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 */
-	void enterStateStringVal(ourCParser.StateStringValContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code stateStringVal}
-	 * labeled alternative in {@link ourCParser}.
-	 * @param ctx the parse tree
-	 */
-	void exitStateStringVal(ourCParser.StateStringValContext ctx);
+	void exitExpr_string(ourCParser.Expr_stringContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ourCParser#bool_var_dec}.
 	 * @param ctx the parse tree
@@ -226,6 +187,16 @@ public interface ourCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTernar_assignment(ourCParser.Ternar_assignmentContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ourCParser#ternar_declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterTernar_declaration(ourCParser.Ternar_declarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ourCParser#ternar_declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitTernar_declaration(ourCParser.Ternar_declarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ourCParser#call_proc}.
 	 * @param ctx the parse tree

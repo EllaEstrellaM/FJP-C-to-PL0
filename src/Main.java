@@ -7,7 +7,7 @@ import visitors.VarAssVisitor;
 
 
 public class Main {
-    static String testStr = "newValue = (i == 4) ? 10 : 20; int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno; const string new = \"here\";\n" +
+    static String testStr = "if(i == 4){c = 5;} newValue = (i == 4) ? 10 : 20; int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno; const string new = \"here\";\n" +
             "\n" +
             "for(i = 0 to 5){\n" +
             "int i = 4;\n" +
