@@ -8,7 +8,7 @@ import visitors.VarAssVisitor;
 
 public class Main {
 
-    static String testStr = "for(variable = testSTart to 10){int i = 7;}; int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno; const string new = \"here\";\n" +
+    static String testStr = "procedure testProc(i){int i = 7;} int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno; const string new = \"here\";\n" +
             "\n" +
             "for(i = 0 to 5){\n" +
             "int i = 4;\n" +
