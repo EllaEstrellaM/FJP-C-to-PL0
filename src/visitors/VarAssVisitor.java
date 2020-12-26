@@ -4,9 +4,7 @@ import generated.ourCBaseVisitor;
 import generated.ourCParser;
 import statementDefMultiLine.*;
 import statementDefOneLine.*;
-import statementInterEnum.EmultiLineStatementType;
 import statementInterEnum.ImultiLineStatement;
-import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
@@ -45,6 +43,8 @@ public class VarAssVisitor extends ourCBaseVisitor {
             if(statement instanceof ImultiLineStatement){ //check if instance of multiline statement
                 System.out.println("Found multiline statement!");
                 foundMultiStatements.add((ImultiLineStatement)statement); //if multiline statement -> add to found multiline statements list
+            }else{
+                System.out.println("NON multiline statement!");
             }
         }
 

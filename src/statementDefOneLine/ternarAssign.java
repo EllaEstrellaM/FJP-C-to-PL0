@@ -1,15 +1,12 @@
-package statementDefMultiLine;
+package statementDefOneLine;
 
-import statementInterEnum.EmultiLineStatementType;
-import statementInterEnum.ImultiLineStatement;
-import statementInterEnum.Istatement;
+import statementInterEnum.*;
 
 import java.util.ArrayList;
 
-public class ternarAssign implements Istatement, ImultiLineStatement {
-    EmultiLineStatementType operationType;
+public class ternarAssign implements Istatement, IoneLineStatement {
+    EoneLineStatementType operationType;
     String wholeContent;
-    ArrayList<Istatement> innerStatementsList;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the variable, which we want to assign value
@@ -21,7 +18,6 @@ public class ternarAssign implements Istatement, ImultiLineStatement {
     public ternarAssign(){
         setOperationType();
         wholeContent = "";
-        innerStatementsList = new ArrayList<Istatement>();
 
         identifierVar = "";
         exprDecBoolCont = "";
@@ -31,11 +27,11 @@ public class ternarAssign implements Istatement, ImultiLineStatement {
 
     @Override
     public void setOperationType() {
-        operationType = EmultiLineStatementType.TERNAR_ASSIGN;
+        operationType = EoneLineStatementType.TERNAR_ASSIGN;
     }
 
     @Override
-    public EmultiLineStatementType getOperationType() {
+    public EoneLineStatementType getOperationType() {
         return operationType;
     }
 
@@ -47,16 +43,6 @@ public class ternarAssign implements Istatement, ImultiLineStatement {
     @Override
     public String getWholeContent() {
         return this.wholeContent;
-    }
-
-    @Override
-    public void addInnerStatement(Istatement statement) {
-        this.innerStatementsList.add(statement);
-    }
-
-    @Override
-    public ArrayList<Istatement> getInnerStatement() {
-        return innerStatementsList;
     }
 
     public String getIdentifierVar() {
