@@ -14,6 +14,10 @@ public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
     ArrayList<Integer> toPutInsideArr; //on each index holds number of one-line statements which should be added into respective multi-line "ArrayList<Istatement> innerStatementsList"
 
+    public ArrayList<Istatement> getEncounteredStatements() {
+        return encounteredStatements;
+    }
+
     /**
      * Adds given statements to ArrayList<Istatement> encounteredStatements or binds the statement to multiline statement which is already present in the mentioned array.
      * @param statement statements (implements Istatement), which should be added to statement list
@@ -86,7 +90,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
                 ifCondition ifCond = new ifCondition();
                 ifCond.setExprDecBoolCont(exprDecBoolCont);
-                encounteredStatements.add(ifCond);
+                addStatement(ifCond);
 
                 System.out.println("If statement created with " + exprDecBoolCont);
             }
@@ -101,7 +105,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
                 doWhileCycle doWhileCyc = new doWhileCycle();
                 doWhileCyc.setExprDecBoolCont(exprDecBoolCont);
-                encounteredStatements.add(doWhileCyc);
+                addStatement(doWhileCyc);
 
                 System.out.println("Do while cycle created with " + exprDecBoolCont);
             }
@@ -126,7 +130,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 forCyc.setExprDecBool1(exprDecBool1);
                 forCyc.setExprDecBool2(exprDecBool2);
 
-                encounteredStatements.add(forCyc);
+                addStatement(forCyc);
 
                 System.out.println("For cycle created with start: " + exprDecBool1 + " and end: " + exprDecBool2 + ", variable name is: " + identifierVar);
             }
@@ -146,7 +150,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 forEachCyc.setIdentifierVar1(identifierVar1);
                 forEachCyc.setIdentifierVar2(identifierVar2);
 
-                encounteredStatements.add(forEachCyc);
+               addStatement(forEachCyc);
 
                 System.out.println("Foreach cycle created with ident1: " + identifierVar1 + ", ident2: " + identifierVar2);
             }
@@ -161,7 +165,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
                 repeatUntilCycle repeatUntilCyc = new repeatUntilCycle();
                 repeatUntilCyc.setExprDecBoolCont(exprDecBoolCont);
-                encounteredStatements.add(repeatUntilCyc);
+                addStatement(repeatUntilCyc);
 
                 System.out.println("Repeat until cycle created with " + exprDecBoolCont);
             }
@@ -176,7 +180,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
                 whileCycle whileCyc = new whileCycle();
                 whileCyc.setExprDecBoolCont(exprDecBoolCont);
-                encounteredStatements.add(whileCyc);
+                addStatement(whileCyc);
 
                 System.out.println("While cycle created with " + exprDecBoolCont);
             }
@@ -237,7 +241,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
         unkAssign.setValueVar(assignVarValue);
 
         System.out.println("Var assignment created\n");
-        encounteredStatements.add(unkAssign);
+        addStatement(unkAssign);
 
         return super.visitVar_assignment(ctx);
     }
@@ -338,7 +342,6 @@ public class VarAssVisitor extends ourCBaseVisitor {
             System.out.println("INT declaration \n");
 
             addStatement(intDeclar);
-            //encounteredStatements.add(intDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
             ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
 
@@ -349,7 +352,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             boolDeclar.setIdentifierVar(declVarName);
             boolDeclar.setBoolVal(declVarValue);
             System.out.println("BOOL declaration\n");
-            encounteredStatements.add(boolDeclar);
+            addStatement(boolDeclar);
         }else if(ctx.string_var_dec() != null){ //string value
             ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
 
@@ -360,7 +363,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             stringDeclar.setIdentifierVar(declVarName);
             stringDeclar.setStringVal(declVarValue);
             System.out.println("STRING declaration\n");
-            encounteredStatements.add(stringDeclar);
+            addStatement(stringDeclar);
         }else if(ctx.array_var_dec() != null){
             ourCParser.Array_var_decContext treeItem1 = ctx.array_var_dec();
 
@@ -372,13 +375,13 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 arrIntDeclar.setIdentifierVar(declArrName);
                 arrIntDeclar.setDecNum(declArrsize);
                 System.out.println("INT ARR declaration\n");
-                encounteredStatements.add(arrIntDeclar);
+                addStatement(arrIntDeclar);
             }else{ //want to declare bool array
                 arrBoolDeclaration arrBoolDeclar = new arrBoolDeclaration();
                 arrBoolDeclar.setIdentifierVar(declArrName);
                 arrBoolDeclar.setDecNum(declArrsize);
                 System.out.println("BOOL ARR declaration\n");
-                encounteredStatements.add(arrBoolDeclar);
+                addStatement(arrBoolDeclar);
             }
         }else{
             //error, tbd
@@ -416,7 +419,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constIntDeclar.setMinus_sign(declVarMinusSign);
             constIntDeclar.setDecVal(declVarValue);
             System.out.println("INT const declaration \n");
-            encounteredStatements.add(constIntDeclar);
+            addStatement(constIntDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
             ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
 
@@ -427,7 +430,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constBoolDeclar.setIdentifierVar(declVarName);
             constBoolDeclar.setBoolVal(declVarValue);
             System.out.println("BOOL const declaration\n");
-            encounteredStatements.add(constBoolDeclar);
+            addStatement(constBoolDeclar);
         }else if(ctx.string_var_dec() != null){ //string value
             ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
 
@@ -438,7 +441,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constStringDeclar.setIdentifierVar(declVarName);
             constStringDeclar.setStringVal(declVarValue);
             System.out.println("STRING const declaration\n");
-            encounteredStatements.add(constStringDeclar);
+            addStatement(constStringDeclar);
         }else{
             //error, tbd
         }
@@ -491,7 +494,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
         procCall.setIdentifierVar(identifierVar);
         procCall.setArguments(arguments);
 
-        encounteredStatements.add(procCall);
+        addStatement(procCall);
         System.out.println("Procedure called: name: " + identifierVar + ", args: " + arguments);
 
         return super.visitCall_proc(ctx);
@@ -526,7 +529,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             procDef.setIdentifierVar(identifierVar);
             procDef.setParameters(parameters);
 
-            encounteredStatements.add(procDef);
+            addStatement(procDef);
             System.out.println("Procedure defined: name: " + identifierVar + ", params: " + parameters);
         }
 
@@ -569,7 +572,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
         ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
         ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
 
-        encounteredStatements.add(ternarAss);
+        addStatement(ternarAss);
         System.out.println("Added ternar assignment: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
 
         return super.visitTernar_assignment(ctx);
