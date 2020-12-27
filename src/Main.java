@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 
 public class Main {
-    static String testStr = "if(i == 4){int c = 5; string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
+    static String testStr = "if(i == 4){int c = 5; for(o = 1 to 10){int g = 4;} string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
 
     public static void main(String[] args){
         //System.out.println("jajajja");
@@ -113,14 +113,6 @@ public class Main {
                 }
             }
         }
-
-        for (Istatement name: statementTypeMap.keySet()){
-            String key = name.toString();
-            String value = statementTypeMap.get(name).toString();
-            //System.out.println("Got: " + key + " " + value);
-        }
-
-        //System.out.println("Then: " + statementTypeMap.get(encounteredStatements.get(0)));
 
         return statementTypeMap;
     }

@@ -45,14 +45,9 @@ public class VarAssVisitor extends ourCBaseVisitor {
             Istatement statement = encounteredStatements.get(i); //get one statement
 
             if(statement instanceof ImultiLineStatement){ //check if instance of multiline statement
-                System.out.println("Found multiline statement!");
                 foundMultiStatements.add((ImultiLineStatement)statement); //if multiline statement -> add to found multiline statements list
-            }else{
-                System.out.println("NON multiline statement!");
             }
         }
-
-        System.out.println("Size of multiline is: " + foundMultiStatements.size());
 
         ImultiLineStatement toReturn = null; //instance of ImultiLineStatement which should be returned
 
