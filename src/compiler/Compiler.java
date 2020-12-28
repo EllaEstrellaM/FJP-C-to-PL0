@@ -4,15 +4,18 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import visitors.VarDeclarationVisitor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Compiler {
     private int stackPointer;
-    private HashSet<Symbol> symbolTable;
+    //private HashSet<Symbol> symbolTable;
+    private HashMap<String, Symbol> symbolTable;
     private ParseTree tree;
 
     public Compiler(ParseTree tree){
-        symbolTable = new HashSet<Symbol>();
+        //symbolTable = new HashSet<Symbol>();
+        symbolTable = new HashMap<String, Symbol>();
         this.tree = tree;
     }
 
@@ -37,6 +40,7 @@ public class Compiler {
         // the last but not least return instruction
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
+
 
 
         return instructions;
