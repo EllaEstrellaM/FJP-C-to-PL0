@@ -1,0 +1,5 @@
+package statementInterEnum;
+
+public enum EmultiLineStatementType {
+    IF_CONDITION, DO_WHILE_CYCLE, WHILE_CYCLE, REPEAT_UNTIL_CYCLE, FOR_CYCLE, FOREACH_CYCLE, PROCEDURE_DEFINITION
+}

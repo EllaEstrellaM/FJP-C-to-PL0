@@ -1,7 +1,7 @@
 grammar ourC;
 
 /* SKIP COMMENTS AND WHITESPACES - START */
-COMMENT_START: '//' ~[\r\n]* -> skip; // todo moved these rules to the beginning - else extraneous char error?
+COMMENT_START: '//' ~[\r\n]* -> skip;
 BLANK_SPACE: [ \r\t\n]+ -> skip ;
 /* SKIP COMMENTS AND WHITESPACES - END */
 
@@ -110,10 +110,10 @@ expr_dec_bool
     | OP_MINUS expr_dec_bool;
 
 expr_string
-    : string_val                                        #stringValHash
-    | identifier_var                                    #identifierVarHash
-    | expr_string OP_PLUS expr_string                   #exprStringHash
-    | LEFT_BASIC_BRACK expr_string RIGHT_BASIC_BRACK    #bracketsHash
+    : string_val
+    | identifier_var
+    | expr_string OP_PLUS expr_string
+    | LEFT_BASIC_BRACK expr_string RIGHT_BASIC_BRACK
     ;
 
 bool_var_dec
@@ -146,6 +146,9 @@ arr_assignment
 ternar_assignment
     : identifier_var ASSIGN LEFT_BASIC_BRACK expr_dec_bool RIGHT_BASIC_BRACK QUES_MARK (expr_dec_bool | expr_string) COLON (expr_dec_bool | expr_string) SEMI_COLON;
 
+ternar_declaration
+    : (BOOL | INT | STRING) ternar_assignment;
+
 call_proc
     : identifier_var LEFT_BASIC_BRACK ((expr_dec_bool | expr_string) (COMMA (expr_dec_bool | expr_string))*)? RIGHT_BASIC_BRACK;
 
@@ -154,6 +157,7 @@ code_block
     | var_assignment
     | arr_assignment
     | ternar_assignment
+    | ternar_declaration
     | call_proc SEMI_COLON
     | CON_IF LEFT_BASIC_BRACK expr_dec_bool RIGHT_BASIC_BRACK block_body (CON_ELSE block_body)?
     | CYC_WHILE LEFT_BASIC_BRACK expr_dec_bool RIGHT_BASIC_BRACK block_body
@@ -166,7 +170,7 @@ block_body
     : LEFT_CURLY_BRACK ((code_block)+)? RIGHT_CURLY_BRACK;
 
 def_proc
-    : PROC_DEF identifier_var LEFT_BASIC_BRACK ((expr_dec_bool | expr_string) (COMMA (expr_dec_bool | expr_string))*)? RIGHT_BASIC_BRACK block_body;
+    : PROC_DEF identifier_var LEFT_BASIC_BRACK (((BOOL | INT) expr_dec_bool | (STRING) expr_string) (COMMA ((BOOL | INT) expr_dec_bool | (STRING) expr_string))*)? RIGHT_BASIC_BRACK block_body;
 
 start
     : ((code_block | def_proc)+)?;

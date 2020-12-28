@@ -1,4 +1,4 @@
-// Generated from C:/Users/elisk/Documents/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
+// Generated from C:/Users/Ondrej/IdeaProjects/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
 package generated;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -100,49 +100,13 @@ public class ourCBaseListener implements ourCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExprStringHash(ourCParser.ExprStringHashContext ctx) { }
+	@Override public void enterExpr_string(ourCParser.Expr_stringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExprStringHash(ourCParser.ExprStringHashContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBracketsHash(ourCParser.BracketsHashContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBracketsHash(ourCParser.BracketsHashContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIdentifierVarHash(ourCParser.IdentifierVarHashContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIdentifierVarHash(ourCParser.IdentifierVarHashContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterStringValHash(ourCParser.StringValHashContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStringValHash(ourCParser.StringValHashContext ctx) { }
+	@Override public void exitExpr_string(ourCParser.Expr_stringContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -263,6 +227,18 @@ public class ourCBaseListener implements ourCListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTernar_assignment(ourCParser.Ternar_assignmentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTernar_declaration(ourCParser.Ternar_declarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTernar_declaration(ourCParser.Ternar_declarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,4 +1,4 @@
-// Generated from C:/Users/elisk/Documents/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
+// Generated from C:/Users/Ondrej/IdeaProjects/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
 package generated;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -78,53 +78,15 @@ public interface ourCListener extends ParseTreeListener {
 	 */
 	void exitExpr_dec_bool(ourCParser.Expr_dec_boolContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code exprStringHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
+	 * Enter a parse tree produced by {@link ourCParser#expr_string}.
 	 * @param ctx the parse tree
 	 */
-	void enterExprStringHash(ourCParser.ExprStringHashContext ctx);
+	void enterExpr_string(ourCParser.Expr_stringContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code exprStringHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
+	 * Exit a parse tree produced by {@link ourCParser#expr_string}.
 	 * @param ctx the parse tree
 	 */
-	void exitExprStringHash(ourCParser.ExprStringHashContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code bracketsHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
-	 * @param ctx the parse tree
-	 */
-	void enterBracketsHash(ourCParser.BracketsHashContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code bracketsHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
-	 * @param ctx the parse tree
-	 */
-	void exitBracketsHash(ourCParser.BracketsHashContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code identifierVarHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
-	 * @param ctx the parse tree
-	 */
-	void enterIdentifierVarHash(ourCParser.IdentifierVarHashContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code identifierVarHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
-	 * @param ctx the parse tree
-	 */
-	void exitIdentifierVarHash(ourCParser.IdentifierVarHashContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code stringValHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
-	 * @param ctx the parse tree
-	 */
-	void enterStringValHash(ourCParser.StringValHashContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code stringValHash}
-	 * labeled alternative in {@link ourCParser#expr_string}.
-	 * @param ctx the parse tree
-	 */
-	void exitStringValHash(ourCParser.StringValHashContext ctx);
+	void exitExpr_string(ourCParser.Expr_stringContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ourCParser#bool_var_dec}.
 	 * @param ctx the parse tree
@@ -225,6 +187,16 @@ public interface ourCListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTernar_assignment(ourCParser.Ternar_assignmentContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ourCParser#ternar_declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterTernar_declaration(ourCParser.Ternar_declarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ourCParser#ternar_declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitTernar_declaration(ourCParser.Ternar_declarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ourCParser#call_proc}.
 	 * @param ctx the parse tree
