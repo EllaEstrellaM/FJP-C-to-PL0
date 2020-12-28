@@ -16,7 +16,9 @@ public class Main {
     static String testStr = "if(i == 4){int c = 5; for(o = 1 to 10){int g = 4;} string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
 
     public static void main(String[] args){
-        //System.out.println("jajajja");
+      
+        //Compiler compiler = new Compiler(tree);
+        //compiler.compile();
 
         ourCLexer lexer = new ourCLexer(CharStreams.fromString(testStr));
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
