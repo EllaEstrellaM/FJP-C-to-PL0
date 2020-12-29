@@ -1,6 +1,7 @@
 package compiler.instructions_generators;
 
 import compiler.*;
+import compiler.Compiler;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class ArithmeticExpressionInstructions {
         // store the first number:
         if(op.getSymbol1().getAdr() == -1){
             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
+            //generatedInstructions.add(Compiler.generateInstruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
         }
         else{
             generatedInstructions.add(new Instruction(EInstrSet.STO, op.getSymbol1().getLev(), Integer.parseInt(op.getSymbol1().getValue())));

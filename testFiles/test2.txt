@@ -1,0 +1,17 @@
+
+procedure main(){
+    a = 7;
+
+    mojeProcedura(ahoj + a, true);
+    druha();
+
+    string sprosteSlovo = "krucipisek";
+
+    for(0 to 5){
+        if(a){
+            while(1){
+                a = a + 1;
+            }
+        }
+    }
+}

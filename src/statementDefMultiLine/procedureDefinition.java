@@ -1,12 +1,13 @@
 package statementDefMultiLine;
 
 import statementInterEnum.EmultiLineStatementType;
+import statementInterEnum.IDeclaration;
 import statementInterEnum.ImultiLineStatement;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
-public class procedureDefinition implements Istatement, ImultiLineStatement {
+public class procedureDefinition implements Istatement, ImultiLineStatement, IDeclaration {
     EmultiLineStatementType operationType;
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;

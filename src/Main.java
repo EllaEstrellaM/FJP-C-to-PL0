@@ -1,3 +1,4 @@
+import compiler.Compiler;
 import generated.ourCLexer;
 import generated.ourCParser;
 import org.antlr.v4.runtime.CharStreams;
@@ -8,19 +9,33 @@ import statementDefOneLine.*;
 import statementInterEnum.*;
 import visitors.VarAssVisitor;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 
 public class Main {
     static String testStr = "if(i == 4){int c = 5; for(o = 1 to 10){int g = 4;} string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
 
-    public static void main(String[] args){
-      
-        //Compiler compiler = new Compiler(tree);
-        //compiler.compile();
+    static String test2 = "int ahoj = 3;";
 
-        ourCLexer lexer = new ourCLexer(CharStreams.fromString(testStr));
+    public static void main(String[] args){
+
+        String testFile = "test2.txt";
+        String filesPath = "testFiles";
+        String path = filesPath + File.separator + testFile;
+
+
+        String content = loadContents(path);
+
+
+        ourCLexer lexer = new ourCLexer(CharStreams.fromString(content));
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
         ParseTree tree = parser.start();
         VarAssVisitor varAss = new VarAssVisitor();
@@ -49,6 +64,12 @@ public class Main {
                 System.out.println("Inside: " +statement + " - END");
             }
         }
+
+
+        Compiler compiler = new Compiler(encounteredStatements);
+        compiler.compile();
+
+
     }
 
     /**
@@ -187,4 +208,25 @@ public class Main {
 
         return statementTypeMap;
     }
+
+
+
+    private static String loadContents(String filePath)
+    {
+
+        StringBuilder contentBuilder = new StringBuilder();
+
+        try (Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8))
+        {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return contentBuilder.toString();
+    }
+
+
 }

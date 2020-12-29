@@ -4,7 +4,7 @@ public class Symbol {
     private String name;
     private int lev;
     private int adr;
-    private int size;
+    private int sizeArr;
     private ESymbolType type;
     private boolean isConst;
 
@@ -12,7 +12,31 @@ public class Symbol {
     // todo is this a good idea?
     private String value;
 
+    private String inProcedure;
+    private String procParameters;
 
+    public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
+        this.name = name;
+        this.lev = level;
+        this.adr = address;
+        this.sizeArr = sizeArr;
+        this.type = type;
+        this.isConst = isConst;
+        this.value = value;
+        this.inProcedure = inProcedure;
+    }
+
+    public Symbol(){
+        this.name = "";
+        this.lev = 1;
+        this.adr = -1;
+        this.sizeArr = -1;
+        this.type = null;
+        this.isConst = false;
+        this.value = "0";
+        this.inProcedure = "global";
+        procParameters = "";
+    }
 
 
 
@@ -42,12 +66,12 @@ public class Symbol {
         this.adr = adr;
     }
 
-    public int getSize() {
-        return size;
+    public int getSizeArr() {
+        return sizeArr;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setSizeArr(int sizeArr) {
+        this.sizeArr = sizeArr;
     }
 
     public ESymbolType getType() {
@@ -80,9 +104,25 @@ public class Symbol {
         System.out.println("name: " + name);
         System.out.println("lev: " + lev);
         System.out.println("adr: " + adr);
-        System.out.println("size: " + size);
+        System.out.println("size: " + sizeArr);
         System.out.println("type: " + type);
         System.out.println("isConst: " + isConst);
         System.out.println("value: " + value);
+    }
+
+    public String getInProcedure() {
+        return inProcedure;
+    }
+
+    public void setInProcedure(String inProcedure) {
+        this.inProcedure = inProcedure;
+    }
+
+    public String getProcParameters() {
+        return procParameters;
+    }
+
+    public void setProcParameters(String procParameters) {
+        this.procParameters = procParameters;
     }
 }
