@@ -501,31 +501,43 @@ public class VarAssVisitor extends ourCBaseVisitor {
         if(ctx.PROC_DEF() != null && ctx.LEFT_BASIC_BRACK() != null && ctx.RIGHT_BASIC_BRACK() != null){ //procedure definition
             /* relevant statement info to keep - START */
             String identifierVar = ""; //name of the NEW procedure
-            String parameters = ""; //contains parameters (content in brackets after procedure name)
+            ArrayList<String> parameters = new ArrayList<String>(); //contains parameters (content in brackets after procedure name)
             /* relevant statement info to keep - END */
 
             if(ctx.identifier_var() != null){ //name of the procedure
                 identifierVar = ctx.identifier_var().getText();
             }
 
-            if(ctx.expr_dec_bool() != null){ //names of parameters in parentheses
-                List<ourCParser.Expr_dec_boolContext> treeItem1 = ctx.expr_dec_bool();
+            String[] splitContent = ctx.getText().split("\\("); //names of parameters in parentheses
+            splitContent = splitContent[1].split("\\)");
+            System.out.println("Def is: " + splitContent[0]);
 
-                for(int i = 0; i < treeItem1.size(); i++){
-                    if(i != 0){ //first item traversed, dnt add comma
-                        parameters += ",";
-                    }
-
-                    parameters += treeItem1.get(i).getText();
+            String[] indivParams = splitContent[0].split(",");
+            for(int i = 0; i < indivParams.length; i++){
+                if(indivParams[i].startsWith("bool")){
+                    indivParams[i] = indivParams[i].replaceFirst("bool", "bool ");
+                }else if(indivParams[i].startsWith("int")){
+                    indivParams[i] = indivParams[i].replaceFirst("int", "int ");
+                }else if(indivParams[i].startsWith("string")){
+                    indivParams[i] = indivParams[i].replaceFirst("string", "string ");
                 }
+            }
+
+            String params = "";
+            for(int i = 0; i < indivParams.length; i++){
+                if(params.length() != 0){
+                    params += ",";
+                }
+
+                params += indivParams[i];
             }
 
             procedureDefinition procDef = new procedureDefinition();
             procDef.setIdentifierVar(identifierVar);
-            procDef.setParameters(parameters);
+            procDef.setParameters(params);
 
             addStatement(procDef);
-            System.out.println("Procedure defined: name: " + identifierVar + ", params: " + parameters);
+            System.out.println("Procedure defined: name: " + identifierVar + ", params: " + params);
         }
 
         return super.visitDef_proc(ctx);

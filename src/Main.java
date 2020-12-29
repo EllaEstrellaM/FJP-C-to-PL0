@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 
 public class Main {
-    static String testStr = "if(i == 4){int c = 5; for(o = 1 to 10){int g = 4;} string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
+    static String testStr = "procedure proc(string s, int r, bool s){int r = 4;} if(i == 4){int c = 5; for(o = 1 to 10){int g = 4;} string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
 
     public static void main(String[] args){
       
@@ -35,6 +35,15 @@ public class Main {
             Istatement statement = encounteredStatements.get(i); //get one statement
 
             if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
+                if(statement instanceof procedureDefinition){
+                    System.out.println("Got prooc definition! - START");
+                    procedureDefinition procDef = (procedureDefinition) statement;
+
+                    System.out.println("Name " + procDef.getIdentifierVar());
+                    System.out.println("Params " + procDef.getParameters());
+                    System.out.println("Got prooc definition! - END");
+                }
+
                 ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
                 ArrayList<Istatement> innerStatements = multiStatement.getInnerStatement(); //inner statements included in multiline statement
 
