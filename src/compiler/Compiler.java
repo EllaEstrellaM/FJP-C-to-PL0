@@ -10,6 +10,7 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Compiler {
     private static int stackPointer;
@@ -287,6 +288,117 @@ public class Compiler {
         //globalSymbolTable.put(name, symb);
         symbolTable.put(name, symb);
         // --- DECLARATIONS END ---
+    }
+
+
+
+
+
+
+
+
+
+
+
+    // -- parsing expressions: ---
+    private static ArrayList<valueEvalDecData> parseExprDecBool(String exprDecBool){
+        ArrayList<valueEvalDecData> statementOrder = new ArrayList<valueEvalDecData>();
+
+        char[] splitted = exprDecBool.toCharArray(); //split to indiv "letters" (numbers + operators)
+
+        Stack<Integer> numbers = new Stack<Integer>(); //stack for retrieved numbers
+        Stack<Character> opers = new Stack<Character>(); //stack for retrieved operators
+
+        for(int i = 0; i < splitted.length; i++){ //go through splitted numbers & operators
+            if(splitted[i] >= '0' && splitted[i] <= '9'){ //between 0 - 9 -> number
+                StringBuffer numBuf = new StringBuffer();
+
+                while(i < splitted.length && splitted[i] >= '0' && splitted[i] <= '9'){ //number can be > 1 char
+                    numBuf.append(splitted[i++]);
+                }
+                numbers.push(Integer.parseInt(numBuf.toString())); //push buffer containing whole number to stack
+                i--;
+            }else if(splitted[i] == '('){
+                opers.push(splitted[i]);
+            }else if(splitted[i] == ')'){
+                while(opers.peek() != '('){
+                    int secondVal = numbers.pop();
+                    int firstVal = numbers.pop();
+                    Character oper = opers.pop();
+
+                    valueEvalDecData evalSingleOper = new valueEvalDecData();
+                    evalSingleOper.setSecondVal(secondVal);
+                    evalSingleOper.setOper(oper);
+                    evalSingleOper.setFirstVal(firstVal);
+                    statementOrder.add(evalSingleOper);
+
+                    numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
+                }
+
+                opers.pop();
+            }else if(splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/'){ //supported operators
+                while (!opers.empty() && checkPrecExprDecBool(splitted[i], opers.peek())){
+                    int secondVal = numbers.pop();
+                    int firstVal = numbers.pop();
+                    Character oper = opers.pop();
+
+                    valueEvalDecData evalSingleOper = new valueEvalDecData();
+                    evalSingleOper.setSecondVal(secondVal);
+                    evalSingleOper.setOper(oper);
+                    evalSingleOper.setFirstVal(firstVal);
+                    statementOrder.add(evalSingleOper);
+
+                    numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
+                }
+
+                opers.push(splitted[i]);
+            }
+        }
+
+        while (!opers.empty()){
+            int secondVal = numbers.pop();
+            int firstVal = numbers.pop();
+            Character oper = opers.pop();
+
+            valueEvalDecData evalSingleOper = new valueEvalDecData();
+            evalSingleOper.setSecondVal(secondVal);
+            evalSingleOper.setOper(oper);
+            evalSingleOper.setFirstVal(firstVal);
+            statementOrder.add(evalSingleOper);
+
+            numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
+        }
+
+        return statementOrder;
+    }
+
+    private static boolean checkPrecExprDecBool(char firstOper, char secondOper){
+        if(secondOper == '(' || secondOper == ')'){
+            return false;
+        }else if((firstOper == '*' || firstOper == '/') && (secondOper == '+' || secondOper == '-')){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    private static int singleOpExprDecBool(char oper, int secondNum, int firstNum){
+        if(oper == '-'){
+            return firstNum - secondNum;
+        }else if(oper == '+'){
+            return firstNum + secondNum;
+        }else if(oper == '*'){
+            return firstNum * secondNum;
+        }else if(oper == '/') {
+            return firstNum / secondNum;
+        }else{
+            return 0;
+        }
+
+
+
+
+
     }
 
 
