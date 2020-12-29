@@ -1,11 +1,13 @@
 package statementDefMultiLine;
 
+import compiler.Symbol;
 import statementInterEnum.EmultiLineStatementType;
 import statementInterEnum.IDeclaration;
 import statementInterEnum.ImultiLineStatement;
 import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class procedureDefinition implements Istatement, ImultiLineStatement, IDeclaration {
     EmultiLineStatementType operationType;
@@ -17,6 +19,8 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
     String parameters; //contains parameters (content in brackets after procedure name)
     /* relevant statement info to keep - END */
 
+    private HashMap<String, Symbol> privateSymbolTable;
+
     public procedureDefinition(){
         setOperationType();
         wholeContent = "";
@@ -24,6 +28,8 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
 
         identifierVar = "";
         parameters = "";
+
+        privateSymbolTable = new HashMap<>();
     }
 
     @Override
@@ -70,5 +76,17 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
 
     public void setParameters(String parameters) {
         this.parameters = parameters;
+    }
+
+    public HashMap<String, Symbol> getPrivateSymbolTable() {
+        return privateSymbolTable;
+    }
+
+    public void setPrivateSymbolTable(HashMap<String, Symbol> privateSymbolTable) {
+        this.privateSymbolTable = privateSymbolTable;
+    }
+
+    public void addToLocalSymbolTable(String key, Symbol symbol){
+        this.privateSymbolTable.put(key, symbol);
     }
 }

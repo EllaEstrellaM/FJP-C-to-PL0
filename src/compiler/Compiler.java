@@ -8,18 +8,16 @@ import statementInterEnum.ImultiLineStatement;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Stack;
 
 public class Compiler {
     private static int stackPointer;
     //private HashSet<Symbol> symbolTable;
-    private HashMap<String, Symbol> symbolTable;
+    private HashMap<String, Symbol> globalSymbolTable;
     private ParseTree tree;
     private ArrayList<Istatement> statements;
+    private ArrayList<procedureDefinition> procedureDefinitions;
 
 //    public Compiler(ParseTree tree){
 //        //symbolTable = new HashSet<Symbol>();
@@ -33,7 +31,8 @@ public class Compiler {
     int declCounter = BASE_ADDRESS;
 
     public Compiler(ArrayList<Istatement> statements){
-        symbolTable = new HashMap<String, Symbol>();
+        globalSymbolTable = new HashMap<String, Symbol>();
+        this.procedureDefinitions = new ArrayList<>();
         this.statements = statements;
     }
 
@@ -51,19 +50,25 @@ public class Compiler {
         instructions.add(firstI);
         instructions.add(secondI);
 
-        // fill the symbol table with 'global' things:
+        // 1. fill the symbol table with 'global' things:
         String proc = "global";
         for(Istatement st : statements){
             if(st instanceof IDeclaration){
-                resolveDeclaration((IDeclaration) st, proc);
+                resolveDeclaration((IDeclaration) st, proc, globalSymbolTable);
                 //declCounter++;
             }
-            if(st instanceof ImultiLineStatement){
-                resolveMultilineStatement((ImultiLineStatement) st);
-            }
-            else if(st instanceof IoneLineStatement){
+//            if(st instanceof ImultiLineStatement){
+//                resolveMultilineStatement((ImultiLineStatement) st);
+//            }
+//            else if(st instanceof IoneLineStatement){
+//                ;;
+//            }
+        }
 
-            }
+        // 2. take care of procedures:
+        for(procedureDefinition pd : procedureDefinitions){
+
+
         }
 
 
@@ -96,28 +101,40 @@ public class Compiler {
     }
 
 
+    private void generateInstructionsForProcedure(){
 
-    private void resolveOneLineStatement(IoneLineStatement st, ImultiLineStatement parentSt){
+    }
+
+
+
+    private void resolveOneLineStatement(IoneLineStatement st, String inWhichProc){
         if(st instanceof IDeclaration){
-            String inWhichProc = "global";
-            if(parentSt != null){
-                if(parentSt instanceof procedureDefinition){
-                    inWhichProc = ((procedureDefinition) parentSt).getIdentifierVar();
-                }
-            }
 
-            resolveDeclaration((IDeclaration) st, inWhichProc);
+//            if(parentSt != null){
+//                if(parentSt instanceof procedureDefinition){
+//                    inWhichProc = ((procedureDefinition) parentSt).getIdentifierVar();
+//                }
+//            }
+
+            //resolveDeclaration((IDeclaration) st, inWhichProc);
         }
     }
 
+    String currProc = "";
     private void resolveMultilineStatement(ImultiLineStatement st){
-//        if(st instanceof procedureDefinition){
-//
-//        }
+
+
+        if(st instanceof procedureDefinition){
+            currProc = ((procedureDefinition) st).getIdentifierVar();
+        }
 
         for(int i = 0; i < st.getInnerStatement().size(); i++){
             if(st.getInnerStatement().get(i) instanceof IoneLineStatement){
-
+                resolveOneLineStatement((IoneLineStatement) st.getInnerStatement().get(i), currProc);
+            }
+            else{
+                // recursion?
+                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatement().get(i));
             }
         }
     }
@@ -127,7 +144,7 @@ public class Compiler {
      * Adds new symbol to the table
      * @param st
      */
-    private void resolveDeclaration(IDeclaration st, String inProc){
+    private void resolveDeclaration(IDeclaration st, String inProc, HashMap<String, Symbol> symbolTable){
         // --- DECLARATIONS START: ---
         Symbol symb = new Symbol();
         String name = null;
@@ -263,8 +280,11 @@ public class Compiler {
             symb.setType(ESymbolType.PROCEDURE);
             symb.setInProcedure(inProc); // todo we probably dont support nested procedures anyway
             declCounter++; // todo???
+
+            procedureDefinitions.add((procedureDefinition)st);
         }
 
+        //globalSymbolTable.put(name, symb);
         symbolTable.put(name, symb);
         // --- DECLARATIONS END ---
     }
