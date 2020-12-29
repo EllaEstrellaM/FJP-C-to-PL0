@@ -1,10 +1,11 @@
 package statementDefOneLine;
 
 import statementInterEnum.EoneLineStatementType;
+import statementInterEnum.IDeclaration;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
-public class stringDeclaration implements Istatement, IoneLineStatement {
+public class stringDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
     /* relevant statement info to keep - START */

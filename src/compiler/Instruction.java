@@ -6,7 +6,9 @@ public class Instruction {
     private int address;
 
     public Instruction(EInstrSet instr, int first, int second){
-
+        this.instruction = instr;
+        this.level = first;
+        this.address = second;
     }
 
     // getters and setters:

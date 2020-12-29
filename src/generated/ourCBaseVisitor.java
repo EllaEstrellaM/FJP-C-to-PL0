@@ -1,4 +1,4 @@
-// Generated from C:/Users/Ondrej/IdeaProjects/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
+// Generated from C:/Users/elisk/Documents/FJP-C-to-PL0\ourC.g4 by ANTLR 4.9
 package generated;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
