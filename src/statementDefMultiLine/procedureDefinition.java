@@ -1,5 +1,6 @@
 package statementDefMultiLine;
 
+import compiler.Instruction;
 import compiler.Symbol;
 import statementInterEnum.EmultiLineStatementType;
 import statementInterEnum.IDeclaration;
@@ -20,6 +21,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
     /* relevant statement info to keep - END */
 
     private HashMap<String, Symbol> privateSymbolTable;
+    private ArrayList<Instruction> instructions;
 
     public procedureDefinition(){
         setOperationType();
@@ -30,6 +32,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
         parameters = "";
 
         privateSymbolTable = new HashMap<>();
+        instructions = new ArrayList<>();
     }
 
     @Override
@@ -58,7 +61,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
     }
 
     @Override
-    public ArrayList<Istatement> getInnerStatement() {
+    public ArrayList<Istatement> getInnerStatements() {
         return innerStatementsList;
     }
 
@@ -88,5 +91,13 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
 
     public void addToLocalSymbolTable(String key, Symbol symbol){
         this.privateSymbolTable.put(key, symbol);
+    }
+
+    public ArrayList<Instruction> getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(ArrayList<Instruction> instructions) {
+        this.instructions = instructions;
     }
 }

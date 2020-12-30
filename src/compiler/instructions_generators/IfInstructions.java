@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class IfInstructions {
 
 
-    public ArrayList<Instruction> generateInstructions(Operation conditionOp){
+    public static ArrayList<Instruction> generateInstructions(Operation conditionOp){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         // condition contains the symbol and the operator

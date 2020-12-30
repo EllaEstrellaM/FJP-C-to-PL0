@@ -7,7 +7,7 @@ procedure main(){
 
     string sprosteSlovo = "krucipisek";
 
-    for(0 to 5){
+    for(i = 0 to 5){
         if(a){
             while(1){
                 a = a + 1;

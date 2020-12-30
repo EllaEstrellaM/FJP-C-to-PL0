@@ -1,29 +1,29 @@
 package statementDefOneLine;
 
 public class valueEvalDecData {
-    int firstVal;
-    int secondVal;
+    String firstVal;
+    String secondVal;
     char oper;
 
     public valueEvalDecData(){
-        this.firstVal = 0;
-        this.secondVal = 0;
+        this.firstVal = "";
+        this.secondVal = "";
         oper = '+';
     }
 
-    public int getFirstVal() {
+    public String getFirstVal() {
         return firstVal;
     }
 
-    public void setFirstVal(int firstVal) {
+    public void setFirstVal(String firstVal) {
         this.firstVal = firstVal;
     }
 
-    public int getSecondVal() {
+    public String getSecondVal() {
         return secondVal;
     }
 
-    public void setSecondVal(int secondVal) {
+    public void setSecondVal(String secondVal) {
         this.secondVal = secondVal;
     }
 

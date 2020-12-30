@@ -49,7 +49,7 @@ public class ifCondition implements Istatement, ImultiLineStatement {
     }
 
     @Override
-    public ArrayList<Istatement> getInnerStatement() {
+    public ArrayList<Istatement> getInnerStatements() {
         return innerStatementsList;
     }
 

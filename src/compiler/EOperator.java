@@ -24,4 +24,23 @@ public enum EOperator {
     public int getInstrCode() {
         return instrCode;
     }
+
+    public static EOperator getOperFromString(String str){
+        switch (str){
+            case "unary minus": return UNARY_MINUS; // todo?
+            case "+": return PLUS;
+            case "-": return MINUS;
+            case "*": return MULT;
+            case "/": return DIV;
+            case "%": return MOD;
+            case "odd": return ODD;  // todo?
+            case "==": return EQUAL;
+            case "!=": return NOT_EQUAL;
+            case "<": return LT;
+            case ">=": return GE;
+            case ">": return GT;
+            case "<=": return LE;
+            default: return null;
+        }
+    }
 }
