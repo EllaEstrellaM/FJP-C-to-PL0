@@ -23,8 +23,7 @@ import compiler.*;
 
 
 public class Main {
-    static String testStr = "int s = 456 + 852 * 123 * 123; procedure proc(string s, int r, bool s){int r = 4;} if(i == 4){int c = 5; for(o = 1 to 10){int g = 4;} string s = \"ahoj\"; bool tr = true;} newValue = (i == 4) ? 10 : 20; if(r == 8){c = 4;}int d = 4; bool test[3]; const string s = \"ahoj\"; cislo = porno;";
-
+    static String testStr = "if(i == 4){int c = 5; for(o = 1 to 10){if(i == 7){bool r = true;}int g = 4;} string s = \"ahoj\"; bool tr = true;}";
     static String test2 = "int ahoj = 3;";
 
     public static void main(String[] args){
@@ -37,7 +36,7 @@ public class Main {
         String content = loadContents(path);
 
 
-        ourCLexer lexer = new ourCLexer(CharStreams.fromString(content));
+        ourCLexer lexer = new ourCLexer(CharStreams.fromString(testStr)); //content
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
         ParseTree tree = parser.start();
         VarAssVisitor varAss = new VarAssVisitor();
@@ -61,16 +60,6 @@ public class Main {
             Istatement statement = encounteredStatements.get(i); //get one statement
 
             if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
-                if(statement instanceof procedureDefinition){
-                    System.out.println("Got prooc definition! - START");
-                    procedureDefinition procDef = (procedureDefinition) statement;
-
-                    System.out.println("Name " + procDef.getIdentifierVar());
-                    System.out.println("Params " + procDef.getParameters());
-                    System.out.println("Params " + procDef.getOperationType());
-                    System.out.println("Got prooc definition! - END");
-                }
-
                 ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
                 ArrayList<Istatement> innerStatements = multiStatement.getInnerStatement(); //inner statements included in multiline statement
 
@@ -80,6 +69,18 @@ public class Main {
 
                 for(int j = 0; j < innerStatements.size(); j++){
                     System.out.println("Got: " + innerStatementsMap.get(innerStatements.get(j)));
+
+                    if(innerStatements.get(j) instanceof forCycle){
+                        System.out.println("For instance with " + ((forCycle)((forCycle) innerStatements.get(j))).getIdentifierVar());
+                        forCycle forCycle = (forCycle) innerStatements.get(j); //cast to multiline
+
+                        ArrayList<Istatement> innerStatementsd = forCycle.getInnerStatement(); //inner statements included in multiline statement
+                        HashMap<Istatement, EallStatementType> innerStatementsMapd = parseInnerMultiStatement((ImultiLineStatement) forCycle);
+                        System.out.println("Size is: " + innerStatementsd.size());
+                        for(int k = 0; k < innerStatementsd.size(); k++){
+                            System.out.println("Got INSIDE FOR: " + innerStatementsMapd.get(innerStatementsd.get(k)));
+                        }
+                    }
                 }
 
                 System.out.println("Inside: " +statement + " - END");

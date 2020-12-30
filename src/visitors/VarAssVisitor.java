@@ -12,6 +12,8 @@ import java.util.List;
 
 public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
+    ArrayList<ImultiLineStatement> encounteredMultiStatements; //list of encountered MULTIstatements
+
     ArrayList<Integer> toPutInsideArr; //on each index holds number of one-line statements which should be added into respective multi-line "ArrayList<Istatement> innerStatementsList"
 
     public ArrayList<Istatement> getEncounteredStatements() {
@@ -27,9 +29,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
         if(nonFilledMultiStatement != null){ //not null -> assign new statement to already existing one
             nonFilledMultiStatement.addInnerStatement(statement);
-            System.out.println("Adding to inner!!");
         }else{ //null -> statement is NOT inside any multistatement, stands alone ; put to ArrayList<Istatement> encounteredStatements
-            System.out.println("Adding to NEW!!");
             encounteredStatements.add(statement);
         }
     }
@@ -39,20 +39,10 @@ public class VarAssVisitor extends ourCBaseVisitor {
      * @return instance of ImultiLineStatement which represents wanted multiline statement to which new statements should be assigned
      */
     ImultiLineStatement findMultiStatementToAssign(){
-        ArrayList<ImultiLineStatement> foundMultiStatements = new ArrayList<ImultiLineStatement>(); //list of multiline statements which exists inside list encounteredStatements with all statements
-
-        for(int i = 0; i < encounteredStatements.size(); i++){ //go through all statements
-            Istatement statement = encounteredStatements.get(i); //get one statement
-
-            if(statement instanceof ImultiLineStatement){ //check if instance of multiline statement
-                foundMultiStatements.add((ImultiLineStatement)statement); //if multiline statement -> add to found multiline statements list
-            }
-        }
-
         ImultiLineStatement toReturn = null; //instance of ImultiLineStatement which should be returned
 
-        for(int i = foundMultiStatements.size() - 1; i >= 0; i--){ //got list of multiline statements, go from end and find last one which value in toPutInsideArr is != 0
-            ImultiLineStatement multiStatement = foundMultiStatements.get(i); //get one multistatement
+        for(int i = encounteredMultiStatements.size() - 1; i >= 0; i--){ //got list of multiline statements, go from end and find last one which value in toPutInsideArr is != 0
+            ImultiLineStatement multiStatement = encounteredMultiStatements.get(i); //get one multistatement
 
             if(toPutInsideArr.get(i) != 0){ //OK, got target, value -1 ; return
                 toPutInsideArr.set(i, toPutInsideArr.get(i) - 1);
@@ -66,6 +56,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
     public VarAssVisitor(){
         encounteredStatements = new ArrayList<Istatement>();
+        encounteredMultiStatements = new ArrayList<ImultiLineStatement>();
         toPutInsideArr = new ArrayList<Integer>(); //how many statements (ie. code_blocks should be attached to last multistatement)
     }
 
@@ -86,6 +77,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 ifCondition ifCond = new ifCondition();
                 ifCond.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(ifCond);
+                encounteredMultiStatements.add((ImultiLineStatement) ifCond);
 
                 System.out.println("If statement created with " + exprDecBoolCont);
             }
@@ -101,6 +93,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 doWhileCycle doWhileCyc = new doWhileCycle();
                 doWhileCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(doWhileCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) doWhileCyc);
 
                 System.out.println("Do while cycle created with " + exprDecBoolCont);
             }
@@ -126,6 +119,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 forCyc.setExprDecBool2(exprDecBool2);
 
                 addStatement(forCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) forCyc);
 
                 System.out.println("For cycle created with start: " + exprDecBool1 + " and end: " + exprDecBool2 + ", variable name is: " + identifierVar);
             }
@@ -146,6 +140,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 forEachCyc.setIdentifierVar2(identifierVar2);
 
                addStatement(forEachCyc);
+               encounteredMultiStatements.add((ImultiLineStatement) forEachCyc);
 
                 System.out.println("Foreach cycle created with ident1: " + identifierVar1 + ", ident2: " + identifierVar2);
             }
@@ -161,6 +156,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 repeatUntilCycle repeatUntilCyc = new repeatUntilCycle();
                 repeatUntilCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(repeatUntilCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) repeatUntilCyc);
 
                 System.out.println("Repeat until cycle created with " + exprDecBoolCont);
             }
@@ -176,6 +172,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 whileCycle whileCyc = new whileCycle();
                 whileCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(whileCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) whileCyc);
 
                 System.out.println("While cycle created with " + exprDecBoolCont);
             }
@@ -537,6 +534,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             procDef.setParameters(params);
 
             addStatement(procDef);
+            encounteredMultiStatements.add((ImultiLineStatement) procDef);
             System.out.println("Procedure defined: name: " + identifierVar + ", params: " + params);
         }
 
