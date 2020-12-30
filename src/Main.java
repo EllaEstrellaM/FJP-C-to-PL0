@@ -1,8 +1,10 @@
 import compiler.Compiler;
 import generated.ourCLexer;
 import generated.ourCParser;
+import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
 import statementDefOneLine.*;
@@ -36,7 +38,10 @@ public class Main {
 
         ourCLexer lexer = new ourCLexer(CharStreams.fromString(content));
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
-        ParseTree tree = parser.start();
+
+        ParseTree tree = null;
+        tree = parser.start();
+
         VarAssVisitor varAss = new VarAssVisitor();
         varAss.visit(tree);
 

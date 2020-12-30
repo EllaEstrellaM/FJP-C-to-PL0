@@ -18,41 +18,49 @@ public class VarAssignmentInstructions {
         int level = s.getLev();
 
 
-
+        boolean valAtTop = false;
         if(isExpression(value)){
             ArrayList<Operation> operOrder = parseExprDecBool(value, table);
 
             for(int i = 0; i < operOrder.size(); i++){
                 Operation oper = operOrder.get(i);
-                Operation op = new Operation();
 
-                //ArithmeticExpressionInstructions.generateInstructions(new Operation())
+                ArithmeticExpressionInstructions.generateInstructions(oper);
 
                 //System.out.println("Operation - START");
                 //System.out.println(oper.getFirstVal() + ", " + oper.getOper() + ", " + oper.getSecondVal());
                 //System.out.println("Operation - END");
             }
+            valAtTop = true;
         }
 
+        // now we should have the result stored at the top of the stack?
 
 
 
-        if(s.getType() == ESymbolType.BOOL || s.getType() == ESymbolType.INT){
+
+
+        if(s.getType() == ESymbolType.INT){
             // first store the value at the top of the stack:
-            // we can be sure the parseInt will be ok, bc it got accepted by the grammar - NO! can be expression
-            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(value)));
+            // we can be sure the parseInt will be ok, bc it got accepted by the grammar - NO! can be expression^^
+            if(!valAtTop)
+                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(value)));
 
             // then write the value to the correct address:
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr)); // todo is the level true?
 
 
         }
+        else if(s.getType() == ESymbolType.BOOL){
+            // todo evaluate epression for bool?
+        }
         else if(s.getType() == ESymbolType.ARRAY || s.getType() == ESymbolType.STRING){
-            if(value.length() > 1){
+            if(value.length() > 1 && !isExpression(value)){
                 // we're assigning to the whole thing
 
                 for(int i = 0; i < value.length(); i++){
-                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)value.charAt(i)));
+                    if(!valAtTop) // todo ???
+                        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)value.charAt(i)));
 
                     // then write the value to the correct address:
                     generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + i)); // todo is the level true?
@@ -61,7 +69,8 @@ public class VarAssignmentInstructions {
             }
             else if(value.length() == 1){
                 // we're changing one element in the array
-                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)value.charAt(0)));
+                if(!valAtTop)
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)value.charAt(0)));
 
                 // then write the value to the correct address:
                 generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + index)); // todo is the level true?

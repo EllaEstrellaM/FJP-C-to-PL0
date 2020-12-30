@@ -20,7 +20,12 @@ public class Error {
     }
 
     public static void printVarNotFound(String varName){
-        System.err.println("Unknown symbol " + varName);
+        System.err.println("Unknown symbol " + varName+ ".");
+        System.exit(0);
+    }
+
+    public static void printDivisoinByZero(){
+        System.err.println("Attempt to divide by zero detected.");
         System.exit(0);
     }
 }
