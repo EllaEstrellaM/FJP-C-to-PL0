@@ -4,7 +4,7 @@ import statementInterEnum.EoneLineStatementType;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
-public class ternarAssign implements Istatement, IoneLineStatement {
+public class intTernarDeclaration implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
 
@@ -15,7 +15,7 @@ public class ternarAssign implements Istatement, IoneLineStatement {
     String exprDecBoolFalseVal; //value, which will be assigned to identifierVar if condition equals FALSE
     /* relevant statement info to keep - END */
 
-    public ternarAssign(){
+    public intTernarDeclaration(){
         setOperationType();
         wholeContent = "";
 
@@ -27,7 +27,7 @@ public class ternarAssign implements Istatement, IoneLineStatement {
 
     @Override
     public void setOperationType() {
-        operationType = EoneLineStatementType.TERNAR_ASSIGN;
+        operationType = EoneLineStatementType.INT_TERNAR_DECLARATION;
     }
 
     @Override

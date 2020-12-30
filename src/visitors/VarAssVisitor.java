@@ -16,6 +16,9 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
     ArrayList<Integer> toPutInsideArr; //on each index holds number of one-line statements which should be added into respective multi-line "ArrayList<Istatement> innerStatementsList"
 
+    boolean visitedTernDecl; //true when ternar_declaration was visited ; reset to false when visit ternar_assignment
+    String ternDecType; //contains type of delcared value - string, bool or int
+
     public ArrayList<Istatement> getEncounteredStatements() {
         return encounteredStatements;
     }
@@ -58,6 +61,8 @@ public class VarAssVisitor extends ourCBaseVisitor {
         encounteredStatements = new ArrayList<Istatement>();
         encounteredMultiStatements = new ArrayList<ImultiLineStatement>();
         toPutInsideArr = new ArrayList<Integer>(); //how many statements (ie. code_blocks should be attached to last multistatement)
+        visitedTernDecl = false;
+        ternDecType = "";
     }
 
     /* visited on int assign, string assign, bool assign, arr int assign, arr bool assign, int declaration, bool declaration, string declaration, arr int declaration, arr bool declaration,
@@ -588,22 +593,72 @@ public class VarAssVisitor extends ourCBaseVisitor {
             }else{ //want to assign string
                 List<ourCParser.Expr_stringContext> treeItem2 = ctx.expr_string();
 
-                exprDecBoolTrueVal = treeItem1.get(0).getText(); //first value which is assigned if true
-                exprDecBoolFalseVal = treeItem1.get(1).getText(); //second is value assigned if false
+                exprDecBoolTrueVal = treeItem2.get(0).getText(); //first value which is assigned if true
+                exprDecBoolFalseVal = treeItem2.get(1).getText(); //second is value assigned if false
             }
         }
 
-        ternarAssign ternarAss = new ternarAssign();
-        ternarAss.setIdentifierVar(identifierVar);
-        ternarAss.setExprDecBoolCont(exprDecBoolCont);
-        ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
-        ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+        if(visitedTernDecl){ //ternar declaration was visited -> create declaration instance
+            System.out.println("Ternar declaratino vis!");
 
-        addStatement(ternarAss);
-        System.out.println("Added ternar assignment: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+            visitedTernDecl = false;
 
+            if(ternDecType.equals("int")){
+                intTernarDeclaration intTernDec = new intTernarDeclaration();
+
+                intTernDec.setIdentifierVar(identifierVar);
+                intTernDec.setExprDecBoolCont(exprDecBoolCont);
+                intTernDec.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+                intTernDec.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+                System.out.println("Added INT TERN DECLAR: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+                addStatement(intTernDec);
+            }else if(ternDecType.equals("bool")){
+                boolTernarDeclaration boolTernDec = new boolTernarDeclaration();
+
+                boolTernDec.setIdentifierVar(identifierVar);
+                boolTernDec.setExprDecBoolCont(exprDecBoolCont);
+                boolTernDec.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+                boolTernDec.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+                System.out.println("Added BOOL TERN DECLAR: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+
+                addStatement(boolTernDec);
+            }else if(ternDecType.equals("string")){
+                stringTernarDeclaration stringTernDec = new stringTernarDeclaration();
+
+                stringTernDec.setIdentifierVar(identifierVar);
+                stringTernDec.setExprDecBoolCont(exprDecBoolCont);
+                stringTernDec.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+                stringTernDec.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+                System.out.println("Added STRING TERN DECLAR: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+
+                addStatement(stringTernDec);
+            }
+        }else{ //declaration not visited -> create classic assignment
+            ternarAssign ternarAss = new ternarAssign();
+            ternarAss.setIdentifierVar(identifierVar);
+            ternarAss.setExprDecBoolCont(exprDecBoolCont);
+            ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+            ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+
+            addStatement(ternarAss);
+            System.out.println("Added ternar assignment: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+        }
         return super.visitTernar_assignment(ctx);
     }
 
+    @Override
+    public Object visitTernar_declaration(ourCParser.Ternar_declarationContext ctx) {
+        System.out.println("Ternar declaration visited");
+        visitedTernDecl = true;
 
+        if(ctx.INT() != null){
+            ternDecType = "int";
+        }else if(ctx.BOOL() != null){
+            ternDecType = "bool";
+        }else if(ctx.STRING() != null){
+            ternDecType = "string";
+        }
+
+        return super.visitTernar_declaration(ctx);
+    }
 }
