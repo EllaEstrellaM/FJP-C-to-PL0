@@ -7,6 +7,7 @@ public class Symbol {
     private int sizeArr;
     private ESymbolType type;
     private boolean isConst;
+    private boolean hasBeenDeclared;
 
     // save everything as a string - all ints, bools, strings and arrays
     // todo is this a good idea?
@@ -124,5 +125,13 @@ public class Symbol {
 
     public void setProcParameters(String procParameters) {
         this.procParameters = procParameters;
+    }
+
+    public boolean hasBeenDeclared() {
+        return hasBeenDeclared;
+    }
+
+    public void setHasBeenDeclared(boolean hasBeenDeclared) {
+        this.hasBeenDeclared = hasBeenDeclared;
     }
 }

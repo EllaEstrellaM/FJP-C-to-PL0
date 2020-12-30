@@ -1,8 +1,10 @@
 import compiler.Compiler;
 import generated.ourCLexer;
 import generated.ourCParser;
+import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
 import statementDefOneLine.*;
@@ -13,13 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
 import java.util.stream.Stream;
-import compiler.*;
 
 
 public class Main {
@@ -28,7 +27,7 @@ public class Main {
 
     public static void main(String[] args){
 
-        String testFile = "test2.txt";
+        String testFile = "test3.txt";
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;
 
@@ -36,7 +35,10 @@ public class Main {
 
         ourCLexer lexer = new ourCLexer(CharStreams.fromString(testStr)); //content
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
-        ParseTree tree = parser.start();
+
+        ParseTree tree = null;
+        tree = parser.start();
+
         VarAssVisitor varAss = new VarAssVisitor();
         varAss.visit(tree);
 
@@ -59,7 +61,7 @@ public class Main {
 
             if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
                 ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
-                ArrayList<Istatement> innerStatements = multiStatement.getInnerStatement(); //inner statements included in multiline statement
+                ArrayList<Istatement> innerStatements = multiStatement.getInnerStatements(); //inner statements included in multiline statement
 
                 System.out.println("Inside: " +statement + " - START");
 
@@ -183,7 +185,7 @@ public class Main {
     private static HashMap<Istatement, EallStatementType> parseInnerMultiStatement(ImultiLineStatement multiLineStatement){
         HashMap<Istatement, EallStatementType> statementTypeMap = new HashMap<Istatement, EallStatementType>();
 
-        ArrayList<Istatement> innerStatements = multiLineStatement.getInnerStatement();
+        ArrayList<Istatement> innerStatements = multiLineStatement.getInnerStatements();
 
         for(int i = 0; i < innerStatements.size(); i++){ //go through inner statements
             Istatement statement = innerStatements.get(i); //get one inner statement

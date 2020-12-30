@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class IfInstructions {
 
 
-    public ArrayList<Instruction> generateInstructions(Operation conditionOp){
+    public static ArrayList<Instruction> generateInstructions(Operation conditionOp){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         // condition contains the symbol and the operator
@@ -33,15 +33,21 @@ public class IfInstructions {
         // perform the comparison:
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, conditionOp.getOperator().getInstrCode()));
 
-        // todo decide upon true / not true:
-        if(conditionOp.getResult() != 0){
-            // true - dont jump anywhere:
-        }
-        else{
-            // jmc when the condition is NOT true
-            // todo maybe add this elsewhere when ALL the conditions were evaluated?
-            generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -666666)); // todo set the address
-        }
+
+
+
+
+        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -666666));
+
+//        // todo decide upon true / not true:
+//        if(conditionOp.getResult() != 0){
+//            // true - dont jump anywhere:
+//        }
+//        else{
+//            // jmc when the condition is NOT true
+//            // todo maybe add this elsewhere when ALL the conditions were evaluated?
+//            generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -666666)); // todo set the address
+//        }
 
 
 

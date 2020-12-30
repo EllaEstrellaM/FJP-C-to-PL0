@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ArithmeticExpressionInstructions {
 
-    public ArrayList<Instruction> generateInstructions(Operation op, Symbol symbToStoreTo){
+    public static ArrayList<Instruction> generateInstructions(Operation op/*, Symbol symbToStoreTo*/){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         // if symbToStoreTo has address -1, store at top of stack?
@@ -34,17 +34,18 @@ public class ArithmeticExpressionInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, op.getOperator().getInstrCode()));
 
         int resToStore = op.getResult();
+        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, resToStore));
 
         // then store it in the symbol or in stack
-        if(symbToStoreTo.getAdr() == -1){
-
-            // put it to stack
-            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, resToStore));
-        }
-        else{
-            // todo we dont have to push it to stack at all?
-            symbToStoreTo.setValue("" + resToStore);
-        }
+//        if(symbToStoreTo.getAdr() == -1){
+//
+//            // put it to stack
+//            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, resToStore));
+//        }
+//        else{
+//            // todo we dont have to push it to stack at all?
+//            symbToStoreTo.setValue("" + resToStore);
+//        }
 
 
 

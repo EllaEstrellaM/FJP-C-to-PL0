@@ -1,5 +1,7 @@
 package compiler;
 
+import compiler.errors.Error;
+import compiler.instructions_generators.VarAssignmentInstructions;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
 import statementDefOneLine.*;
@@ -20,21 +22,16 @@ public class Compiler {
     private ArrayList<Istatement> statements;
     private ArrayList<procedureDefinition> procedureDefinitions;
 
-//    public Compiler(ParseTree tree){
-//        //symbolTable = new HashSet<Symbol>();
-//        symbolTable = new HashMap<String, Symbol>();
-//        this.tree = tree;
-//    }
-
 
     private final int BASE_ADDRESS = 3;
-
     int declCounter = BASE_ADDRESS;
+
 
     public Compiler(ArrayList<Istatement> statements){
         globalSymbolTable = new HashMap<String, Symbol>();
         this.procedureDefinitions = new ArrayList<>();
         this.statements = statements;
+
     }
 
     public ArrayList<Instruction> compile(){
@@ -68,7 +65,7 @@ public class Compiler {
 
         // 2. take care of procedures:
         for(procedureDefinition pd : procedureDefinitions){
-
+            generateInstructionsForProcedure(pd);
 
         }
 
@@ -102,8 +99,18 @@ public class Compiler {
     }
 
 
-    private void generateInstructionsForProcedure(){
+    private ArrayList<Instruction> generateInstructionsForProcedure(procedureDefinition pd){
+        ArrayList<Instruction> instructions = new ArrayList<>();
 
+        String currProcName = pd.getIdentifierVar();
+
+        for(Istatement pdSt : pd.getInnerStatements()){
+            if(pdSt instanceof IDeclaration){
+                resolveDeclaration((IDeclaration) pdSt, currProcName, pd.getPrivateSymbolTable());
+            }
+        }
+
+        return instructions;
     }
 
 
@@ -129,13 +136,13 @@ public class Compiler {
             currProc = ((procedureDefinition) st).getIdentifierVar();
         }
 
-        for(int i = 0; i < st.getInnerStatement().size(); i++){
-            if(st.getInnerStatement().get(i) instanceof IoneLineStatement){
-                resolveOneLineStatement((IoneLineStatement) st.getInnerStatement().get(i), currProc);
+        for(int i = 0; i < st.getInnerStatements().size(); i++){
+            if(st.getInnerStatements().get(i) instanceof IoneLineStatement){
+                resolveOneLineStatement((IoneLineStatement) st.getInnerStatements().get(i), currProc);
             }
             else{
                 // recursion?
-                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatement().get(i));
+                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatements().get(i));
             }
         }
     }
@@ -146,7 +153,6 @@ public class Compiler {
      * @param st
      */
     private void resolveDeclaration(IDeclaration st, String inProc, HashMap<String, Symbol> symbolTable){
-        // --- DECLARATIONS START: ---
         Symbol symb = new Symbol();
         String name = null;
 
@@ -280,14 +286,21 @@ public class Compiler {
             symb.setLev(1); // todo ???
             symb.setType(ESymbolType.PROCEDURE);
             symb.setInProcedure(inProc); // todo we probably dont support nested procedures anyway
-            declCounter++; // todo???
+            //declCounter++; // todo???
 
             procedureDefinitions.add((procedureDefinition)st);
         }
 
         //globalSymbolTable.put(name, symb);
+
+        if(symbolTable.containsKey(name)){
+            Error.printMultipleDefines(name);
+        }
+
+        symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        // --- DECLARATIONS END ---
+        VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable);
+        symb.setHasBeenDeclared(true);
     }
 
 
@@ -300,106 +313,6 @@ public class Compiler {
 
 
 
-    // -- parsing expressions: ---
-    private static ArrayList<valueEvalDecData> parseExprDecBool(String exprDecBool){
-        ArrayList<valueEvalDecData> statementOrder = new ArrayList<valueEvalDecData>();
-
-        char[] splitted = exprDecBool.toCharArray(); //split to indiv "letters" (numbers + operators)
-
-        Stack<Integer> numbers = new Stack<Integer>(); //stack for retrieved numbers
-        Stack<Character> opers = new Stack<Character>(); //stack for retrieved operators
-
-        for(int i = 0; i < splitted.length; i++){ //go through splitted numbers & operators
-            if(splitted[i] >= '0' && splitted[i] <= '9'){ //between 0 - 9 -> number
-                StringBuffer numBuf = new StringBuffer();
-
-                while(i < splitted.length && splitted[i] >= '0' && splitted[i] <= '9'){ //number can be > 1 char
-                    numBuf.append(splitted[i++]);
-                }
-                numbers.push(Integer.parseInt(numBuf.toString())); //push buffer containing whole number to stack
-                i--;
-            }else if(splitted[i] == '('){
-                opers.push(splitted[i]);
-            }else if(splitted[i] == ')'){
-                while(opers.peek() != '('){
-                    int secondVal = numbers.pop();
-                    int firstVal = numbers.pop();
-                    Character oper = opers.pop();
-
-                    valueEvalDecData evalSingleOper = new valueEvalDecData();
-                    evalSingleOper.setSecondVal(secondVal);
-                    evalSingleOper.setOper(oper);
-                    evalSingleOper.setFirstVal(firstVal);
-                    statementOrder.add(evalSingleOper);
-
-                    numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
-                }
-
-                opers.pop();
-            }else if(splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/'){ //supported operators
-                while (!opers.empty() && checkPrecExprDecBool(splitted[i], opers.peek())){
-                    int secondVal = numbers.pop();
-                    int firstVal = numbers.pop();
-                    Character oper = opers.pop();
-
-                    valueEvalDecData evalSingleOper = new valueEvalDecData();
-                    evalSingleOper.setSecondVal(secondVal);
-                    evalSingleOper.setOper(oper);
-                    evalSingleOper.setFirstVal(firstVal);
-                    statementOrder.add(evalSingleOper);
-
-                    numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
-                }
-
-                opers.push(splitted[i]);
-            }
-        }
-
-        while (!opers.empty()){
-            int secondVal = numbers.pop();
-            int firstVal = numbers.pop();
-            Character oper = opers.pop();
-
-            valueEvalDecData evalSingleOper = new valueEvalDecData();
-            evalSingleOper.setSecondVal(secondVal);
-            evalSingleOper.setOper(oper);
-            evalSingleOper.setFirstVal(firstVal);
-            statementOrder.add(evalSingleOper);
-
-            numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
-        }
-
-        return statementOrder;
-    }
-
-    private static boolean checkPrecExprDecBool(char firstOper, char secondOper){
-        if(secondOper == '(' || secondOper == ')'){
-            return false;
-        }else if((firstOper == '*' || firstOper == '/') && (secondOper == '+' || secondOper == '-')){
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    private static int singleOpExprDecBool(char oper, int secondNum, int firstNum){
-        if(oper == '-'){
-            return firstNum - secondNum;
-        }else if(oper == '+'){
-            return firstNum + secondNum;
-        }else if(oper == '*'){
-            return firstNum * secondNum;
-        }else if(oper == '/') {
-            return firstNum / secondNum;
-        }else{
-            return 0;
-        }
-
-
-
-
-
-    }
 
 
 }

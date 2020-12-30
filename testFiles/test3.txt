@@ -1,0 +1,32 @@
+ajjsjsj
+int abc = 0;
+int ahoj = 2;
+int a = 8 - 7 * abc + 9 * (ahoj + 6);
+
+procedure prvni(){
+    int a = 7;
+    string b = "lol";
+
+    bool haha = true;
+}
+
+
+procedure druha(){
+    int a = 7;
+    string b = "lol";
+
+    bool haha = true;
+}
+
+
+
+procedure main(){
+    int a = 7;
+    string b = "lol";
+
+    bool haha = true;
+
+    prvni();
+    druha();
+}
+
