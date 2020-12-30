@@ -417,6 +417,11 @@ public class VarAssVisitor extends ourCBaseVisitor {
         String declVarValue; //value of the NEW const variable (int, bool or string) -> convert after...
         /* info relevant to variable declaration - END */
 
+        /* info relevant to array declaration - START */
+        String declArrName; //name of the NEW array
+        int declArrsize; //size of the NEW array
+        /* info relevant to array declaration - END */
+
         if(ctx.decimal_var_dec() != null){ //decimal value
             ourCParser.Decimal_var_decContext treeItem1 = ctx.decimal_var_dec();
 
@@ -461,6 +466,25 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constStringDeclar.setStringVal(declVarValue);
             System.out.println("STRING const declaration\n" + constStringDeclar.getIdentifierVar() + ", " + constStringDeclar.getStringVal());
             addStatement(constStringDeclar);
+        }else if(ctx.array_var_dec() != null){
+            ourCParser.Array_var_decContext treeItem1 = ctx.array_var_dec();
+
+            declArrName = treeItem1.identifier_var().IDENT().getText();
+            declArrsize = Integer.valueOf(treeItem1.DEC_NUM().getText());
+
+            if(ctx.array_var_dec().INT() != null){ //want to declare int array
+                constArrIntDeclaration constArrIntDeclar = new constArrIntDeclaration();
+                constArrIntDeclar.setIdentifierVar(declArrName);
+                constArrIntDeclar.setDecNum(declArrsize);
+                System.out.println("CONST INT ARR declaration\n" + constArrIntDeclar.getIdentifierVar() + ", " + constArrIntDeclar.getDecNum());
+                addStatement(constArrIntDeclar);
+            }else{ //want to declare bool array
+                constArrBoolDeclaration constArrBoolDeclar = new constArrBoolDeclaration();
+                constArrBoolDeclar.setIdentifierVar(declArrName);
+                constArrBoolDeclar.setDecNum(declArrsize);
+                System.out.println("CONST BOOL ARR declaration: " + constArrBoolDeclar.getIdentifierVar() + ", " + constArrBoolDeclar.getDecNum());
+                addStatement(constArrBoolDeclar);
+            }
         }else{
             //error, tbd
         }
