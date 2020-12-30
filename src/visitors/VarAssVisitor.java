@@ -192,6 +192,30 @@ public class VarAssVisitor extends ourCBaseVisitor {
         /* info relevant to variable assign - END */
 
         assignVarName = ctx.identifier_var().getText();
+        indexToInsert = Integer.valueOf(ctx.DEC_NUM().getText());
+
+        if(ctx.expr_dec_bool() != null){ //target is boolean or int
+            ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool();
+
+            assignVarValue = treeItem1.getText();
+            if(treeItem1.OP_MINUS() != null){ //minus sign present
+                assignVarMinusSign = true;
+            }else{ //plus or no sign present in assignment...
+                assignVarMinusSign = false;
+            }
+        }else{
+            assignVarValue = ""; //should NEVER occur...
+            indexToInsert = 0;
+        }
+
+        unknownArrAssign unkArrAssign = new unknownArrAssign();
+        unkArrAssign.setIdentifierVar(assignVarName);
+        unkArrAssign.setMinusSign(assignVarMinusSign);
+        unkArrAssign.setValueVar(assignVarValue);
+        unkArrAssign.setIndexToAssign(indexToInsert);
+
+        System.out.println("Array assignment created\n" + unkArrAssign.getIdentifierVar() + ", " + unkArrAssign.isMinusSign() + ", " + unkArrAssign.getValueVar() + ", " + unkArrAssign.getIndexToAssign());
+        addStatement(unkArrAssign);
 
         return super.visitArr_assignment(ctx);
     }
@@ -580,4 +604,6 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
         return super.visitTernar_assignment(ctx);
     }
+
+
 }

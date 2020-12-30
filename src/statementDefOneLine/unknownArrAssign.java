@@ -12,7 +12,6 @@ public class unknownArrAssign implements Istatement, IoneLineStatement {
     String identifierVar; //name of the array
     boolean minusSign; //true if value is <= 0, ie minus sign is present ; else false (if ommited or plus sign present) ; used just on int arr assign...
     String valueVar; //value of the variable
-
     int indexToAssign; //index of array to which new value should be inserted
     /* relevant statement info to keep - END */
 
