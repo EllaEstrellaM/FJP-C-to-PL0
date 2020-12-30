@@ -23,7 +23,7 @@ import compiler.*;
 
 
 public class Main {
-    static String testStr = "if(i == 4){int c = 5; for(o = 1 to 10){if(i == 7){bool r = true;}int g = 4;} string s = \"ahoj\"; bool tr = true;}";
+    static String testStr = "while(i < 4 or c > 9){r = 4;} repeat{c = 7;}until(d == 8 or v == 6); procedure proc(int intPar, int intArr[2], string stringPar, string stringArr[4], bool boolPar, string boolArr[3]){innerAssProc = 4;} foreach(i : pole){c = 4;} do{int c = 5;}while(i < 4 and i == 8); if(i == 4 and c == 8){int c = 5; for(o = 1 to 10){if(i == 7){bool r = true;}int g = 4;} string s = \"ahoj\"; bool tr = true;}";
     static String test2 = "int ahoj = 3;";
 
     public static void main(String[] args){
@@ -34,7 +34,6 @@ public class Main {
 
 
         String content = loadContents(path);
-
 
         ourCLexer lexer = new ourCLexer(CharStreams.fromString(testStr)); //content
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
