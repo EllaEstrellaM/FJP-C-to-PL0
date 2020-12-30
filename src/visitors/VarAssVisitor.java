@@ -12,7 +12,12 @@ import java.util.List;
 
 public class VarAssVisitor extends ourCBaseVisitor {
     ArrayList<Istatement> encounteredStatements; //list of ALL recognized statements (oneline + multiline)
+    ArrayList<ImultiLineStatement> encounteredMultiStatements; //list of encountered MULTIstatements
+
     ArrayList<Integer> toPutInsideArr; //on each index holds number of one-line statements which should be added into respective multi-line "ArrayList<Istatement> innerStatementsList"
+
+    boolean visitedTernDecl; //true when ternar_declaration was visited ; reset to false when visit ternar_assignment
+    String ternDecType; //contains type of delcared value - string, bool or int
 
     public ArrayList<Istatement> getEncounteredStatements() {
         return encounteredStatements;
@@ -27,9 +32,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
         if(nonFilledMultiStatement != null){ //not null -> assign new statement to already existing one
             nonFilledMultiStatement.addInnerStatement(statement);
-            System.out.println("Adding to inner!!");
         }else{ //null -> statement is NOT inside any multistatement, stands alone ; put to ArrayList<Istatement> encounteredStatements
-            System.out.println("Adding to NEW!!");
             encounteredStatements.add(statement);
         }
     }
@@ -39,20 +42,10 @@ public class VarAssVisitor extends ourCBaseVisitor {
      * @return instance of ImultiLineStatement which represents wanted multiline statement to which new statements should be assigned
      */
     ImultiLineStatement findMultiStatementToAssign(){
-        ArrayList<ImultiLineStatement> foundMultiStatements = new ArrayList<ImultiLineStatement>(); //list of multiline statements which exists inside list encounteredStatements with all statements
-
-        for(int i = 0; i < encounteredStatements.size(); i++){ //go through all statements
-            Istatement statement = encounteredStatements.get(i); //get one statement
-
-            if(statement instanceof ImultiLineStatement){ //check if instance of multiline statement
-                foundMultiStatements.add((ImultiLineStatement)statement); //if multiline statement -> add to found multiline statements list
-            }
-        }
-
         ImultiLineStatement toReturn = null; //instance of ImultiLineStatement which should be returned
 
-        for(int i = foundMultiStatements.size() - 1; i >= 0; i--){ //got list of multiline statements, go from end and find last one which value in toPutInsideArr is != 0
-            ImultiLineStatement multiStatement = foundMultiStatements.get(i); //get one multistatement
+        for(int i = encounteredMultiStatements.size() - 1; i >= 0; i--){ //got list of multiline statements, go from end and find last one which value in toPutInsideArr is != 0
+            ImultiLineStatement multiStatement = encounteredMultiStatements.get(i); //get one multistatement
 
             if(toPutInsideArr.get(i) != 0){ //OK, got target, value -1 ; return
                 toPutInsideArr.set(i, toPutInsideArr.get(i) - 1);
@@ -66,7 +59,10 @@ public class VarAssVisitor extends ourCBaseVisitor {
 
     public VarAssVisitor(){
         encounteredStatements = new ArrayList<Istatement>();
+        encounteredMultiStatements = new ArrayList<ImultiLineStatement>();
         toPutInsideArr = new ArrayList<Integer>(); //how many statements (ie. code_blocks should be attached to last multistatement)
+        visitedTernDecl = false;
+        ternDecType = "";
     }
 
     /* visited on int assign, string assign, bool assign, arr int assign, arr bool assign, int declaration, bool declaration, string declaration, arr int declaration, arr bool declaration,
@@ -86,6 +82,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 ifCondition ifCond = new ifCondition();
                 ifCond.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(ifCond);
+                encounteredMultiStatements.add((ImultiLineStatement) ifCond);
 
                 System.out.println("If statement created with " + exprDecBoolCont);
             }
@@ -101,6 +98,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 doWhileCycle doWhileCyc = new doWhileCycle();
                 doWhileCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(doWhileCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) doWhileCyc);
 
                 System.out.println("Do while cycle created with " + exprDecBoolCont);
             }
@@ -126,6 +124,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 forCyc.setExprDecBool2(exprDecBool2);
 
                 addStatement(forCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) forCyc);
 
                 System.out.println("For cycle created with start: " + exprDecBool1 + " and end: " + exprDecBool2 + ", variable name is: " + identifierVar);
             }
@@ -146,6 +145,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 forEachCyc.setIdentifierVar2(identifierVar2);
 
                addStatement(forEachCyc);
+               encounteredMultiStatements.add((ImultiLineStatement) forEachCyc);
 
                 System.out.println("Foreach cycle created with ident1: " + identifierVar1 + ", ident2: " + identifierVar2);
             }
@@ -161,6 +161,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 repeatUntilCycle repeatUntilCyc = new repeatUntilCycle();
                 repeatUntilCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(repeatUntilCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) repeatUntilCyc);
 
                 System.out.println("Repeat until cycle created with " + exprDecBoolCont);
             }
@@ -176,6 +177,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 whileCycle whileCyc = new whileCycle();
                 whileCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(whileCyc);
+                encounteredMultiStatements.add((ImultiLineStatement) whileCyc);
 
                 System.out.println("While cycle created with " + exprDecBoolCont);
             }
@@ -195,6 +197,30 @@ public class VarAssVisitor extends ourCBaseVisitor {
         /* info relevant to variable assign - END */
 
         assignVarName = ctx.identifier_var().getText();
+        indexToInsert = Integer.valueOf(ctx.DEC_NUM().getText());
+
+        if(ctx.expr_dec_bool() != null){ //target is boolean or int
+            ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool();
+
+            assignVarValue = treeItem1.getText();
+            if(treeItem1.OP_MINUS() != null){ //minus sign present
+                assignVarMinusSign = true;
+            }else{ //plus or no sign present in assignment...
+                assignVarMinusSign = false;
+            }
+        }else{
+            assignVarValue = ""; //should NEVER occur...
+            indexToInsert = 0;
+        }
+
+        unknownArrAssign unkArrAssign = new unknownArrAssign();
+        unkArrAssign.setIdentifierVar(assignVarName);
+        unkArrAssign.setMinusSign(assignVarMinusSign);
+        unkArrAssign.setValueVar(assignVarValue);
+        unkArrAssign.setIndexToAssign(indexToInsert);
+
+        System.out.println("Array assignment created\n" + unkArrAssign.getIdentifierVar() + ", " + unkArrAssign.isMinusSign() + ", " + unkArrAssign.getValueVar() + ", " + unkArrAssign.getIndexToAssign());
+        addStatement(unkArrAssign);
 
         return super.visitArr_assignment(ctx);
     }
@@ -220,22 +246,20 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 assignVarMinusSign = false;
             }
         }else if(ctx.expr_string() != null){ //target is string
+            System.out.println("targeting string");
             ourCParser.Expr_stringContext treeItem1 = ctx.expr_string();
 
             assignVarValue = treeItem1.getText();
         }else{
-            //error, tbd
+            assignVarValue = ""; //should NEVER occur...
         }
-
-        ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool();
-        assignVarValue = treeItem1.getText(); //value of the variable
 
         unknownAssign unkAssign = new unknownAssign();
         unkAssign.setIdentifierVar(assignVarName);
         unkAssign.setMinusSign(assignVarMinusSign);
         unkAssign.setValueVar(assignVarValue);
 
-        System.out.println("Var assignment created\n");
+        System.out.println("Var assignment created\n" + unkAssign.getIdentifierVar() + ", " + unkAssign.isMinusSign() + ", " + unkAssign.getValueVar());
         addStatement(unkAssign);
 
         return super.visitVar_assignment(ctx);
@@ -334,7 +358,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             intDeclar.setIdentifierVar(declVarName);
             intDeclar.setMinus_sign(declVarMinusSign);
             intDeclar.setDecVal(declVarValue);
-            System.out.println("INT declaration \n");
+            System.out.println("INT declaration \n" + intDeclar.getIdentifierVar() + ", " + intDeclar.isMinus_sign() + ", " + intDeclar.getDecVal());
 
             addStatement(intDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
@@ -346,7 +370,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             boolDeclaration boolDeclar = new boolDeclaration();
             boolDeclar.setIdentifierVar(declVarName);
             boolDeclar.setBoolVal(declVarValue);
-            System.out.println("BOOL declaration\n");
+            System.out.println("BOOL declaration\n" + boolDeclar.getIdentifierVar() + ", " + boolDeclar.getBoolVal());
             addStatement(boolDeclar);
         }else if(ctx.string_var_dec() != null){ //string value
             ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
@@ -357,7 +381,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             stringDeclaration stringDeclar = new stringDeclaration();
             stringDeclar.setIdentifierVar(declVarName);
             stringDeclar.setStringVal(declVarValue);
-            System.out.println("STRING declaration\n");
+            System.out.println("STRING declaration\n" + stringDeclar.getIdentifierVar() + ", " + stringDeclar.getStringVal());
             addStatement(stringDeclar);
         }else if(ctx.array_var_dec() != null){
             ourCParser.Array_var_decContext treeItem1 = ctx.array_var_dec();
@@ -369,13 +393,13 @@ public class VarAssVisitor extends ourCBaseVisitor {
                 arrIntDeclaration arrIntDeclar = new arrIntDeclaration();
                 arrIntDeclar.setIdentifierVar(declArrName);
                 arrIntDeclar.setDecNum(declArrsize);
-                System.out.println("INT ARR declaration\n");
+                System.out.println("INT ARR declaration\n" + arrIntDeclar.getIdentifierVar() + ", " + arrIntDeclar.getDecNum());
                 addStatement(arrIntDeclar);
             }else{ //want to declare bool array
                 arrBoolDeclaration arrBoolDeclar = new arrBoolDeclaration();
                 arrBoolDeclar.setIdentifierVar(declArrName);
                 arrBoolDeclar.setDecNum(declArrsize);
-                System.out.println("BOOL ARR declaration\n");
+                System.out.println("BOOL ARR declaration: " + arrBoolDeclar.getIdentifierVar() + ", " + arrBoolDeclar.getDecNum());
                 addStatement(arrBoolDeclar);
             }
         }else{
@@ -392,6 +416,11 @@ public class VarAssVisitor extends ourCBaseVisitor {
         boolean declVarMinusSign; //true if minus sign is present; else false
         String declVarValue; //value of the NEW const variable (int, bool or string) -> convert after...
         /* info relevant to variable declaration - END */
+
+        /* info relevant to array declaration - START */
+        String declArrName; //name of the NEW array
+        int declArrsize; //size of the NEW array
+        /* info relevant to array declaration - END */
 
         if(ctx.decimal_var_dec() != null){ //decimal value
             ourCParser.Decimal_var_decContext treeItem1 = ctx.decimal_var_dec();
@@ -413,7 +442,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constIntDeclar.setIdentifierVar(declVarName);
             constIntDeclar.setMinus_sign(declVarMinusSign);
             constIntDeclar.setDecVal(declVarValue);
-            System.out.println("INT const declaration \n");
+            System.out.println("INT const declaration \n" + constIntDeclar.getIdentifierVar() + ", " + constIntDeclar.isMinus_sign() + ", " + constIntDeclar.getDecVal());
             addStatement(constIntDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
             ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
@@ -424,7 +453,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constBoolDeclaration constBoolDeclar = new constBoolDeclaration();
             constBoolDeclar.setIdentifierVar(declVarName);
             constBoolDeclar.setBoolVal(declVarValue);
-            System.out.println("BOOL const declaration\n");
+            System.out.println("BOOL const declaration\n" + constBoolDeclar.getIdentifierVar() + ", " + constBoolDeclar.getBoolVal());
             addStatement(constBoolDeclar);
         }else if(ctx.string_var_dec() != null){ //string value
             ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
@@ -435,8 +464,27 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constStringDeclaration constStringDeclar = new constStringDeclaration();
             constStringDeclar.setIdentifierVar(declVarName);
             constStringDeclar.setStringVal(declVarValue);
-            System.out.println("STRING const declaration\n");
+            System.out.println("STRING const declaration\n" + constStringDeclar.getIdentifierVar() + ", " + constStringDeclar.getStringVal());
             addStatement(constStringDeclar);
+        }else if(ctx.array_var_dec() != null){
+            ourCParser.Array_var_decContext treeItem1 = ctx.array_var_dec();
+
+            declArrName = treeItem1.identifier_var().IDENT().getText();
+            declArrsize = Integer.valueOf(treeItem1.DEC_NUM().getText());
+
+            if(ctx.array_var_dec().INT() != null){ //want to declare int array
+                constArrIntDeclaration constArrIntDeclar = new constArrIntDeclaration();
+                constArrIntDeclar.setIdentifierVar(declArrName);
+                constArrIntDeclar.setDecNum(declArrsize);
+                System.out.println("CONST INT ARR declaration\n" + constArrIntDeclar.getIdentifierVar() + ", " + constArrIntDeclar.getDecNum());
+                addStatement(constArrIntDeclar);
+            }else{ //want to declare bool array
+                constArrBoolDeclaration constArrBoolDeclar = new constArrBoolDeclaration();
+                constArrBoolDeclar.setIdentifierVar(declArrName);
+                constArrBoolDeclar.setDecNum(declArrsize);
+                System.out.println("CONST BOOL ARR declaration: " + constArrBoolDeclar.getIdentifierVar() + ", " + constArrBoolDeclar.getDecNum());
+                addStatement(constArrBoolDeclar);
+            }
         }else{
             //error, tbd
         }
@@ -537,6 +585,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
             procDef.setParameters(params);
 
             addStatement(procDef);
+            encounteredMultiStatements.add((ImultiLineStatement) procDef);
             System.out.println("Procedure defined: name: " + identifierVar + ", params: " + params);
         }
 
@@ -568,20 +617,72 @@ public class VarAssVisitor extends ourCBaseVisitor {
             }else{ //want to assign string
                 List<ourCParser.Expr_stringContext> treeItem2 = ctx.expr_string();
 
-                exprDecBoolTrueVal = treeItem1.get(0).getText(); //first value which is assigned if true
-                exprDecBoolFalseVal = treeItem1.get(1).getText(); //second is value assigned if false
+                exprDecBoolTrueVal = treeItem2.get(0).getText(); //first value which is assigned if true
+                exprDecBoolFalseVal = treeItem2.get(1).getText(); //second is value assigned if false
             }
         }
 
-        ternarAssign ternarAss = new ternarAssign();
-        ternarAss.setIdentifierVar(identifierVar);
-        ternarAss.setExprDecBoolCont(exprDecBoolCont);
-        ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
-        ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+        if(visitedTernDecl){ //ternar declaration was visited -> create declaration instance
+            System.out.println("Ternar declaratino vis!");
 
-        addStatement(ternarAss);
-        System.out.println("Added ternar assignment: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+            visitedTernDecl = false;
 
+            if(ternDecType.equals("int")){
+                intTernarDeclaration intTernDec = new intTernarDeclaration();
+
+                intTernDec.setIdentifierVar(identifierVar);
+                intTernDec.setExprDecBoolCont(exprDecBoolCont);
+                intTernDec.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+                intTernDec.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+                System.out.println("Added INT TERN DECLAR: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+                addStatement(intTernDec);
+            }else if(ternDecType.equals("bool")){
+                boolTernarDeclaration boolTernDec = new boolTernarDeclaration();
+
+                boolTernDec.setIdentifierVar(identifierVar);
+                boolTernDec.setExprDecBoolCont(exprDecBoolCont);
+                boolTernDec.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+                boolTernDec.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+                System.out.println("Added BOOL TERN DECLAR: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+
+                addStatement(boolTernDec);
+            }else if(ternDecType.equals("string")){
+                stringTernarDeclaration stringTernDec = new stringTernarDeclaration();
+
+                stringTernDec.setIdentifierVar(identifierVar);
+                stringTernDec.setExprDecBoolCont(exprDecBoolCont);
+                stringTernDec.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+                stringTernDec.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+                System.out.println("Added STRING TERN DECLAR: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+
+                addStatement(stringTernDec);
+            }
+        }else{ //declaration not visited -> create classic assignment
+            ternarAssign ternarAss = new ternarAssign();
+            ternarAss.setIdentifierVar(identifierVar);
+            ternarAss.setExprDecBoolCont(exprDecBoolCont);
+            ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
+            ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
+
+            addStatement(ternarAss);
+            System.out.println("Added ternar assignment: ident: " + identifierVar + " condition: " + exprDecBoolCont + ", when true: " + exprDecBoolTrueVal + ", when false: " + exprDecBoolFalseVal);
+        }
         return super.visitTernar_assignment(ctx);
+    }
+
+    @Override
+    public Object visitTernar_declaration(ourCParser.Ternar_declarationContext ctx) {
+        System.out.println("Ternar declaration visited");
+        visitedTernDecl = true;
+
+        if(ctx.INT() != null){
+            ternDecType = "int";
+        }else if(ctx.BOOL() != null){
+            ternDecType = "bool";
+        }else if(ctx.STRING() != null){
+            ternDecType = "string";
+        }
+
+        return super.visitTernar_declaration(ctx);
     }
 }
