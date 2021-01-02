@@ -21,8 +21,8 @@ public class ExpressionParser {
 
         return value.equals("+") || value.equals("-") || value.equals("*") ||
                 value.equals("/") || value.equals("%") /*|| value.equals("(") || value.equals(")")*/
-                || value.contains("|") || value.contains("&") /*|| value.contains("!")*/
-                || value.contains("<") || value.contains("=") || value.contains(">") || value.contains("!");
+                || value.equals("|") || value.equals("&") /*|| value.contains("!")*/
+                || value.equals("<") || value.equals("=") || value.equals(">") || value.equals("!");
     }
 
     private static boolean isNumeric(String str) {
@@ -58,15 +58,9 @@ public class ExpressionParser {
             if(!isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')'      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
                 StringBuffer numBuf = new StringBuffer();
 
-                while(i < splitted.length && !isOperator("" + splitted[i]) /*&& !isOperator("" + splitted[i+1])*/ /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
-//                    if(isOperator("" + splitted[i+1])){
-//                        numBuf.append(splitted[i]);
-//                        numBuf.append(splitted[i + 1]);
-//                        i+=2;
-//                    }
-//                    else{
-                        numBuf.append(splitted[i++]);
-                    //}
+                while(i < splitted.length && !isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')'      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
+
+                    numBuf.append(splitted[i++]);
 
                 }
 
@@ -92,28 +86,21 @@ public class ExpressionParser {
 
                 }
                 i--;
-            }else if(splitted[i] == '('){
+            }
+            else if(splitted[i] == '('){
                 opers.push("" + splitted[i]);
-            }else if(splitted[i] == ')'){
-                while(opers.peek().equals("(")){
+            }
+            else if(splitted[i] == ')'){
+                while(!opers.peek().equals("(")){
                     Symbol secondVal = numbers.pop();
                     Symbol firstVal = numbers.pop();
                     String oper = opers.pop();
 
-                    //valueEvalDecData evalSingleOper = new valueEvalDecData();
                     Operation op = new Operation();
                     op.setSymbol1(firstVal);
                     op.setSymbol2(secondVal);
                     op.setOperator(EOperator.getOperFromString("" + oper));
                     statementOrder.add(op);
-
-
-//                    evalSingleOper.setSecondVal(secondVal);
-//                    evalSingleOper.setOper(oper);
-//                    evalSingleOper.setFirstVal(firstVal);
-//                    statementOrder.add(evalSingleOper);
-
-                    //numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
 
                     Symbol s = new Symbol();
                     s.setAdr(-1);
@@ -123,19 +110,13 @@ public class ExpressionParser {
                 }
 
                 opers.pop();
-            }else if(isOperator("" + splitted[i]) || (isOperator("" + splitted[i]) && isOperator("" + splitted[i+1]))/*splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/' || splitted[i] == '|' || splitted[i] == '&'*/){ //supported operators
+            }
+            else if(isOperator("" + splitted[i]) || (isOperator("" + splitted[i]) && isOperator("" + splitted[i+1]))/*splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/' || splitted[i] == '|' || splitted[i] == '&'*/){ //supported operators
+
                 while (!opers.empty() && checkPrecExprDecBool(splitted[i], opers.peek())){
                     Symbol secondVal = numbers.pop();
                     Symbol firstVal = numbers.pop();
                     String oper = opers.pop();
-
-//                    valueEvalDecData evalSingleOper = new valueEvalDecData();
-//                    evalSingleOper.setSecondVal(secondVal);
-//                    evalSingleOper.setOper(oper);
-//                    evalSingleOper.setFirstVal(firstVal);
-//                    statementOrder.add(evalSingleOper);
-//
-//                    numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
 
                     Operation op = new Operation();
                     op.setSymbol1(firstVal);
@@ -165,14 +146,6 @@ public class ExpressionParser {
             Symbol secondVal = numbers.pop();
             Symbol firstVal = numbers.pop();
             String oper = opers.pop();
-
-//            valueEvalDecData evalSingleOper = new valueEvalDecData();
-//            evalSingleOper.setSecondVal(secondVal);
-//            evalSingleOper.setOper(oper);
-//            evalSingleOper.setFirstVal(firstVal);
-//            statementOrder.add(evalSingleOper);
-//
-//            numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
 
             Operation op = new Operation();
             op.setSymbol1(firstVal);
