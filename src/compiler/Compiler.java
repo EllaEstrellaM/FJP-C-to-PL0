@@ -106,7 +106,7 @@ public class Compiler {
 
         for(Istatement pdSt : pd.getInnerStatements()){
             if(pdSt instanceof IDeclaration){
-                resolveDeclaration((IDeclaration) pdSt, currProcName, pd.getPrivateSymbolTable());
+                resolveDeclaration((IDeclaration) pdSt, currProcName, pd.getPrivateSymbolTable()); // todo merge the private and global table?
             }
         }
 
@@ -159,7 +159,7 @@ public class Compiler {
         // normal declarations:
         if(st instanceof intDeclaration){
             name = ((intDeclaration) st).getIdentifierVar();
-            String value = (((intDeclaration) st).isMinus_sign() ? "-" : "") + ((intDeclaration) st).getDecVal();
+            String value = /*(((intDeclaration) st).isMinus_sign() ? "-" : "") + */((intDeclaration) st).getDecVal();
 
 
             symb.setValue(value);

@@ -50,7 +50,7 @@ public class ourCParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, null, null, "'*'", "'-'", "'+'", "'/'", "'=='", "'!='", "'>'", 
-			"'>='", "'<'", "'<='", "'='", "'!'", "'?'", "'and'", "'or'", "':'", "';'", 
+			"'>='", "'<'", "'<='", "'='", "'!'", "'?'", "'&'", "'|'", "':'", "';'", 
 			"'true'", "'false'", "'('", "')'", "'{'", "'}'", "'['", "']'", "','", 
 			"'\n'", "'if'", "'else'", "'while'", "'for'", "'foreach'", "'repeat'", 
 			"'until'", "'do'", "'to'", "'bool'", "'int'", "'string'", "'const'", 
