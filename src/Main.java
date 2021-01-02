@@ -74,7 +74,7 @@ public class Main {
                         System.out.println("For instance with " + ((forCycle)((forCycle) innerStatements.get(j))).getIdentifierVar());
                         forCycle forCycle = (forCycle) innerStatements.get(j); //cast to multiline
 
-                        ArrayList<Istatement> innerStatementsd = forCycle.getInnerStatement(); //inner statements included in multiline statement
+                        ArrayList<Istatement> innerStatementsd = forCycle.getInnerStatements(); //inner statements included in multiline statement
                         HashMap<Istatement, EallStatementType> innerStatementsMapd = parseInnerMultiStatement((ImultiLineStatement) forCycle);
                         System.out.println("Size is: " + innerStatementsd.size());
                         for(int k = 0; k < innerStatementsd.size(); k++){
