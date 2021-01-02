@@ -18,6 +18,7 @@ public class Symbol {
 
 
     private boolean negateValue;
+    private int indToArray;
 
     public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
         this.name = name;
@@ -39,7 +40,9 @@ public class Symbol {
         this.isConst = false;
         this.value = "0";
         this.inProcedure = "global";
-        procParameters = "";
+        this.procParameters = "";
+        this.negateValue = false;
+        this.indToArray = -1;
     }
 
 
@@ -144,5 +147,13 @@ public class Symbol {
 
     public void setNegateValue(boolean negateValue) {
         this.negateValue = negateValue;
+    }
+
+    public int getIndToArray() {
+        return indToArray;
+    }
+
+    public void setIndToArray(int indToArray) {
+        this.indToArray = indToArray;
     }
 }

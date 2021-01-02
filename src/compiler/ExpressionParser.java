@@ -61,11 +61,13 @@ public class ExpressionParser {
 
 
             if(!isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
-                StringBuffer numBuf = new StringBuffer();
+                //StringBuffer numBuf = new StringBuffer();
+                String numBuf = "";
 
                 while(i < splitted.length && !isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
 
-                    numBuf.append(splitted[i++]);
+                    //numBuf.append(splitted[i++]);
+                    numBuf += splitted[i++];
 
                 }
 
@@ -73,14 +75,24 @@ public class ExpressionParser {
                 if(numBuf.length() > 0){
                     if(numBuf.charAt(0) == '!'){
                         negateValue = true;
-                        numBuf = numBuf.replace(0,1,"");
+                        //numBuf = numBuf.replace(0,1,"");
+                        numBuf = numBuf.substring(1);
+
                     }
+                }
+
+                int indToArr = -1;
+                if(numBuf.charAt(numBuf.length() - 1) == ']'){
+                    // array
+                    indToArr = Integer.parseInt(numBuf.substring(numBuf.indexOf("[") + 1, numBuf.indexOf("]")));
+                    numBuf = numBuf.substring(0, numBuf.indexOf("["));
                 }
 
 
                 if(table.containsKey(numBuf.toString())){
                     if(table.get(numBuf.toString()).hasBeenDeclared()){
                         table.get(numBuf.toString()).setNegateValue(negateValue);
+                        table.get(numBuf.toString()).setIndToArray(indToArr);
                         numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
                     }
                     else{
@@ -146,7 +158,7 @@ public class ExpressionParser {
                 }
 
                 if(opers.peek().equals("!(")){
-                    statementOrder.get(statementOrder.size() - 1).setNegateResult(true);
+                    statementOrder.get(statementOrder.size() - 1).setNegateResult(true); // todo out of bounds
                 }
                 opers.pop();
                 // negate result of this operation if ! before opening parentheses
