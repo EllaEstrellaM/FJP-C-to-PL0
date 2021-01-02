@@ -13,6 +13,8 @@ public class Operation {
     private Symbol symbol2;
     private EOperator operator;
 
+    private boolean negateResult = false;
+
 
     public EOperator getOperator() {
         return operator;
@@ -94,5 +96,13 @@ public class Operation {
         }
 
         return res;
+    }
+
+    public boolean isNegateResult() {
+        return negateResult;
+    }
+
+    public void setNegateResult(boolean negateResult) {
+        this.negateResult = negateResult;
     }
 }

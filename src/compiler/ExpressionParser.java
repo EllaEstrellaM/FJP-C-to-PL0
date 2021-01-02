@@ -14,7 +14,8 @@ public class ExpressionParser {
         return value.contains("+") || value.contains("-") || value.contains("*") ||
                 value.contains("/") || value.contains("%") || value.contains("(") || value.contains(")")
                 || value.contains("|") || value.contains("&") /*|| value.contains("!")*/
-                || value.contains("<") || value.contains("<=") || value.contains(">") || value.contains(">=") || value.contains("==") || value.contains("!=");
+                || value.contains("<") || value.contains("<=") || value.contains(">") || value.contains(">=") || value.contains("==") || value.contains("!=")
+                /*|| value.contains("!")*/;
     }
 
     private static boolean isOperator(String value){
@@ -22,7 +23,7 @@ public class ExpressionParser {
         return value.equals("+") || value.equals("-") || value.equals("*") ||
                 value.equals("/") || value.equals("%") /*|| value.equals("(") || value.equals(")")*/
                 || value.equals("|") || value.equals("&") /*|| value.contains("!")*/
-                || value.equals("<") || value.equals("=") || value.equals(">") || value.equals("!");
+                || value.equals("<") || value.equals("=") || value.equals(">") /*|| value.equals("!")*/;
     }
 
     private static boolean isNumeric(String str) {
@@ -54,18 +55,32 @@ public class ExpressionParser {
         Stack<Symbol> numbers = new Stack<Symbol>(); //stack for retrieved numbers
         Stack<String> opers = new Stack<String>(); //stack for retrieved operators
 
+
+
         for(int i = 0; i < splitted.length; i++){ //go through splitted numbers & operators
-            if(!isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')'      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
+
+
+            if(!isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
                 StringBuffer numBuf = new StringBuffer();
 
-                while(i < splitted.length && !isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')'      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
+                while(i < splitted.length && !isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
 
                     numBuf.append(splitted[i++]);
 
                 }
 
+                boolean negateValue = false;
+                if(numBuf.length() > 0){
+                    if(numBuf.charAt(0) == '!'){
+                        negateValue = true;
+                        numBuf = numBuf.replace(0,1,"");
+                    }
+                }
+
+
                 if(table.containsKey(numBuf.toString())){
                     if(table.get(numBuf.toString()).hasBeenDeclared()){
+                        table.get(numBuf.toString()).setNegateValue(negateValue);
                         numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
                     }
                     else{
@@ -78,6 +93,15 @@ public class ExpressionParser {
                         Symbol s = new Symbol();
                         s.setValue(numBuf.toString());
                         s.setAdr(-1);
+                        s.setNegateValue(negateValue);
+                        numbers.push(s);
+                    }
+                    else if(isTrueFalse(numBuf.toString()) != -1){
+                        int value = isTrueFalse(numBuf.toString());
+                        Symbol s = new Symbol();
+                        s.setValue("" + value);
+                        s.setAdr(-1);
+                        s.setNegateValue(negateValue);
                         numbers.push(s);
                     }
                     else{
@@ -87,11 +111,23 @@ public class ExpressionParser {
                 }
                 i--;
             }
-            else if(splitted[i] == '('){
-                opers.push("" + splitted[i]);
+            else if(splitted[i] == '(' || (splitted[i] == '!' && splitted[i + 1] == '(')){
+//                if(i - 1 >= 0){
+//                    if(splitted[i - 1] == '!'){
+//                        opers.push("" + splitted[i-1]);
+//                    }
+//                }
+                if(splitted[i] == '!' && splitted[i + 1] == '('){
+                    opers.push("" + splitted[i] + "" + splitted[i + 1]);
+                    i++;
+                }
+                else{
+                    opers.push("" + splitted[i]);
+                }
+
             }
             else if(splitted[i] == ')'){
-                while(!opers.peek().equals("(")){
+                while(!opers.peek().equals("(") && !opers.peek().equals("!(")){
                     Symbol secondVal = numbers.pop();
                     Symbol firstVal = numbers.pop();
                     String oper = opers.pop();
@@ -109,7 +145,11 @@ public class ExpressionParser {
 
                 }
 
+                if(opers.peek().equals("!(")){
+                    statementOrder.get(statementOrder.size() - 1).setNegateResult(true);
+                }
                 opers.pop();
+                // negate result of this operation if ! before opening parentheses
             }
             else if(isOperator("" + splitted[i]) || (isOperator("" + splitted[i]) && isOperator("" + splitted[i+1]))/*splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/' || splitted[i] == '|' || splitted[i] == '&'*/){ //supported operators
 
@@ -163,7 +203,7 @@ public class ExpressionParser {
     }
 
     private static boolean checkPrecExprDecBool(char firstOper, String secondOper){
-        if(secondOper.equals("(") || secondOper.equals(")")){
+        if(secondOper.equals("(") || secondOper.equals(")") || secondOper.equals("!(")){
             return false;
         }else if((firstOper == '*' || firstOper == '/') && (secondOper.equals("+") || secondOper.equals("-") || secondOper.equals("|") || secondOper.equals("&")
                 || secondOper.equals("<") || secondOper.equals("<=") || secondOper.equals(">") || secondOper.equals(">=") || secondOper.equals("==") || secondOper.equals("!="))){

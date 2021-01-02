@@ -16,6 +16,9 @@ public class Symbol {
     private String inProcedure;
     private String procParameters;
 
+
+    private boolean negateValue;
+
     public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
         this.name = name;
         this.lev = level;
@@ -133,5 +136,13 @@ public class Symbol {
 
     public void setHasBeenDeclared(boolean hasBeenDeclared) {
         this.hasBeenDeclared = hasBeenDeclared;
+    }
+
+    public boolean isNegateValue() {
+        return negateValue;
+    }
+
+    public void setNegateValue(boolean negateValue) {
+        this.negateValue = negateValue;
     }
 }
