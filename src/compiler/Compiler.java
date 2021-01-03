@@ -5,10 +5,7 @@ import compiler.instructions_generators.VarAssignmentInstructions;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
 import statementDefOneLine.*;
-import statementInterEnum.IDeclaration;
-import statementInterEnum.ImultiLineStatement;
-import statementInterEnum.IoneLineStatement;
-import statementInterEnum.Istatement;
+import statementInterEnum.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +50,7 @@ public class Compiler {
         String proc = "global";
         for(Istatement st : statements){
             if(st instanceof IDeclaration){
-                resolveDeclaration((IDeclaration) st, proc, globalSymbolTable);
+                //resolveDeclaration((IDeclaration) st, proc, globalSymbolTable); drtikkomentuje
                 //declCounter++;
             }
 //            if(st instanceof ImultiLineStatement){
@@ -64,18 +61,21 @@ public class Compiler {
 //            }
         }
 
-        // 2. take care of procedures:
-        for(procedureDefinition pd : procedureDefinitions){
-            generateInstructionsForProcedure(pd);
+        HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got statement list, ok -> parse them and get its content
+        for(int i = 0; i < statements.size(); i++){ //go through retrieved statements
+            Istatement statement = statements.get(i); //get one statement
 
+            if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
+                ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
+                solvRecurMultiLine(multiStatement);
+            }else{ //statement is oneline - generate respective instructions
+                generateOneline((IoneLineStatement) statement, statementType);
+            }
         }
-
 
         // the last but not least return instruction
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
-
-
 
         return instructions;
     }
@@ -304,16 +304,156 @@ public class Compiler {
         symb.setHasBeenDeclared(true);
     }
 
+    /**
+     * Accepts one multiline statement (implements ImultiLineStatement) for which PL0 instructions should be generated. Contains recursive logic to get individual oneline statements.
+     * @param statement instance which represents multiline statement (implements ImultiLineStatement)
+     */
+    private static void solvRecurMultiLine(ImultiLineStatement statement){
+        ArrayList<Istatement> innerStatements = statement.getInnerStatements(); //inner statements included in multiline statement
+        HashMap<Istatement, EallStatementType> innerStatementType = parseStatements(innerStatements); //type of inner statements included in multiline statement
 
+        for(int j = 0; j < innerStatements.size(); j++){ //go thru inner statements of multiline
+            Istatement innerStatement = innerStatements.get(j); //get one inner statement
 
+            if(innerStatement instanceof ImultiLineStatement){//inner statement could be multi -> recursive call to retrieve oneline
+                ImultiLineStatement multiStatement = (ImultiLineStatement) innerStatement; //cast to multiline
+                solvRecurMultiLine(multiStatement); //recursive call
+            }else{//inner statement is oneline -> solve it
+                generateOneline((IoneLineStatement) innerStatement, innerStatementType);
+            }
+        }
+    }
 
+    /**
+     * Accepts one oneline statement (implements IoneLineStatement) for which we then generate PL0 instructions.
+     * @param statement instance which represents oneline statement (implements IoneLineStatement)
+     * @param statementType HashMap contains concrete type of oneline statement (ie.STRING_DECLARATION and so on)
+     */
+    private static void generateOneline(IoneLineStatement statement, HashMap<Istatement, EallStatementType> statementType){
+        if(statementType.get(statement) == EallStatementType.ARR_BOOL_ASSIGN){
+            System.out.println("Oneline detected - ARR_BOOL_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.ARR_BOOL_DECLARATION){
+            System.out.println("Oneline detected - ARR_BOOL_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.ARR_INT_ASSIGN){
+            System.out.println("Oneline detected - ARR_INT_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.ARR_INT_DECLARATION){
+            System.out.println("Oneline detected - ARR_INT_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.BOOL_ASSIGN){
+            System.out.println("Oneline detected - BOOL_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.BOOL_DECLARATION){
+            System.out.println("Oneline detected - BOOL_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.CONST_BOOL_DECLARATION){
+            System.out.println("Oneline detected - CONST_BOOL_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.CONST_INT_DECLARATION){
+            System.out.println("Oneline detected - CONST_INT_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.CONST_STRING_DECLARATION){
+            System.out.println("Oneline detected - CONST_STRING_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.INT_ASSIGN){
+            System.out.println("Oneline detected - INT_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.INT_DECLARATION){
+            System.out.println("Oneline detected - INT_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.PROCEDURE_CALL){
+            System.out.println("Oneline detected - PROCEDURE_CALL");
+        }else if(statementType.get(statement) == EallStatementType.STRING_ASSIGN){
+            System.out.println("Oneline detected - STRING_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.STRING_DECLARATION){
+            System.out.println("Oneline detected - STRING_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.UNKNOWN_ARR_ASSIGN){
+            System.out.println("Oneline detected - UNKNOWN_ARR_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.UNKNOWN_ASSIGN){
+            System.out.println("Oneline detected - UNKNOWN_ASSIGN");
+        }else if(statementType.get(statement) == EallStatementType.BOOL_TERNAR_DECLARATION){
+            System.out.println("Oneline detected - BOOL_TERNAR_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.INT_TERNAR_DECLARATION){
+            System.out.println("Oneline detected - INT_TERNAR_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.STRING_TERNAR_DECLARATION){
+            System.out.println("Oneline detected - STRING_TERNAR_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.CONST_ARR_BOOL_DECLARATION){
+            System.out.println("Oneline detected - CONST_ARR_BOOL_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.CONST_ARR_INT_DECLARATION){
+            System.out.println("Oneline detected - CONST_ARR_INT_DECLARATION");
+        }else if(statementType.get(statement) == EallStatementType.TERNAR_ASSIGN){
+            System.out.println("Oneline detected - TERNAR_ASSIGN");
+        }
+    }
 
+    /**
+     * Expects ArrayList retrieved from instance of VarAssVisitor, which contains all encountered statements in given code.
+     * Returns HashMap in which, key = instance of class which implements Istatement ; value = value from EallStatementType which tells the actual type of key
+     * @param encounteredStatements list of statements retrieved from VarAssVisitor
+     * @return HashMap, where key = instance of class which implements Istatement ; value = value from EallStatementType which tells the actual type of key
+     */
+    private static HashMap<Istatement, EallStatementType> parseStatements(ArrayList<Istatement> encounteredStatements){
+        HashMap<Istatement, EallStatementType> statementTypeMap = new HashMap<Istatement, EallStatementType>();
 
+        for(int i = 0; i < encounteredStatements.size(); i++){ //go through all statements
+            Istatement statement = encounteredStatements.get(i); //get one statement
 
+            if(statement instanceof IoneLineStatement){ //kind of oneline statement
+                if(statement instanceof arrBoolAssign){
+                    statementTypeMap.put(statement, EallStatementType.ARR_BOOL_ASSIGN);
+                }else if(statement instanceof arrBoolDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.ARR_BOOL_DECLARATION);
+                }else if(statement instanceof arrIntAssign){
+                    statementTypeMap.put(statement, EallStatementType.ARR_INT_ASSIGN);
+                }else if(statement instanceof arrIntDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.ARR_INT_DECLARATION);
+                }else if(statement instanceof boolAssign){
+                    statementTypeMap.put(statement, EallStatementType.BOOL_ASSIGN);
+                }else if(statement instanceof boolDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.BOOL_DECLARATION);
+                }else if(statement instanceof constBoolDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.CONST_BOOL_DECLARATION);
+                }else if(statement instanceof constIntDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.CONST_INT_DECLARATION);
+                }else if(statement instanceof constStringDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.CONST_STRING_DECLARATION);
+                }else if(statement instanceof intAssign){
+                    statementTypeMap.put(statement, EallStatementType.INT_ASSIGN);
+                }else if(statement instanceof intDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.INT_DECLARATION);
+                }else if(statement instanceof procedureCall){
+                    statementTypeMap.put(statement, EallStatementType.PROCEDURE_CALL);
+                }else if(statement instanceof stringAssign){
+                    statementTypeMap.put(statement, EallStatementType.STRING_ASSIGN);
+                }else if(statement instanceof stringDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.STRING_DECLARATION);
+                }else if(statement instanceof unknownArrAssign){
+                    statementTypeMap.put(statement, EallStatementType.UNKNOWN_ARR_ASSIGN);
+                }else if(statement instanceof unknownAssign){
+                    statementTypeMap.put(statement, EallStatementType.UNKNOWN_ASSIGN);
+                }else if(statement instanceof boolTernarDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.BOOL_TERNAR_DECLARATION);
+                }else if(statement instanceof intTernarDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.INT_TERNAR_DECLARATION);
+                }else if(statement instanceof stringTernarDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.STRING_TERNAR_DECLARATION);
+                }else if(statement instanceof constArrBoolDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.CONST_ARR_BOOL_DECLARATION);
+                }else if(statement instanceof constArrIntDeclaration){
+                    statementTypeMap.put(statement, EallStatementType.CONST_ARR_INT_DECLARATION);
+                }else if(statement instanceof ternarAssign){
+                    statementTypeMap.put(statement, EallStatementType.TERNAR_ASSIGN);
+                }
+            }else if(statement instanceof ImultiLineStatement){ //kind of multiline statement
+                if(statement instanceof doWhileCycle){
+                    statementTypeMap.put(statement, EallStatementType.DO_WHILE_CYCLE);
+                }else if(statement instanceof forCycle){
+                    statementTypeMap.put(statement, EallStatementType.FOR_CYCLE);
+                }else if(statement instanceof foreachCycle){
+                    statementTypeMap.put(statement, EallStatementType.FOREACH_CYCLE);
+                }else if(statement instanceof ifCondition){
+                    statementTypeMap.put(statement, EallStatementType.IF_CONDITION);
+                }else if(statement instanceof procedureDefinition){
+                    statementTypeMap.put(statement, EallStatementType.PROCEDURE_DEFINITION);
+                }else if(statement instanceof repeatUntilCycle){
+                    statementTypeMap.put(statement, EallStatementType.REPEAT_UNTIL_CYCLE);
+                }else if(statement instanceof whileCycle){
+                    statementTypeMap.put(statement, EallStatementType.WHILE_CYCLE);
+                }
+            }
+        }
 
-
-
-
-
-
+        return statementTypeMap;
+    }
 }

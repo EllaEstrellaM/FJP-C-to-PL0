@@ -1,0 +1,22 @@
+0	JMP	0	1
+1	INT 0	4 	
+2	LIT 0	0 //definuji ZACATEK cyklu - zaciname od 0 indexovat, asi?
+3	STO	0	3 //ulozim ZACATEK cyklu na 4 pozici v zasobniku
+//kontrola hodnoty ridici prom - START
+4	LOD	0	3 //nactu aktualni hodnotu ridici promenne cyklu
+5	LIT	0	5 //nactu KONEC cyklu CELKOVA VELIKOSTI POLE?? TADY 5 NAPR
+6	OPR	0	10 //porovnani aktualni hodnoty s KONCEM - 10 = MENSI NEZ velikost pole
+7	JMC	0	13 //navrat z procedury
+//kontrola hodnoty ridici prom - STOP
+//KOD UVNITR CYKLU, tady budeme cist pole[4. pozice na stacku]
+//zvyseni hodnoty ridici prom - START
+8	LOD	0	3 //nacteni aktualni hodnoty ridici promenne cyklu
+9	LIT	0	1 //chci zvysit ridici promennou o +1
+10	OPR 0	2 //PROVEDU pricteni 1 k ridici promenne
+11	STO 0	3 //znovuulozeni ridici promenne
+//zvyseni hodnoty ridici prom - STOP
+12	JMP	0	4 //skok na zacatek cyklu...
+13	RET 0	0 //vylez z procedury, pokud naplnena podminka
+
+foreach(i : pole){};
+//pole ma velikost 5 ;
