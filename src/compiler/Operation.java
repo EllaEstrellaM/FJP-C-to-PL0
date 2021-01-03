@@ -105,4 +105,13 @@ public class Operation {
     public void setNegateResult(boolean negateResult) {
         this.negateResult = negateResult;
     }
+
+
+    public int getNegatedResult(){
+        int res = getResult();
+        if(res == 0){
+            return 1;
+        }
+        else return 0;
+    }
 }

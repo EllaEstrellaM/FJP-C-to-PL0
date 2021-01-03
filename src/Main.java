@@ -31,7 +31,12 @@ public class Main {
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;
 
+        // load the contents of the file to a string:
         String content = loadContents(path);
+
+        // change all trues / falseses to 1s / 0ses
+       // content = editInput(content);
+
 
         ourCLexer lexer = new ourCLexer(CharStreams.fromString(content)); //content
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
@@ -282,6 +287,15 @@ public class Main {
         }
 
         return contentBuilder.toString();
+    }
+
+
+    // todo is this a good idea? what about var names, etc..?
+    private static String editInput(String content){
+        String res = content.replaceAll("true", "1");
+        res = res.replaceAll("false", "0");
+
+        return res;
     }
 
 

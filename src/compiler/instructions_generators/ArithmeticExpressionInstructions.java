@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ArithmeticExpressionInstructions {
 
-    // todo negate value and/or result
+    // todo negate value and/or result!!!
     public static ArrayList<Instruction> generateInstructions(Operation op/*, Symbol symbToStoreTo*/){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
@@ -35,6 +35,8 @@ public class ArithmeticExpressionInstructions {
 
         // store the first number:
         if(!op.getSymbol1().isPartialResult()){
+
+
             if(op.getSymbol1().getAdr() == -1){
                 generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
                 //generatedInstructions.add(Compiler.generateInstruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));

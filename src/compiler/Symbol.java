@@ -178,4 +178,12 @@ public class Symbol {
     public void setPartialResult(boolean partialResult) {
         isPartialResult = partialResult;
     }
+
+    public int negate(){
+        int val = Integer.parseInt(this.value);
+        if(val == 0){
+            return 1;
+        }
+        else return 0;
+    }
 }
