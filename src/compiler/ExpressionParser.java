@@ -55,16 +55,26 @@ public class ExpressionParser {
         Stack<Symbol> numbers = new Stack<Symbol>(); //stack for retrieved numbers
         Stack<String> opers = new Stack<String>(); //stack for retrieved operators
 
-
+        boolean isOper = false;
 
         for(int i = 0; i < splitted.length; i++){ //go through splitted numbers & operators
 
+//            if(splitted[i] == '!' && splitted[i+1] != '='){
+//
+//            }
+//            else{
+//
+//            }
+//            isOper = false;
+//            if(){
+//
+//            }
 
-            if(!isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
+            if(!isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(') && !(splitted[i] == '!' && splitted[i + 1] == '=')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
                 //StringBuffer numBuf = new StringBuffer();
                 String numBuf = "";
 
-                while(i < splitted.length && !isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
+                while(i < splitted.length && !isOperator("" + splitted[i]) && splitted[i] != '(' && splitted[i] != ')' && !(splitted[i] == '!' && splitted[i + 1] == '(') && !(splitted[i] == '!' && splitted[i + 1] == '=')      /*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
 
                     //numBuf.append(splitted[i++]);
                     numBuf += splitted[i++];
@@ -153,6 +163,7 @@ public class ExpressionParser {
                     Symbol s = new Symbol();
                     s.setAdr(-1);
                     s.setValue("" + op.getResult());
+                    s.setPartialResult(true);
                     numbers.push(s);
 
                 }
@@ -163,7 +174,8 @@ public class ExpressionParser {
                 opers.pop();
                 // negate result of this operation if ! before opening parentheses
             }
-            else if(isOperator("" + splitted[i]) || (isOperator("" + splitted[i]) && isOperator("" + splitted[i+1]))/*splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/' || splitted[i] == '|' || splitted[i] == '&'*/){ //supported operators
+            else if(isOperator("" + splitted[i]) || (isOperator("" + splitted[i]) && isOperator("" + splitted[i+1]) ||
+                    (splitted[i] == '!' && splitted[i+1] == '='))/*splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/' || splitted[i] == '|' || splitted[i] == '&'*/){ //supported operators
 
                 while (!opers.empty() && checkPrecExprDecBool(splitted[i], opers.peek())){
                     Symbol secondVal = numbers.pop();
@@ -179,6 +191,7 @@ public class ExpressionParser {
                     Symbol s = new Symbol();
                     s.setAdr(-1);
                     s.setValue("" + op.getResult());
+                    s.setPartialResult(true);
                     numbers.push(s);
                 }
 
@@ -208,6 +221,7 @@ public class ExpressionParser {
             Symbol s = new Symbol();
             s.setAdr(-1);
             s.setValue("" + op.getResult());
+            s.setPartialResult(true);
             numbers.push(s);
         }
 

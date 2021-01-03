@@ -180,7 +180,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -195,7 +195,7 @@ public class Compiler {
             symb.setSizeArr(size);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -212,7 +212,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+= size;
@@ -227,7 +227,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -243,21 +243,21 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
         }
         else if(st instanceof constIntDeclaration){
             name = ((constIntDeclaration) st).getIdentifierVar();
-            String value = (((constIntDeclaration) st).isMinus_sign() ? "-" : "") + ((constIntDeclaration) st).getDecVal();
+            String value = /*(((constIntDeclaration) st).isMinus_sign() ? "-" : "") + */((constIntDeclaration) st).getDecVal();
 
 
             symb.setValue(value);
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -271,7 +271,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -283,7 +283,7 @@ public class Compiler {
             symb.setName(name);
             symb.setProcParameters(params);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.PROCEDURE);
             symb.setInProcedure(inProc); // todo we probably dont support nested procedures anyway
             //declCounter++; // todo???
