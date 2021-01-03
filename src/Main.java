@@ -55,46 +55,6 @@ public class Main {
 //            System.out.println("Operation - END");
 //        }
 
-        //got statement list, ok -> parse multiline statements and get its content
-        for(int i = 0; i < encounteredStatements.size(); i++){
-            Istatement statement = encounteredStatements.get(i); //get one statement
-
-            if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
-                ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
-                ArrayList<Istatement> innerStatements = multiStatement.getInnerStatements(); //inner statements included in multiline statement
-
-                System.out.println("Inside: " +statement + " - START");
-
-                HashMap<Istatement, EallStatementType> innerStatementsMap = parseInnerMultiStatement((ImultiLineStatement) statement);
-
-                for(int j = 0; j < innerStatements.size(); j++){
-                    System.out.println("Got: " + innerStatementsMap.get(innerStatements.get(j)));
-
-                    if(innerStatements.get(j) instanceof forCycle){
-                        System.out.println("For instance with " + ((forCycle)((forCycle) innerStatements.get(j))).getIdentifierVar());
-                        forCycle forCycle = (forCycle) innerStatements.get(j); //cast to multiline
-
-                        ArrayList<Istatement> innerStatementsd = forCycle.getInnerStatements(); //inner statements included in multiline statement
-                        HashMap<Istatement, EallStatementType> innerStatementsMapd = parseInnerMultiStatement((ImultiLineStatement) forCycle);
-                        System.out.println("Size is: " + innerStatementsd.size());
-                        for(int k = 0; k < innerStatementsd.size(); k++){
-                            System.out.println("Got INSIDE FOR: " + innerStatementsMapd.get(innerStatementsd.get(k)));
-                        }
-                    }
-                }
-
-                System.out.println("Inside: " +statement + " - END");
-            }
-            if(statement instanceof intDeclaration){
-                System.out.println("Got int declaration! - START");
-                intDeclaration intDec = (intDeclaration) statement;
-                System.out.println("Dec val: " + intDec.getDecVal());
-
-                System.out.println("Got int declaration! - END");
-            }
-
-        }
-
         Compiler compiler = new Compiler(encounteredStatements);
         compiler.compile();
     }
