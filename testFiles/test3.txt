@@ -4,11 +4,12 @@ int ahoj = 2;
 //int a = (8 - 7 * abc + 9 * (ahoj + 6)) | 1;
 //int a = (abc * 2 | 5) & 9 * ahoj <= (888 > (5 & ahoj)) != 333;
 //int a = 5 + (6 + 3 - 9) * 8;
-int a = !(true | !false) & !(!(5+6) - true * (22 | !(abc))) & !(5 != 8);
+//int a = !(true | !false) & !(!(5+6) - true * (22 | !(abc))) & !(5 != 8);
 int pole[3];
 int pole2[4];
 //int a = !pole[0] * pole2[0];
 //int a = 2 != 3;
+int a = (2 * (3+1) - (8*9)) - 6;
 
 
 procedure prvni(){
@@ -37,4 +38,19 @@ procedure main(){
     prvni();
     druha();
 }
+
+
+
+
+
+
+
+
+
+
+
+var a;
+begin
+   a := 1*(2+3)*4 + (8 * 9 - (2+6+7) + 3);
+end.
 

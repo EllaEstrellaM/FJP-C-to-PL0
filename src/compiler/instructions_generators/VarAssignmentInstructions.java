@@ -25,7 +25,7 @@ public class VarAssignmentInstructions {
             for(int i = 0; i < operOrder.size(); i++){
                 Operation oper = operOrder.get(i);
 
-                ArithmeticExpressionInstructions.generateInstructions(oper);
+                generatedInstructions.addAll(ArithmeticExpressionInstructions.generateInstructions(oper));
 
                 //System.out.println("Operation - START");
                 //System.out.println(oper.getFirstVal() + ", " + oper.getOper() + ", " + oper.getSecondVal());

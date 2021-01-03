@@ -1,4 +1,5 @@
 import compiler.Compiler;
+import compiler.Instruction;
 import generated.ourCLexer;
 import generated.ourCParser;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -11,8 +12,7 @@ import statementDefOneLine.*;
 import statementInterEnum.*;
 import visitors.VarAssVisitor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,7 +27,7 @@ public class Main {
 
     public static void main(String[] args){
 
-        String testFile = "test3.txt";
+        String testFile = "test4.txt";
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;
 
@@ -96,7 +96,16 @@ public class Main {
         }
 
         Compiler compiler = new Compiler(encounteredStatements);
-        compiler.compile();
+        ArrayList<Instruction> generatedInstructions = compiler.compile();
+
+
+        // write the instructions to a file:
+        try {
+            writeToFile(generatedInstructions);
+        } catch (IOException e) {
+            System.err.println("Something went wrong with writing to file.");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -273,6 +282,23 @@ public class Main {
         }
 
         return contentBuilder.toString();
+    }
+
+
+    private static void writeToFile(ArrayList<Instruction> instructions) throws IOException{
+        String str = "Hello";
+        String fileName = "resultInstr.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+
+        for(int i = 0; i < instructions.size(); i++){
+            str = "" + (i + 1) + " " + instructions.get(i).toString() + "\n";
+            writer.write(str);
+        }
+
+
+
+
+        writer.close();
     }
 
 

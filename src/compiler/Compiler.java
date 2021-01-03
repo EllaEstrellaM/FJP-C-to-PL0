@@ -18,9 +18,10 @@ public class Compiler {
     private static int stackPointer;
     //private HashSet<Symbol> symbolTable;
     private HashMap<String, Symbol> globalSymbolTable;
-    private ParseTree tree;
+    //private ParseTree tree;
     private ArrayList<Istatement> statements;
     private ArrayList<procedureDefinition> procedureDefinitions;
+    ArrayList<Instruction> instructions;
 
 
     private final int BASE_ADDRESS = 3;
@@ -35,7 +36,7 @@ public class Compiler {
     }
 
     public ArrayList<Instruction> compile(){
-        ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+        this.instructions = new ArrayList<Instruction>();
 
         // this instruction will always be the first one?
         // todo or can the address be other than 1?
@@ -166,7 +167,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -299,7 +300,7 @@ public class Compiler {
 
         symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable);
+        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable));
         symb.setHasBeenDeclared(true);
     }
 

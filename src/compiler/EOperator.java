@@ -21,9 +21,9 @@ public enum EOperator {
     NEG(-1);
 
 
-    private int instrCode;
+    private final int instrCode;
     private EOperator(int instrCode){
-        ;;
+        this.instrCode = instrCode;
     }
 
 
