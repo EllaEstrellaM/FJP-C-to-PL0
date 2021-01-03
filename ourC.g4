@@ -23,8 +23,8 @@ ASSIGN: '=';
 
 NEGATION: '!';
 QUES_MARK: '?';
-OPER_AND: 'and';
-OPER_OR: 'or';
+OPER_AND: '&';
+OPER_OR: '|';
 COLON: ':' ;
 SEMI_COLON: ';' ;
 

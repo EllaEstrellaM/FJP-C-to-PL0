@@ -1,4 +1,5 @@
 import compiler.Compiler;
+import compiler.Instruction;
 import generated.ourCLexer;
 import generated.ourCParser;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -11,8 +12,7 @@ import statementDefOneLine.*;
 import statementInterEnum.*;
 import visitors.VarAssVisitor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,13 +27,18 @@ public class Main {
 
     public static void main(String[] args){
 
-        String testFile = "test3.txt";
+        String testFile = "test4.txt";
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;
 
+        // load the contents of the file to a string:
         String content = loadContents(path);
 
-        ourCLexer lexer = new ourCLexer(CharStreams.fromString(testStr)); //content
+        // change all trues / falseses to 1s / 0ses
+       // content = editInput(content);
+
+
+        ourCLexer lexer = new ourCLexer(CharStreams.fromString(content)); //content
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
 
         ParseTree tree = null;
@@ -43,9 +48,7 @@ public class Main {
         varAss.visit(tree);
 
         ArrayList<Istatement> encounteredStatements = varAss.getEncounteredStatements();
-        System.out.println("Got number of statements: " + encounteredStatements.size());
-        HashMap<Istatement, EallStatementType> statements = parseStatements(encounteredStatements);
-
+      
         // --- expressions ---
 //        ArrayList<valueEvalDecData> operOrder = parseExprDecBool("100*(2+12)/14");
 //        for(int i = 0; i < operOrder.size(); i++){
@@ -56,167 +59,17 @@ public class Main {
 //        }
 
         Compiler compiler = new Compiler(encounteredStatements);
-        compiler.compile();
-    }
+        ArrayList<Instruction> generatedInstructions = compiler.compile();
 
-    /**
-     * Expects ArrayList retrieved from instance of VarAssVisitor, which contains all encountered statements in given code.
-     * Returns HashMap in which, key = instance of class which implements Istatement ; value = value from EallStatementType which tells the actual type of key
-     * @param encounteredStatements list of statements retrieved from VarAssVisitor
-     * @return HashMap, where key = instance of class which implements Istatement ; value = value from EallStatementType which tells the actual type of key
-     */
-    private static HashMap<Istatement, EallStatementType> parseStatements(ArrayList<Istatement> encounteredStatements){
-        HashMap<Istatement, EallStatementType> statementTypeMap = new HashMap<Istatement, EallStatementType>();
 
-        for(int i = 0; i < encounteredStatements.size(); i++){ //go through all statements
-            Istatement statement = encounteredStatements.get(i); //get one statement
-
-            if(statement instanceof IoneLineStatement){ //kind of oneline statement
-                if(statement instanceof arrBoolAssign){
-                    statementTypeMap.put(statement, EallStatementType.ARR_BOOL_ASSIGN);
-                }else if(statement instanceof arrBoolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.ARR_BOOL_DECLARATION);
-                }else if(statement instanceof arrIntAssign){
-                    statementTypeMap.put(statement, EallStatementType.ARR_INT_ASSIGN);
-                }else if(statement instanceof arrIntDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.ARR_INT_DECLARATION);
-                }else if(statement instanceof boolAssign){
-                    statementTypeMap.put(statement, EallStatementType.BOOL_ASSIGN);
-                }else if(statement instanceof boolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.BOOL_DECLARATION);
-                }else if(statement instanceof constBoolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_BOOL_DECLARATION);
-                }else if(statement instanceof constIntDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_INT_DECLARATION);
-                }else if(statement instanceof constStringDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_STRING_DECLARATION);
-                }else if(statement instanceof intAssign){
-                    statementTypeMap.put(statement, EallStatementType.INT_ASSIGN);
-                }else if(statement instanceof intDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.INT_DECLARATION);
-                }else if(statement instanceof procedureCall){
-                    statementTypeMap.put(statement, EallStatementType.PROCEDURE_CALL);
-                }else if(statement instanceof stringAssign){
-                    statementTypeMap.put(statement, EallStatementType.STRING_ASSIGN);
-                }else if(statement instanceof stringDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.STRING_DECLARATION);
-                }else if(statement instanceof unknownArrAssign){
-                    statementTypeMap.put(statement, EallStatementType.UNKNOWN_ARR_ASSIGN);
-                }else if(statement instanceof unknownAssign){
-                    statementTypeMap.put(statement, EallStatementType.UNKNOWN_ASSIGN);
-                }else if(statement instanceof boolTernarDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.BOOL_TERNAR_DECLARATION);
-                }else if(statement instanceof intTernarDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.INT_TERNAR_DECLARATION);
-                }else if(statement instanceof stringTernarDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.STRING_TERNAR_DECLARATION);
-                }else if(statement instanceof constArrBoolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_ARR_BOOL_DECLARATION);
-                }else if(statement instanceof constArrIntDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_ARR_INT_DECLARATION);
-                }
-            }else if(statement instanceof ImultiLineStatement){ //kind of multiline statement
-                if(statement instanceof doWhileCycle){
-                    statementTypeMap.put(statement, EallStatementType.DO_WHILE_CYCLE);
-                }else if(statement instanceof forCycle){
-                    statementTypeMap.put(statement, EallStatementType.FOR_CYCLE);
-                }else if(statement instanceof foreachCycle){
-                    statementTypeMap.put(statement, EallStatementType.FOREACH_CYCLE);
-                }else if(statement instanceof ifCondition){
-                    statementTypeMap.put(statement, EallStatementType.IF_CONDITION);
-                }else if(statement instanceof procedureDefinition){
-                    statementTypeMap.put(statement, EallStatementType.PROCEDURE_DEFINITION);
-                }else if(statement instanceof repeatUntilCycle){
-                    statementTypeMap.put(statement, EallStatementType.REPEAT_UNTIL_CYCLE);
-                }else if(statement instanceof whileCycle){
-                    statementTypeMap.put(statement, EallStatementType.WHILE_CYCLE);
-                }
-            }
+        // write the instructions to a file:
+        try {
+            writeToFile(generatedInstructions);
+        } catch (IOException e) {
+            System.err.println("Something went wrong with writing to file.");
+            e.printStackTrace();
         }
-
-        return statementTypeMap;
     }
-
-    /**
-     * Takes multiline statement reference and returns HashMap with its content.
-     * @param multiLineStatement instance of class which implements ImultiLineStatement
-     * @return HashMap in which key = instance of class which implements Istatement ; value = value from EallStatementType which tells the actual type of key
-     */
-    private static HashMap<Istatement, EallStatementType> parseInnerMultiStatement(ImultiLineStatement multiLineStatement){
-        HashMap<Istatement, EallStatementType> statementTypeMap = new HashMap<Istatement, EallStatementType>();
-
-        ArrayList<Istatement> innerStatements = multiLineStatement.getInnerStatements();
-
-        for(int i = 0; i < innerStatements.size(); i++){ //go through inner statements
-            Istatement statement = innerStatements.get(i); //get one inner statement
-
-            if(statement instanceof IoneLineStatement){ //kind of oneline statement
-                if(statement instanceof arrBoolAssign){
-                    statementTypeMap.put(statement, EallStatementType.ARR_BOOL_ASSIGN);
-                }else if(statement instanceof arrBoolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.ARR_BOOL_DECLARATION);
-                }else if(statement instanceof arrIntAssign){
-                    statementTypeMap.put(statement, EallStatementType.ARR_INT_ASSIGN);
-                }else if(statement instanceof arrIntDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.ARR_INT_DECLARATION);
-                }else if(statement instanceof boolAssign){
-                    statementTypeMap.put(statement, EallStatementType.BOOL_ASSIGN);
-                }else if(statement instanceof boolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.BOOL_DECLARATION);
-                }else if(statement instanceof constBoolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_BOOL_DECLARATION);
-                }else if(statement instanceof constIntDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_INT_DECLARATION);
-                }else if(statement instanceof constStringDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_STRING_DECLARATION);
-                }else if(statement instanceof intAssign){
-                    statementTypeMap.put(statement, EallStatementType.INT_ASSIGN);
-                }else if(statement instanceof intDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.INT_DECLARATION);
-                }else if(statement instanceof procedureCall){
-                    statementTypeMap.put(statement, EallStatementType.PROCEDURE_CALL);
-                }else if(statement instanceof stringAssign){
-                    statementTypeMap.put(statement, EallStatementType.STRING_ASSIGN);
-                }else if(statement instanceof stringDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.STRING_DECLARATION);
-                }else if(statement instanceof unknownArrAssign){
-                    statementTypeMap.put(statement, EallStatementType.UNKNOWN_ARR_ASSIGN);
-                }else if(statement instanceof unknownAssign){
-                    statementTypeMap.put(statement, EallStatementType.UNKNOWN_ASSIGN);
-                }else if(statement instanceof boolTernarDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.BOOL_TERNAR_DECLARATION);
-                }else if(statement instanceof intTernarDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.INT_TERNAR_DECLARATION);
-                }else if(statement instanceof stringTernarDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.STRING_TERNAR_DECLARATION);
-                }else if(statement instanceof constArrBoolDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_ARR_BOOL_DECLARATION);
-                }else if(statement instanceof constArrIntDeclaration){
-                    statementTypeMap.put(statement, EallStatementType.CONST_ARR_INT_DECLARATION);
-                }
-            }else if(statement instanceof ImultiLineStatement){ //kind of multiline statement
-                if(statement instanceof doWhileCycle){
-                    statementTypeMap.put(statement, EallStatementType.DO_WHILE_CYCLE);
-                }else if(statement instanceof forCycle){
-                    statementTypeMap.put(statement, EallStatementType.FOR_CYCLE);
-                }else if(statement instanceof foreachCycle){
-                    statementTypeMap.put(statement, EallStatementType.FOREACH_CYCLE);
-                }else if(statement instanceof ifCondition){
-                    statementTypeMap.put(statement, EallStatementType.IF_CONDITION);
-                }else if(statement instanceof procedureDefinition){
-                    statementTypeMap.put(statement, EallStatementType.PROCEDURE_DEFINITION);
-                }else if(statement instanceof repeatUntilCycle){
-                    statementTypeMap.put(statement, EallStatementType.REPEAT_UNTIL_CYCLE);
-                }else if(statement instanceof whileCycle){
-                    statementTypeMap.put(statement, EallStatementType.WHILE_CYCLE);
-                }
-            }
-        }
-
-        return statementTypeMap;
-    }
-
-
 
     private static String loadContents(String filePath)
     {
@@ -233,6 +86,32 @@ public class Main {
         }
 
         return contentBuilder.toString();
+    }
+
+
+    // todo is this a good idea? what about var names, etc..?
+    private static String editInput(String content){
+        String res = content.replaceAll("true", "1");
+        res = res.replaceAll("false", "0");
+
+        return res;
+    }
+
+
+    private static void writeToFile(ArrayList<Instruction> instructions) throws IOException{
+        String str = "Hello";
+        String fileName = "resultInstr.txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+
+        for(int i = 0; i < instructions.size(); i++){
+            str = "" + (i + 1) + " " + instructions.get(i).toString() + "\n";
+            writer.write(str);
+        }
+
+
+
+
+        writer.close();
     }
 
 

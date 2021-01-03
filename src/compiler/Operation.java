@@ -1,5 +1,7 @@
 package compiler;
 
+import compiler.errors.Error;
+
 import java.util.ArrayList;
 
 public class Operation {
@@ -10,6 +12,8 @@ public class Operation {
     private Symbol symbol1;
     private Symbol symbol2;
     private EOperator operator;
+
+    private boolean negateResult = false;
 
 
     public EOperator getOperator() {
@@ -46,7 +50,11 @@ public class Operation {
             case PLUS: res = s1 + s2; break;
             case MINUS: res = s1 - s2; break;
             case MULT: res = s1 * s2; break;
-            case DIV: res = s1 / s2; break;
+            case DIV:
+                if(s2 == 0)
+                    Error.printDivisoinByZero();
+
+                res = s1 / s2; break;
             case MOD: res = s1 % s2; break;
             case ODD: break;
             case EQUAL:
@@ -73,8 +81,37 @@ public class Operation {
                 if(s1 <= s2) res = 1;
                 else res = 0;
                 break;
+            case OR:
+                if(s1 == 0 && s2 == 0) res = 0;
+                else res = 1;
+                break;
+            case AND:
+                if(s1 != 0 && s2 != 0) res = 1;
+                else res = 0;
+                break;
+            case NEG:
+                if(s1 == 0) res = 1;
+                else res = 0;
+                break;
         }
 
         return res;
+    }
+
+    public boolean isNegateResult() {
+        return negateResult;
+    }
+
+    public void setNegateResult(boolean negateResult) {
+        this.negateResult = negateResult;
+    }
+
+
+    public int getNegatedResult(){
+        int res = getResult();
+        if(res == 0){
+            return 1;
+        }
+        else return 0;
     }
 }

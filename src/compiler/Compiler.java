@@ -15,9 +15,10 @@ public class Compiler {
     private static int stackPointer;
     //private HashSet<Symbol> symbolTable;
     private HashMap<String, Symbol> globalSymbolTable;
-    private ParseTree tree;
+    //private ParseTree tree;
     private ArrayList<Istatement> statements;
     private ArrayList<procedureDefinition> procedureDefinitions;
+    ArrayList<Instruction> instructions;
 
 
     private final int BASE_ADDRESS = 3;
@@ -32,7 +33,7 @@ public class Compiler {
     }
 
     public ArrayList<Instruction> compile(){
-        ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+        this.instructions = new ArrayList<Instruction>();
 
         // this instruction will always be the first one?
         // todo or can the address be other than 1?
@@ -106,7 +107,7 @@ public class Compiler {
 
         for(Istatement pdSt : pd.getInnerStatements()){
             if(pdSt instanceof IDeclaration){
-                resolveDeclaration((IDeclaration) pdSt, currProcName, pd.getPrivateSymbolTable());
+                resolveDeclaration((IDeclaration) pdSt, currProcName, pd.getPrivateSymbolTable()); // todo merge the private and global table?
             }
         }
 
@@ -159,14 +160,14 @@ public class Compiler {
         // normal declarations:
         if(st instanceof intDeclaration){
             name = ((intDeclaration) st).getIdentifierVar();
-            String value = (((intDeclaration) st).isMinus_sign() ? "-" : "") + ((intDeclaration) st).getDecVal();
+            String value = /*(((intDeclaration) st).isMinus_sign() ? "-" : "") + */((intDeclaration) st).getDecVal();
 
 
             symb.setValue(value);
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -180,7 +181,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -195,7 +196,7 @@ public class Compiler {
             symb.setSizeArr(size);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -212,7 +213,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+= size;
@@ -227,7 +228,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -243,21 +244,21 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
         }
         else if(st instanceof constIntDeclaration){
             name = ((constIntDeclaration) st).getIdentifierVar();
-            String value = (((constIntDeclaration) st).isMinus_sign() ? "-" : "") + ((constIntDeclaration) st).getDecVal();
+            String value = /*(((constIntDeclaration) st).isMinus_sign() ? "-" : "") + */((constIntDeclaration) st).getDecVal();
 
 
             symb.setValue(value);
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -271,7 +272,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -283,7 +284,7 @@ public class Compiler {
             symb.setName(name);
             symb.setProcParameters(params);
             symb.setAdr(declCounter);
-            symb.setLev(1); // todo ???
+            symb.setLev(0); // todo ???
             symb.setType(ESymbolType.PROCEDURE);
             symb.setInProcedure(inProc); // todo we probably dont support nested procedures anyway
             //declCounter++; // todo???
@@ -299,7 +300,7 @@ public class Compiler {
 
         symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable);
+        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable));
         symb.setHasBeenDeclared(true);
     }
 

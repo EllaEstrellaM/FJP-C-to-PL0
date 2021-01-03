@@ -13,11 +13,17 @@ public enum EOperator {
     LT(10),
     GE(11),
     GT(12),
-    LE(13);
+    LE(13),
 
-    private int instrCode;
+    // these that follow aren't part of the instruction set!!:
+    OR(-1),
+    AND(-1),
+    NEG(-1);
+
+
+    private final int instrCode;
     private EOperator(int instrCode){
-        ;;
+        this.instrCode = instrCode;
     }
 
 
@@ -40,6 +46,9 @@ public enum EOperator {
             case ">=": return GE;
             case ">": return GT;
             case "<=": return LE;
+            case "|": return OR;
+            case "&": return AND;
+            case "!": return NEG;
             default: return null;
         }
     }

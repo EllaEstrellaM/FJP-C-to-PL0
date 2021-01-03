@@ -1,5 +1,7 @@
 package compiler;
 
+import java.util.ArrayList;
+
 public class Symbol {
     private String name;
     private int lev;
@@ -15,6 +17,13 @@ public class Symbol {
 
     private String inProcedure;
     private String procParameters;
+
+
+    private boolean negateValue;
+    private int indToArray;
+    private boolean isPartialResult;
+
+    private ArrayList<Integer> arrayElements;
 
     public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
         this.name = name;
@@ -36,7 +45,10 @@ public class Symbol {
         this.isConst = false;
         this.value = "0";
         this.inProcedure = "global";
-        procParameters = "";
+        this.procParameters = "";
+        this.negateValue = false;
+        this.indToArray = -1;
+        this.isPartialResult = false;
     }
 
 
@@ -73,6 +85,10 @@ public class Symbol {
 
     public void setSizeArr(int sizeArr) {
         this.sizeArr = sizeArr;
+        this.arrayElements = new ArrayList<>(sizeArr);
+        for(int i = 0; i < sizeArr; i++){
+            this.arrayElements.add(0);
+        }
     }
 
     public ESymbolType getType() {
@@ -133,5 +149,41 @@ public class Symbol {
 
     public void setHasBeenDeclared(boolean hasBeenDeclared) {
         this.hasBeenDeclared = hasBeenDeclared;
+    }
+
+    public boolean isNegateValue() {
+        return negateValue;
+    }
+
+    public void setNegateValue(boolean negateValue) {
+        this.negateValue = negateValue;
+    }
+
+    public int getIndToArray() {
+        return indToArray;
+    }
+
+    public void setIndToArray(int indToArray) {
+        this.indToArray = indToArray;
+    }
+
+    public ArrayList<Integer> getArrayElements() {
+        return arrayElements;
+    }
+
+    public boolean isPartialResult() {
+        return isPartialResult;
+    }
+
+    public void setPartialResult(boolean partialResult) {
+        isPartialResult = partialResult;
+    }
+
+    public int negate(){
+        int val = Integer.parseInt(this.value);
+        if(val == 0){
+            return 1;
+        }
+        else return 0;
     }
 }
