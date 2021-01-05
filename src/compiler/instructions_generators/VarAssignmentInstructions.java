@@ -33,51 +33,134 @@ public class VarAssignmentInstructions {
 
 
         // we can assign only string to a string
-        if(s.getType() == ESymbolType.STRING && !ExpressionParser.isNumeric(value) && !ExpressionParser.isExpression(value)){
+        if(s.getType() == ESymbolType.STRING /*&& !ExpressionParser.isNumeric(value) && !ExpressionParser.isExpression(value)*/){
             // it's not a number and it's not an expression - can be var name or string
             // ok assignment to string
 
-            if(value.charAt(0) == '\"' && value.charAt(value.length() - 1) == '\"'){
-                // it's a string literal we want to assign to the string variable
-                // check if it's too long:
-                if(value.length() - 2 > s.getSizeArr()){
-                    // the string literal is longer than what the string was declared for
-                    Error.printStringTooLong(s.getName(), value);
-                }
+            // merge the right side:
+            //if(value.contains("+")){
+                // concatenating used
+                String[] splits = value.split("\\+");
+                String result = "";
+                ArrayList<String> results = new ArrayList<>(splits.length);
+                ArrayList<Integer> results_addrs = new ArrayList<>(splits.length);
 
-                // proceed:
-                for(int i = 1; i < value.length() - 1; i++){
-                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)value.charAt(i)));
-                    generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + i - 1));
-                }
-                actualVal = value.substring(1,value.length() - 2); // todo check if correct
-            }
-            else{
-                // it's a var name
-                // check if the var exists:
-                if(table.containsKey(value)){
-                    // there is a var with this name
-                    if(table.get(value).getType() == ESymbolType.STRING){
-                        // it is also a string
-                        // check if it's too long:
-                        if(table.get(value).getSizeArr() > s.getSizeArr()){
-                            // the string is longer than what the string was declared for
-                            Error.printStringTooLong(s.getName(), value);
-                        }
+                for(int i = 0; i < splits.length; i++){
+                    System.out.println(splits[i]);
 
-                        // else proceed
-                        for(int i = 0; i < table.get(value).getSizeArr(); i++){
-                            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, (int)table.get(value).getValue().charAt(i)));
-                            generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + i));
-                        }
-                        actualVal = table.get(value).getValue();
+                    if(splits[i].charAt(0) == '\"' && splits[i].charAt(splits[i].length() - 1) == '\"'){
+                        // literal
+                        result += splits[i].substring(1,splits[i].length() - 1);
+
+                        results.add(splits[i].substring(1,splits[i].length() - 1));
+                        results_addrs.add(-1);
                     }
                     else{
-                        // print cannot assign num to string
+                        // var name?
+                        if(table.containsKey(splits[i])) {
+                            // there is a var with this name
+                            if (table.get(splits[i]).getType() == ESymbolType.STRING) {
+                                result += table.get(splits[i]).getValue();
+
+                                results.add(table.get(splits[i]).getValue());
+                                results_addrs.add(table.get(splits[i]).getAdr());
+                            }
+                            else{
+                                // cannot assign
+                                Error.printCannotAssign(s.getName(), splits[i]);
+                            }
+                        }
+                        else{
+                            // no var found
+                            Error.printVarNotFound(splits[i]);
+                        }
+                    }
+
+                }
+
+                System.out.println("result: " + result);
+            //}
+
+            // we have the right side merged.
+            if(result.length() > s.getValue().length()){
+                Error.printStringTooLong(s.getName(), result);
+            }
+
+            // else proceed:
+            int currInd = 0;
+            for(int i = 0; i < results.size(); i++){
+                String currResult = results.get(i);
+                int currAddr = results_addrs.get(i);
+
+                if(currAddr == -1){
+                    // literal
+                    for(int j = 0; j < currResult.length(); j++){
+                        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)currResult.charAt(j)));
+                        generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + currInd));
+                        currInd++;
+                    }
+                }
+                else{
+                    // already stored string var
+                    for(int j = 0; j < currResult.length(); j++){
+                        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, currAddr + j)); // todo 0?
+                        generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + currInd));
+                        currInd++;
                     }
                 }
             }
 
+
+//            for(int i = 0; i < result.length(); i++){
+//                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)result.charAt(i)));
+//                generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + i));
+//            }
+            actualVal = result;
+
+
+//            if(value.charAt(0) == '\"' && value.charAt(value.length() - 1) == '\"'){
+//                // it's a string literal we want to assign to the string variable
+//                // check if it's too long:
+//                if(value.length() - 2 > s.getValue().length()){
+//                    // the string literal is longer than what the string was declared for
+//                    Error.printStringTooLong(s.getName(), value);
+//                }
+//
+//                // proceed:
+//                for(int i = 1; i < value.length() - 1; i++){
+//                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, (int)value.charAt(i)));
+//                    generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + i - 1));
+//                }
+//                actualVal = value.substring(1,value.length() - 2); // todo check if correct
+//            }
+//            else{
+//                // it's a var name
+//                // check if the var exists:
+//                if(table.containsKey(value)){
+//                    // there is a var with this name
+//                    if(table.get(value).getType() == ESymbolType.STRING){
+//                        // it is also a string
+//                        // check if it's too long:
+//                        if(table.get(value).getSizeArr() > s.getSizeArr()){
+//                            // the string is longer than what the string was declared for
+//                            Error.printStringTooLong(s.getName(), value);
+//                        }
+//
+//                        // else proceed
+//                        for(int i = 0; i < table.get(value).getSizeArr(); i++){
+//                            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, (int)table.get(value).getValue().charAt(i)));
+//                            generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + i));
+//                        }
+//                        actualVal = table.get(value).getValue();
+//                    }
+//                    else{
+//                        // print cannot assign num to string
+//                    }
+//                }
+//            }
+
+            s.setValue(actualVal);
+            return generatedInstructions;
             // todo return here + todo concatenating strings
         }
 
@@ -126,6 +209,7 @@ public class VarAssignmentInstructions {
         }
 
 
+        System.out.println("actual val being assigned to " + s.getName() + ": " + actualVal);
         // now whatever it is, it should be at the top of the stack
         if(indexToAssignTo == -1){
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr));
@@ -268,226 +352,5 @@ public class VarAssignmentInstructions {
 
         return generatedInstructions;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // --- expressions ---
-//        ArrayList<valueEvalDecData> operOrder = parseExprDecBool("100*(2+12)/14");
-//        for(int i = 0; i < operOrder.size(); i++){
-//            valueEvalDecData oper = operOrder.get(i);
-//            System.out.println("Operation - START");
-//            System.out.println(oper.getFirstVal() + ", " + oper.getOper() + ", " + oper.getSecondVal());
-//            System.out.println("Operation - END");
-//        }
-
-
-    // -- parsing expressions: ---
-
-
-//    private static boolean isExpression(String value){
-//
-//        return value.contains("+") || value.contains("-") || value.contains("*") ||
-//                value.contains("/") || value.contains("%") || value.contains("(") || value.contains(")");
-//    }
-//
-//    private static boolean isOperator(String value){
-//
-//        return value.equals("+") || value.equals("-") || value.equals("*") ||
-//                value.equals("/") || value.equals("%") || value.equals("(") || value.equals(")");
-//    }
-//
-//    private static boolean isNumeric(String str) {
-//        try {
-//            Integer.parseInt(str);
-//            return true;
-//        } catch(NumberFormatException e){
-//            return false;
-//        }
-//    }
-//
-//
-//    // todo bool vars and keywords too?
-//    private static ArrayList<Operation> parseExprDecBool(String exprDecBool, HashMap<String, Symbol> table){
-//        ArrayList<Operation> statementOrder = new ArrayList<Operation>();
-//
-//        char[] splitted = exprDecBool.toCharArray(); //split to indiv "letters" (numbers + operators)
-//
-//        Stack<Symbol> numbers = new Stack<Symbol>(); //stack for retrieved numbers
-//        Stack<Character> opers = new Stack<Character>(); //stack for retrieved operators
-//
-//        for(int i = 0; i < splitted.length; i++){ //go through splitted numbers & operators
-//            if(!isOperator("" + splitted[i])/*splitted[i] >= '0' && splitted[i] <= '9'*/){ //between 0 - 9 -> number
-//                StringBuffer numBuf = new StringBuffer();
-//
-//                while(i < splitted.length && !isOperator("" + splitted[i])/*splitted[i] >= '0' && splitted[i] <= '9'*/){ //number can be > 1 char
-//                    numBuf.append(splitted[i++]);
-//                }
-//
-//                if(table.containsKey(numBuf.toString())){
-//                    if(table.get(numBuf.toString()).hasBeenDeclared()){
-//                        numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
-//                    }
-//                    else{
-//                        Error.printVarNotFound(numBuf.toString()); // todo opravdu?
-//                    }
-//
-//                }
-//                else{
-//                    if(isNumeric(numBuf.toString())){
-//                        Symbol s = new Symbol();
-//                        s.setValue(numBuf.toString());
-//                        s.setAdr(-1);
-//                        numbers.push(s);
-//                    }
-//                    else{
-//                        Error.printVarNotFound(numBuf.toString()); // todo opravdu?
-//                    }
-//
-//                }
-//
-//
-//
-//                i--;
-//            }else if(splitted[i] == '('){
-//                opers.push(splitted[i]);
-//            }else if(splitted[i] == ')'){
-//                while(opers.peek() != '('){
-//                    Symbol secondVal = numbers.pop();
-//                    Symbol firstVal = numbers.pop();
-//                    Character oper = opers.pop();
-//
-//                    //valueEvalDecData evalSingleOper = new valueEvalDecData();
-//                    Operation op = new Operation();
-//                    op.setSymbol1(firstVal);
-//                    op.setSymbol2(secondVal);
-//                    op.setOperator(EOperator.getOperFromString("" + oper));
-//                    statementOrder.add(op);
-//
-//
-////                    evalSingleOper.setSecondVal(secondVal);
-////                    evalSingleOper.setOper(oper);
-////                    evalSingleOper.setFirstVal(firstVal);
-////                    statementOrder.add(evalSingleOper);
-//
-//                    //numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
-//
-//                    Symbol s = new Symbol();
-//                    s.setAdr(-1);
-//                    s.setValue("" + op.getResult());
-//                    numbers.push(s);
-//
-//                }
-//
-//                opers.pop();
-//            }else if(splitted[i] == '+' || splitted[i] == '-' || splitted[i] == '*' || splitted[i] == '/'){ //supported operators
-//                while (!opers.empty() && checkPrecExprDecBool(splitted[i], opers.peek())){
-//                    Symbol secondVal = numbers.pop();
-//                    Symbol firstVal = numbers.pop();
-//                    Character oper = opers.pop();
-//
-////                    valueEvalDecData evalSingleOper = new valueEvalDecData();
-////                    evalSingleOper.setSecondVal(secondVal);
-////                    evalSingleOper.setOper(oper);
-////                    evalSingleOper.setFirstVal(firstVal);
-////                    statementOrder.add(evalSingleOper);
-////
-////                    numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
-//
-//                    Operation op = new Operation();
-//                    op.setSymbol1(firstVal);
-//                    op.setSymbol2(secondVal);
-//                    op.setOperator(EOperator.getOperFromString("" + oper));
-//                    statementOrder.add(op);
-//
-//                    Symbol s = new Symbol();
-//                    s.setAdr(-1);
-//                    s.setValue("" + op.getResult());
-//                    numbers.push(s);
-//                }
-//
-//                opers.push(splitted[i]);
-//            }
-//        }
-//
-//        while (!opers.empty()){
-//            Symbol secondVal = numbers.pop();
-//            Symbol firstVal = numbers.pop();
-//            Character oper = opers.pop();
-//
-////            valueEvalDecData evalSingleOper = new valueEvalDecData();
-////            evalSingleOper.setSecondVal(secondVal);
-////            evalSingleOper.setOper(oper);
-////            evalSingleOper.setFirstVal(firstVal);
-////            statementOrder.add(evalSingleOper);
-////
-////            numbers.push(singleOpExprDecBool(oper, secondVal, firstVal));
-//
-//            Operation op = new Operation();
-//            op.setSymbol1(firstVal);
-//            op.setSymbol2(secondVal);
-//            op.setOperator(EOperator.getOperFromString("" + oper));
-//            statementOrder.add(op);
-//
-//            Symbol s = new Symbol();
-//            s.setAdr(-1);
-//            s.setValue("" + op.getResult());
-//            numbers.push(s);
-//        }
-//
-//        return statementOrder;
-//    }
-//
-//    private static boolean checkPrecExprDecBool(char firstOper, char secondOper){
-//        if(secondOper == '(' || secondOper == ')'){
-//            return false;
-//        }else if((firstOper == '*' || firstOper == '/') && (secondOper == '+' || secondOper == '-')){
-//            return false;
-//        }else{
-//            return true;
-//        }
-//    }
-
-//    private static int singleOpExprDecBool(char oper, int secondNum, int firstNum){
-//        if(oper == '-'){
-//            return firstNum - secondNum;
-//        }else if(oper == '+'){
-//            return firstNum + secondNum;
-//        }else if(oper == '*'){
-//            return firstNum * secondNum;
-//        }else if(oper == '/') {
-//            return firstNum / secondNum;
-//        }else{
-//            return 0;
-//        }
-//    }
-
 
 }

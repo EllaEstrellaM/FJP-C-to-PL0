@@ -35,7 +35,12 @@ public class Error {
     }
 
     public static void printStringTooLong(String dest, String src){
-        System.err.println("Cannot assign " + src + " to string " + dest);
+        System.err.println("Cannot assign " + src + " to string " + dest + ", because " + src + " is too long.");
+        System.exit(0);
+    }
+
+    public static void printCannotAssign(String dest, String src){
+        System.err.println("Cannot assign " + src + " to " + dest);
         System.exit(0);
     }
 }

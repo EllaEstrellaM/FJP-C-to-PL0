@@ -205,7 +205,7 @@ public class Compiler {
             symb.setInProcedure(inProc);
             declCounter++;
         }
-        else if(st instanceof stringDeclaration){
+        else if(st instanceof stringDeclaration){ // todo addresses
             name = ((stringDeclaration) st).getIdentifierVar();
             String value = ((stringDeclaration) st).getStringVal();
             int size = value.length();
@@ -474,5 +474,11 @@ public class Compiler {
         }
 
         return statementTypeMap;
+    }
+
+
+
+    private void printSymbolTable(HashMap<String, Symbol> table){
+
     }
 }
