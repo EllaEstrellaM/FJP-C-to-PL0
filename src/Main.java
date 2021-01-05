@@ -104,7 +104,7 @@ public class Main {
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
 
         for(int i = 0; i < instructions.size(); i++){
-            str = "" + (i + 1) + " " + instructions.get(i).toString() + "\n";
+            str = "" + (i) + " " + instructions.get(i).toString() + "\n";
             writer.write(str);
         }
 

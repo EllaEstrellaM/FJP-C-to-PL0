@@ -28,4 +28,14 @@ public class Error {
         System.err.println("Attempt to divide by zero detected.");
         System.exit(0);
     }
+
+    public static void printConstAssign(String constName){
+        System.err.println("Cannot modify constant value " + constName + ".");
+        System.exit(0);
+    }
+
+    public static void printStringTooLong(String dest, String src){
+        System.err.println("Cannot assign " + src + " to string " + dest);
+        System.exit(0);
+    }
 }

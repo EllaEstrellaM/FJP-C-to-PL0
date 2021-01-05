@@ -50,7 +50,7 @@ public class Compiler {
         String proc = "global";
         for(Istatement st : statements){
             if(st instanceof IDeclaration){
-                //resolveDeclaration((IDeclaration) st, proc, globalSymbolTable); drtikkomentuje
+                resolveDeclaration((IDeclaration) st, proc, globalSymbolTable);
                 //declCounter++;
             }
 //            if(st instanceof ImultiLineStatement){
@@ -70,6 +70,25 @@ public class Compiler {
                 solvRecurMultiLine(multiStatement);
             }else{ //statement is oneline - generate respective instructions
                 generateOneline((IoneLineStatement) statement, statementType);
+
+
+                if(statement instanceof unknownAssign){
+                    unknownAssign ua = (unknownAssign)statement;
+                    String ident = ua.getIdentifierVar();
+                    String value = ua.getValueVar();
+
+                    if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable));
+                    }
+                    else{
+                        //print
+                    }
+
+
+                }
             }
         }
 
@@ -129,24 +148,24 @@ public class Compiler {
         }
     }
 
-    String currProc = "";
-    private void resolveMultilineStatement(ImultiLineStatement st){
-
-
-        if(st instanceof procedureDefinition){
-            currProc = ((procedureDefinition) st).getIdentifierVar();
-        }
-
-        for(int i = 0; i < st.getInnerStatements().size(); i++){
-            if(st.getInnerStatements().get(i) instanceof IoneLineStatement){
-                resolveOneLineStatement((IoneLineStatement) st.getInnerStatements().get(i), currProc);
-            }
-            else{
-                // recursion?
-                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatements().get(i));
-            }
-        }
-    }
+//    String currProc = "";
+//    private void resolveMultilineStatement(ImultiLineStatement st){
+//
+//
+//        if(st instanceof procedureDefinition){
+//            currProc = ((procedureDefinition) st).getIdentifierVar();
+//        }
+//
+//        for(int i = 0; i < st.getInnerStatements().size(); i++){
+//            if(st.getInnerStatements().get(i) instanceof IoneLineStatement){
+//                resolveOneLineStatement((IoneLineStatement) st.getInnerStatements().get(i), currProc);
+//            }
+//            else{
+//                // recursion?
+//                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatements().get(i));
+//            }
+//        }
+//    }
 
 
     /**
@@ -300,7 +319,7 @@ public class Compiler {
 
         symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable));
+        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable));
         symb.setHasBeenDeclared(true);
     }
 
