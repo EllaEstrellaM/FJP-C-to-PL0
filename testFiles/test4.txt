@@ -2,22 +2,22 @@
 
 
 
-//int a = 0;
+//int a = false;
 //bool b = 8;
 //a = 5;
 //a = b;
 
-string s = "ahoj";
-string s2 = "a";
-string s3 = "h";
-string s4 = "o";
-string s5 = "j";
+//string s = "ahoj";
+//string s2 = "a";
+//string s3 = "h";
+//string s4 = "o";
+//string s5 = "j";
 
-s = s2 + s3 + s4 + s5;
+//s = s2 + s3 + s4 + s5;
 
 
 
-//int pole[3];
-//pole[0] = 1;
-//pole[1] = 2;
-//pole[2] = 3;
+int pole[3];
+pole[0] = 1;
+pole[1] = 2;
+pole[2] = pole[3];

@@ -46,7 +46,7 @@ public class VarAssignmentInstructions {
                 ArrayList<Integer> results_addrs = new ArrayList<>(splits.length);
 
                 for(int i = 0; i < splits.length; i++){
-                    System.out.println(splits[i]);
+                    //System.out.println(splits[i]);
 
                     if(splits[i].charAt(0) == '\"' && splits[i].charAt(splits[i].length() - 1) == '\"'){
                         // literal
@@ -196,6 +196,10 @@ public class VarAssignmentInstructions {
                         }
 
                         else{
+                            if(retrSymb.getIndToArray() >= s.getSizeArr()){
+                                Error.printOutOfBounds(s.getName(), retrSymb.getIndToArray());
+                            }
+
                             generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr() + retrSymb.getIndToArray()));
                             actualVal = "" + retrSymb.getArrayElements().get(retrSymb.getIndToArray());
                         }

@@ -43,4 +43,9 @@ public class Error {
         System.err.println("Cannot assign " + src + " to " + dest);
         System.exit(0);
     }
+
+    public static void printOutOfBounds(String arrIdent, int index){
+        System.err.println("Index " + index + " out of bounds of array " + arrIdent + ".");
+        System.exit(0);
+    }
 }

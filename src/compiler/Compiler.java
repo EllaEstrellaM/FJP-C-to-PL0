@@ -84,10 +84,31 @@ public class Compiler {
                         this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable));
                     }
                     else{
-                        //print
+                        Error.printVarNotFound(ident);
                     }
+                }
+                else if(statement instanceof unknownArrAssign){
+                    unknownArrAssign uaa = (unknownArrAssign) statement;
+                    String ident = uaa.getIdentifierVar();
+                    String value = uaa.getValueVar();
+                    int indexToAssignTo = uaa.getIndexToAssign();
 
 
+                    if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+
+                        if(indexToAssignTo >= s.getSizeArr()){
+                            Error.printOutOfBounds(ident, indexToAssignTo);
+                        }
+
+
+                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
                 }
             }
         }
@@ -208,7 +229,7 @@ public class Compiler {
         else if(st instanceof stringDeclaration){ // todo addresses
             name = ((stringDeclaration) st).getIdentifierVar();
             String value = ((stringDeclaration) st).getStringVal();
-            int size = value.length();
+            int size = value.length() - 2;
 
             symb.setValue(value);
             symb.setName(name);
@@ -285,7 +306,7 @@ public class Compiler {
         else if(st instanceof constStringDeclaration){
             name = ((constStringDeclaration) st).getIdentifierVar();
             String value = ((constStringDeclaration) st).getStringVal();
-            int size = value.length();
+            int size = value.length() - 2;
 
             symb.setValue(value);
             symb.setName(name);
@@ -319,7 +340,12 @@ public class Compiler {
 
         symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable));
+        if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
+            // array declaration doesn't produce any instructions
+            this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable));
+        }
+
+
         symb.setHasBeenDeclared(true);
     }
 
