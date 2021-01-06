@@ -70,20 +70,20 @@ public class ArithmeticExpressionInstructions {
 
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, op.getOperator().getInstrCode()));
         }
-        else{
-            // todo maybe this needs to be done in a more comlicated way?
-            if(op.getOperator() == EOperator.AND){
-
-            }
-            else if(op.getOperator() == EOperator.OR){
-
-            }
-            else if(op.getOperator() == EOperator.NEG){
-
-            }
-
-            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, op.getResult())); // adding just the result...
-        }
+//        else{
+//            // todo maybe this needs to be done in a more complicated way?
+//            if(op.getOperator() == EOperator.AND){
+//
+//            }
+//            else if(op.getOperator() == EOperator.OR){
+//
+//            }
+//            else if(op.getOperator() == EOperator.NEG){
+//
+//            }
+//
+//            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, op.getResult())); // adding just the result...
+//        }
 
 
 

@@ -203,10 +203,19 @@ public class VarAssignmentInstructions {
                         os2.setType(ESymbolType.INT);
                     }
                 }
-                if(oper.isNegateResult()){
+                if(oper.isNegateResult() || oper.getOperator() == EOperator.OR
+                        || oper.getOperator() == EOperator.AND){
                     Symbol newS = new Symbol();
                     newS.setAdr(-1);
-                    newS.setValue("" + oper.getNegatedResult());
+
+                    if(oper.isNegateResult()){
+                        newS.setValue("" + oper.getNegatedResult());
+                    }
+                    else{
+                        newS.setValue("" + oper.getResult());
+                    }
+
+
                     oper = new Operation();
                     oper.setSymbol1(newS);
                     oper.setOperator(null);
