@@ -11,6 +11,15 @@ public class ArithmeticExpressionInstructions {
     public static ArrayList<Instruction> generateInstructions(Operation op/*, Symbol symbToStoreTo*/){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
+
+
+
+        if(op.getOperator() == null){
+            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue()))); // adding just the result...
+            return generatedInstructions;
+        }
+
+
         // if symbToStoreTo has address -1, use LIT
 
         // get the correct addresses:

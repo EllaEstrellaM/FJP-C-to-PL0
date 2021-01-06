@@ -102,14 +102,19 @@ public class ExpressionParser {
 
 
                 if(table.containsKey(numBuf.toString())){
+
                     if(table.get(numBuf.toString()).hasBeenDeclared()){
-                        table.get(numBuf.toString()).setNegateValue(negateValue);
-//                        if(indToArr != -1){
-//                            // we got an indexed array:
-//
-//                        }
-                        table.get(numBuf.toString()).setIndToArray(indToArr); // ???
-                        numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
+
+                        Symbol s = new Symbol(table.get(numBuf)); // deep copy of the symbol
+
+                        //table.get(numBuf.toString()).setNegateValue(negateValue);
+                        s.setNegateValue(negateValue);
+
+                        //table.get(numBuf.toString()).setIndToArray(indToArr); // ???
+                        s.setIndToArray(indToArr); // ???
+
+                        //numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
+                        numbers.push(s); //push buffer containing whole number to stack
                     }
                     else{
                         Error.printVarNotFound(numBuf.toString()); // todo opravdu?

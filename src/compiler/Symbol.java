@@ -25,16 +25,16 @@ public class Symbol {
 
     private ArrayList<Integer> arrayElements;
 
-    public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
-        this.name = name;
-        this.lev = level;
-        this.adr = address;
-        this.sizeArr = sizeArr;
-        this.type = type;
-        this.isConst = isConst;
-        this.value = value;
-        this.inProcedure = inProcedure;
-    }
+//    public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
+//        this.name = name;
+//        this.lev = level;
+//        this.adr = address;
+//        this.sizeArr = sizeArr;
+//        this.type = type;
+//        this.isConst = isConst;
+//        this.value = value;
+//        this.inProcedure = inProcedure;
+//    }
 
     public Symbol(){
         this.name = "";
@@ -49,6 +49,23 @@ public class Symbol {
         this.negateValue = false;
         this.indToArray = -1;
         this.isPartialResult = false;
+    }
+
+    public Symbol(Symbol copy){
+        this.name = copy.getName();
+        this.lev = copy.getLev();
+        this.adr = copy.getAdr();
+        this.sizeArr = copy.getSizeArr();
+        this.type = copy.getType();
+        this.isConst = copy.isConst();
+        this.value = copy.getValue();
+        this.inProcedure = copy.getInProcedure();
+        this.procParameters = copy.getProcParameters();
+        this.negateValue = copy.isNegateValue();
+        this.indToArray = copy.getIndToArray();
+        this.isPartialResult = copy.isPartialResult();
+        this.arrayElements = copy.getArrayElements();
+
     }
 
 

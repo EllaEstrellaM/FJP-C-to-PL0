@@ -20,4 +20,4 @@
 int pole[3];
 pole[0] = 1;
 pole[1] = 2;
-pole[2] = pole[3];
+pole[2] = !pole[1] * !pole[0];

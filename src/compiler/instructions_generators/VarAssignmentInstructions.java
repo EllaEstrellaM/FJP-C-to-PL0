@@ -161,7 +161,6 @@ public class VarAssignmentInstructions {
 
             s.setValue(actualVal);
             return generatedInstructions;
-            // todo return here + todo concatenating strings
         }
 
         // took care of strings ^^
@@ -172,6 +171,46 @@ public class VarAssignmentInstructions {
             // generate the arithmetic instructions:
             for(int i = 0; i < opOrd.size(); i++){
                 Operation oper = opOrd.get(i);
+                Symbol os1 = oper.getSymbol1();
+                Symbol os2 = oper.getSymbol2();
+
+                // todo is this correct?
+                if(os1.isNegateValue()){
+                    if(os1.getType() == ESymbolType.ARRAY){
+                        os1.setValue("" + os1.getArrayElements().get(os1.getIndToArray()));
+                        os1.setValue("" + os1.negate());
+                        os1.setAdr(-1);
+                        os1.setType(ESymbolType.INT);
+
+                    }
+                    else{
+                        os1.setValue("" + os1.negate());
+                        os1.setAdr(-1);
+                        os1.setType(ESymbolType.INT);
+                    }
+                }
+                if(os2.isNegateValue()){
+                    if(os2.getType() == ESymbolType.ARRAY){
+                        os2.setValue("" + os2.getArrayElements().get(os2.getIndToArray()));
+                        os2.setValue("" + os2.negate());
+                        os2.setAdr(-1);
+                        os2.setType(ESymbolType.INT);
+
+                    }
+                    else{
+                        os2.setValue("" + os2.negate());
+                        os2.setAdr(-1);
+                        os2.setType(ESymbolType.INT);
+                    }
+                }
+                if(oper.isNegateResult()){
+                    Symbol newS = new Symbol();
+                    newS.setAdr(-1);
+                    newS.setValue("" + oper.getNegatedResult());
+                    oper = new Operation();
+                    oper.setSymbol1(newS);
+                    oper.setOperator(null);
+                }
 
                 generatedInstructions.addAll(ArithmeticExpressionInstructions.generateInstructions(oper));
 
@@ -180,10 +219,11 @@ public class VarAssignmentInstructions {
                 //System.out.println("Operation - END");
             }
             actualVal = "" + opOrd.get(opOrd.size() - 1).getResult(); // todo negation
+
             valAtTop = true;
         }
         else {
-            Symbol retrSymb = ExpressionParser.retrievedSymbol;
+            Symbol retrSymb = ExpressionParser.retrievedSymbol; // todo negation
             if(retrSymb != null){
                 //if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
                     if(retrSymb.getAdr() == -1){
@@ -217,11 +257,12 @@ public class VarAssignmentInstructions {
         // now whatever it is, it should be at the top of the stack
         if(indexToAssignTo == -1){
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr));
-            s.setValue(actualVal);
+            table.get(s.getName()).setValue(actualVal);
+            //s.setValue(actualVal);
         }
         else{
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + indexToAssignTo));
-            s.getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+            table.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
         }
 
 
