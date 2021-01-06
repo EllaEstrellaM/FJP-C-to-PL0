@@ -2,6 +2,7 @@ package compiler;
 
 import compiler.errors.Error;
 import compiler.instructions_generators.IfInstructions;
+import compiler.instructions_generators.TernaryAssignmentInstructions;
 import compiler.instructions_generators.VarAssignmentInstructions;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
@@ -89,7 +90,7 @@ public class Compiler {
 
                         Symbol s = globalSymbolTable.get(ident);
 
-                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable));
+                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
                     }
                     else{
                         Error.printVarNotFound(ident);
@@ -112,11 +113,33 @@ public class Compiler {
                         }
 
 
-                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable));
+                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
                     }
                     else{
                         Error.printVarNotFound(ident);
                     }
+                }
+                else if(statement instanceof ternarAssign){
+                    ternarAssign ta = (ternarAssign) statement;
+                    String ident = ta.getIdentifierVar();
+                    String cond = ta.getExprDecBoolCont();
+                    String trueVal = ta.getExprDecBoolTrueVal();
+                    String falseVal = ta.getExprDecBoolFalseVal();
+
+                    if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+                        // todo arrays
+
+                        this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+
+
+
                 }
             }
         }
@@ -350,7 +373,7 @@ public class Compiler {
         symbolTable.put(name, symb);
         if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
             // array declaration doesn't produce any instructions
-            this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable));
+            this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
         }
 
 

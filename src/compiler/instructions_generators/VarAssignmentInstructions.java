@@ -12,7 +12,7 @@ public class VarAssignmentInstructions {
     // todo index when we want to change one element in an array / string
     // todo what should we do, when arr1 = arr2 happens? -> point to the same memory?
     // in value there is the whole right side
-    public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> table){
+    public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> table, boolean assignToSymbol){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         int addr = s.getAdr(); // the address to store the new value to
@@ -113,8 +113,8 @@ public class VarAssignmentInstructions {
 
             actualVal = result;
 
-
-            s.setValue(actualVal);
+            if(assignToSymbol)
+                s.setValue(actualVal);
             return generatedInstructions;
         }
 
@@ -205,12 +205,14 @@ public class VarAssignmentInstructions {
         // now whatever it is, it should be at the top of the stack
         if(indexToAssignTo == -1){
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr));
-            table.get(s.getName()).setValue(actualVal);
+            if(assignToSymbol)
+                table.get(s.getName()).setValue(actualVal);
             //s.setValue(actualVal);
         }
         else{
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + indexToAssignTo));
-            table.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+            if(assignToSymbol)
+                table.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
         }
 
 

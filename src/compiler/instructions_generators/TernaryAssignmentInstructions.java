@@ -12,12 +12,25 @@ public class TernaryAssignmentInstructions {
 
         // let if take care of the condition:
         generatedInstructions.addAll(IfInstructions.generateInstructions(cond, table));
+        int res = IfInstructions.resultVal;
 
-        // now follow instructions for assigning when true:
-        VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, table); // todo find out which value to assign to the symbol
+        if(res != 0){
+            // now follow instructions for assigning when true:
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, table, true));
 
-        // now follow instructions for assigning when false:
-        VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, table);
+            // now follow instructions for assigning when false:
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, table, false));
+        }
+        else {
+            // now follow instructions for assigning when true:
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, table, false));
+
+            // now follow instructions for assigning when false:
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, table, true));
+        }
+
+
+
 
 
 
