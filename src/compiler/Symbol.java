@@ -197,10 +197,20 @@ public class Symbol {
     }
 
     public int negate(){
-        int val = Integer.parseInt(this.value);
+
+        int val;
+        if(indToArray != -1){
+            val = arrayElements.get(indToArray);
+        }
+        else{
+            val = Integer.parseInt(this.value);
+        }
+
         if(val == 0){
             return 1;
         }
         else return 0;
+
+
     }
 }

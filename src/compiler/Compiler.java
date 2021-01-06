@@ -1,6 +1,7 @@
 package compiler;
 
 import compiler.errors.Error;
+import compiler.instructions_generators.IfInstructions;
 import compiler.instructions_generators.VarAssignmentInstructions;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
@@ -67,6 +68,13 @@ public class Compiler {
 
             if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
                 ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
+
+                if(multiStatement instanceof ifCondition){
+                    ifCondition ic = (ifCondition) multiStatement;
+                    String value = ic.getExprDecBoolCont();
+                    this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable));
+                }
+
                 solvRecurMultiLine(multiStatement);
             }else{ //statement is oneline - generate respective instructions
                 generateOneline((IoneLineStatement) statement, statementType);
