@@ -7,6 +7,8 @@ import statementInterEnum.Istatement;
 public class stringAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the variable
     String stringVal; //value of the variable
@@ -15,6 +17,7 @@ public class stringAssign implements Istatement, IoneLineStatement {
     public stringAssign(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         stringVal = "";
@@ -54,5 +57,15 @@ public class stringAssign implements Istatement, IoneLineStatement {
 
     public void setStringVal(String stringVal) {
         this.stringVal = stringVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

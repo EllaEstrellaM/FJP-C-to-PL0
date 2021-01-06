@@ -27,7 +27,7 @@ public class Main {
 
     public static void main(String[] args){
 
-        String testFile = "test4.txt";
+        String testFile = "test5.txt";
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;
 

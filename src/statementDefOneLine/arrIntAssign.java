@@ -7,6 +7,8 @@ import statementInterEnum.Istatement;
 public class arrIntAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the array
     int decNum; //index to array
@@ -19,6 +21,7 @@ public class arrIntAssign implements Istatement, IoneLineStatement {
         identifierVar = "";
         decNum = 0;
         decVal = 0;
+        innerLevel = 0;
     }
 
     @Override
@@ -63,5 +66,15 @@ public class arrIntAssign implements Istatement, IoneLineStatement {
 
     public void setDecVal(int decVal) {
         this.decVal = decVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

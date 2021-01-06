@@ -1,0 +1,10 @@
+int i = 0;
+int SYSTEM_RESERVED_1 = 0;
+
+int prvek = 0;
+int pole[4];
+
+procedure main(){
+    for(i = 0 to 9){}
+    foreach(prvek : pole){}
+}

@@ -10,6 +10,7 @@ public class forCycle implements Istatement, ImultiLineStatement {
     EmultiLineStatementType operationType;
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar;//name of the variable, from which will cycle begin
@@ -21,6 +22,7 @@ public class forCycle implements Istatement, ImultiLineStatement {
         setOperationType();
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
+        innerLevel = 0;
 
         identifierVar = "";
         exprDecBool1 = "";
@@ -79,5 +81,15 @@ public class forCycle implements Istatement, ImultiLineStatement {
 
     public void setExprDecBool2(String exprDecBool2) {
         this.exprDecBool2 = exprDecBool2;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }
