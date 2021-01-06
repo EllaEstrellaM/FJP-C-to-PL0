@@ -175,51 +175,51 @@ public class VarAssignmentInstructions {
                 Symbol os2 = oper.getSymbol2();
 
                 // todo is this correct?
-                if(os1.isNegateValue()){
-                    if(os1.getType() == ESymbolType.ARRAY){
-                        os1.setValue("" + os1.getArrayElements().get(os1.getIndToArray()));
-                        os1.setValue("" + os1.negate());
-                        os1.setAdr(-1);
-                        os1.setType(ESymbolType.INT);
-
-                    }
-                    else{
-                        os1.setValue("" + os1.negate());
-                        os1.setAdr(-1);
-                        os1.setType(ESymbolType.INT);
-                    }
-                }
-                if(os2.isNegateValue()){
-                    if(os2.getType() == ESymbolType.ARRAY){
-                        os2.setValue("" + os2.getArrayElements().get(os2.getIndToArray()));
-                        os2.setValue("" + os2.negate());
-                        os2.setAdr(-1);
-                        os2.setType(ESymbolType.INT);
-
-                    }
-                    else{
-                        os2.setValue("" + os2.negate());
-                        os2.setAdr(-1);
-                        os2.setType(ESymbolType.INT);
-                    }
-                }
-                if(oper.isNegateResult() || oper.getOperator() == EOperator.OR
-                        || oper.getOperator() == EOperator.AND){
-                    Symbol newS = new Symbol();
-                    newS.setAdr(-1);
-
-                    if(oper.isNegateResult()){
-                        newS.setValue("" + oper.getNegatedResult());
-                    }
-                    else{
-                        newS.setValue("" + oper.getResult());
-                    }
-
-
-                    oper = new Operation();
-                    oper.setSymbol1(newS);
-                    oper.setOperator(null);
-                }
+//                if(os1.isNegateValue()){
+//                    if(os1.getType() == ESymbolType.ARRAY){
+//                        os1.setValue("" + os1.getArrayElements().get(os1.getIndToArray()));
+//                        os1.setValue("" + os1.negate());
+//                        os1.setAdr(-1);
+//                        os1.setType(ESymbolType.INT);
+//
+//                    }
+//                    else{
+//                        os1.setValue("" + os1.negate());
+//                        os1.setAdr(-1);
+//                        os1.setType(ESymbolType.INT);
+//                    }
+//                }
+//                if(os2.isNegateValue()){
+//                    if(os2.getType() == ESymbolType.ARRAY){
+//                        os2.setValue("" + os2.getArrayElements().get(os2.getIndToArray()));
+//                        os2.setValue("" + os2.negate());
+//                        os2.setAdr(-1);
+//                        os2.setType(ESymbolType.INT);
+//
+//                    }
+//                    else{
+//                        os2.setValue("" + os2.negate());
+//                        os2.setAdr(-1);
+//                        os2.setType(ESymbolType.INT);
+//                    }
+//                }
+//                if(oper.isNegateResult() || oper.getOperator() == EOperator.OR
+//                        || oper.getOperator() == EOperator.AND){
+//                    Symbol newS = new Symbol();
+//                    newS.setAdr(-1);
+//
+//                    if(oper.isNegateResult()){
+//                        newS.setValue("" + oper.getNegatedResult());
+//                    }
+//                    else{
+//                        newS.setValue("" + oper.getResult());
+//                    }
+//
+//
+//                    oper = new Operation();
+//                    oper.setSymbol1(newS);
+//                    oper.setOperator(null);
+//                }
 
                 generatedInstructions.addAll(ArithmeticExpressionInstructions.generateInstructions(oper));
 
