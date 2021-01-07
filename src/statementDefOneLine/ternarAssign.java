@@ -14,6 +14,7 @@ public class ternarAssign implements Istatement, IoneLineStatement {
     String exprDecBoolCont; //conditions written in between brackets before ?
     String exprDecBoolTrueVal; //value, which will be assigned to identifierVar if condition equals TRUE
     String exprDecBoolFalseVal; //value, which will be assigned to identifierVar if condition equals FALSE
+
     int index; //index of the array ; (in case of arr ; else -1)
     /* relevant statement info to keep - END */
 
@@ -21,6 +22,7 @@ public class ternarAssign implements Istatement, IoneLineStatement {
         setOperationType();
         wholeContent = "";
         innerLevel = 0;
+        index = 0;
 
         identifierVar = "";
         exprDecBoolCont = "";
@@ -88,5 +90,13 @@ public class ternarAssign implements Istatement, IoneLineStatement {
     @Override
     public int getInnerLevel() {
         return innerLevel;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

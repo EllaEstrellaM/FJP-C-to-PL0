@@ -13,10 +13,13 @@ public class CycleInstructions {
      * Generates instructions for for cycle (first part).
      * @param cycle instance of forCycle, represents one for cycle
      * @param table table with symbols
+     * @param innerLevel level - inner statements
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateForInstructions1(forCycle cycle, HashMap<String, Symbol> table){
-        System.out.println("Generating CYCLE - for first part");
+    public static ArrayList<Instruction> generateForInstructions1(forCycle cycle, HashMap<String, Symbol> table, int innerLevel){
+        cycle.setInnerLevel(innerLevel); //assign level first
+
+        System.out.println("Generating CYCLE - for first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for forcycle - START
@@ -81,11 +84,13 @@ public class CycleInstructions {
      * Generates instructions for foreach cycle (first part).
      * @param cycle instance of foreachCycle, represents one foreach cycle
      * @param table table with symbols
-     * @param beginCycNum address of instruction to which should be jumped
+     * @param innerLevel level - inner statements
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateForeachInstructions1(foreachCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
-        System.out.println("Generating CYCLE - foreach first");
+    public static ArrayList<Instruction> generateForeachInstructions1(foreachCycle cycle, HashMap<String, Symbol> table, int innerLevel){
+        cycle.setInnerLevel(innerLevel); //assign level first
+
+        System.out.println("Generating CYCLE - foreach first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for foreachcycle - START
@@ -95,36 +100,24 @@ public class CycleInstructions {
 
         Symbol identifItemSym = table.get(identifierItem); //retrieve identifier data from table
         Symbol identifArraySym = table.get(identifierArray); //retrieve identifier data from table
-        Symbol traverseHlp = table.get("SYSTEM_RESERVED_1"); //go through array, keep current index
-        int identifItemSymAddr = identifItemSym.getAdr();
-        int identifArraySymAddr = identifArraySym.getAdr();
-        int traverseHlpAddr = traverseHlp.getAdr();
-        System.out.println("Addr foreach is: " + identifItemSymAddr + " and " + identifArraySymAddr);
 
-        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0)); //define start of the cycle
-        generatedInstructions.add(new Instruction(EInstrSet.STO, 0, traverseHlpAddr)); //store start of the cycle on given address
+        int identifArraySymAddr = identifArraySym.getAdr(); //address where array begins
+        int identifItemSymAddr = identifItemSym.getAdr(); //address of the identifier which should represent currently traversed item
+        int identifArraySymSize = identifArraySym.getSizeArr(); //get size of the array
 
-        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, traverseHlpAddr)); //load actual value of var
-        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, identifArraySym.getSizeArr())); //define end of the cycle
-        generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 10)); //compare actual value of var with the end of the array ; until <
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump to RET
-        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifArraySymAddr + traverseHlpAddr));
-        generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifItemSymAddr));
-        identifItemSym.setAdr(identifArraySymAddr + traverseHlpAddr);
-        identifItemSym.setValue(identifItemSymAddr + "");
-        //CODE INSIDE CYCLE
-        //load one item from arr to var - START
-//        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifArraySymAddr)); //load start address of the cycle
-//        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, traverseHlpAddr)); //load traversing state of the cycle
-//        generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; + ; get address of new value (within the cycle)
-        //now load item on address which is on top of stack???
+        for(int i = 0; i < identifArraySymSize; i++){ //go through items and generate instructions for each step / each item present in arrItems
+            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifArraySymAddr + i)); //base address + count of already traversed items
+            generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifItemSymAddr)); //store item retrieved from array to address of first given identifier
+            //CODE INSIDE CYCLE ; ok, loaded item from arr to the respective variable address
+        }
 
-        //load one item from arr to var - END
-        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, traverseHlpAddr)); //now increment value of var - START ; load value of var
-        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
-        generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
-        generatedInstructions.add(new Instruction(EInstrSet.STO, 0, traverseHlpAddr)); //now increment value of var - END ; save value of var
-        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, -1)); //now jump to beginning of the cycle????
+//        int identifItemSymAddr = identifItemSym.getAdr();
+//        int identifArraySymAddr = identifArraySym.getAdr();
+//
+//        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifArraySymAddr + traverseHlpAddr));
+//        generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifItemSymAddr));
+//        identifItemSym.setAdr(identifArraySymAddr + traverseHlpAddr);
+//        identifItemSym.setValue(identifItemSymAddr + "");
 
         return generatedInstructions;
     }
@@ -147,10 +140,13 @@ public class CycleInstructions {
      * Generates instructions for while cycle (first part).
      * @param cycle instance of whileCycle, represents one while cycle
      * @param table table with symbols
+     * @param innerLevel level - inner statements
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateWhileInstructions1(whileCycle cycle, HashMap<String, Symbol> table){
-        System.out.println("Generating CYCLE - while first part");
+    public static ArrayList<Instruction> generateWhileInstructions1(whileCycle cycle, HashMap<String, Symbol> table, int innerLevel){
+        cycle.setInnerLevel(innerLevel); //assign level first
+
+        System.out.println("Generating CYCLE - while first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for whilecycle - START
@@ -202,11 +198,13 @@ public class CycleInstructions {
      * Generates instructions for do while cycle (first part).
      * @param cycle instance of doWhileCycle, represents one do while cycle
      * @param table table with symbols
-     * @param beginCycNum address of instruction to which should be jumped
+     * @param innerLevel level - inner statements
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateDoWhileInstructions1(doWhileCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
-        System.out.println("Generating CYCLE - dowhile first");
+    public static ArrayList<Instruction> generateDoWhileInstructions1(doWhileCycle cycle, HashMap<String, Symbol> table, int innerLevel){
+        cycle.setInnerLevel(innerLevel); //assign level first
+
+        System.out.println("Generating CYCLE - dowhile first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for dowhilecycle - START
@@ -238,11 +236,13 @@ public class CycleInstructions {
      * Generates instructions for repeat until cycle (first part).
      * @param cycle instance of repeatUntilCycle, represents one repeat until cycle
      * @param table table with symbols
-     * @param beginCycNum address of instruction to which should be jumped
+     * @param innerLevel level - inner statements
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateRepeatUntilInstructions1(repeatUntilCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
-        System.out.println("Generating CYCLE - repeatuntil first");
+    public static ArrayList<Instruction> generateRepeatUntilInstructions1(repeatUntilCycle cycle, HashMap<String, Symbol> table, int innerLevel){
+        cycle.setInnerLevel(innerLevel); //assign level first
+
+        System.out.println("Generating CYCLE - repeatuntil first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for repeatuntilcycle - START

@@ -20,6 +20,7 @@ public class Compiler {
     //private ParseTree tree;
     private ArrayList<Istatement> statements;
     private ArrayList<procedureDefinition> procedureDefinitions;
+
     ArrayList<Instruction> instructions;
 
 
@@ -93,24 +94,27 @@ public class Compiler {
                     System.out.println("Detected multiline OUTER: " + statement);
                     ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
 
-                    //generate FIRST part of the cycle (before inner statements)
+                    int instructCount = 0;
+                    //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
                     if(statement instanceof doWhileCycle){ //check for cycles - START
-                        CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof forCycle){
-                        CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, 1);
+                        instructCount = getInstructionCount();
+
+                        CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof foreachCycle){
-                        CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof repeatUntilCycle){
-                        CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof whileCycle){
-                        CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, innerCounter);
                     } //check for cycles - END
                     solvRecurMultiLine(multiStatement);
                     //generate SECOND part of the cycle (after inner statements)
                     if(statement instanceof doWhileCycle){ //check for cycles - START
                         CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, 1);
                     }else if(statement instanceof forCycle){
-                        CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, instructCount + 2);
                     }else if(statement instanceof foreachCycle){
                         CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable, 1);
                     }else if(statement instanceof repeatUntilCycle){
@@ -120,7 +124,7 @@ public class Compiler {
                     } //check for cycles - END
                 }else{ //statement is oneline - generate respective instructions
                     System.out.println("Detected oneline OUTER: " + statement);
-                    generateOneline((IoneLineStatement) statement, statementType);
+                    generateOneline((IoneLineStatement) statement, statementType, innerCounter); //here assign inner level
                 }
             }
         }
@@ -375,24 +379,24 @@ public class Compiler {
 
                 innerCounter += 1;
 
-                //generate FIRST part of the cycle (before inner statements)
+                //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
                 if(innerStatement instanceof doWhileCycle){ //check for cycles - START
-                    CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, globalSymbolTable, 1);
+                    CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, globalSymbolTable, innerCounter);
                 }else if(innerStatement instanceof forCycle){
-                    CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, 1);
+                    CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, innerCounter);
                 }else if(innerStatement instanceof foreachCycle){
-                    CycleInstructions.generateForeachInstructions1((foreachCycle) innerStatement, globalSymbolTable, 1);
+                    CycleInstructions.generateForeachInstructions1((foreachCycle) innerStatement, globalSymbolTable, innerCounter);
                 }else if(innerStatement instanceof repeatUntilCycle){
-                    CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) innerStatement, globalSymbolTable, 1);
+                    CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) innerStatement, globalSymbolTable, innerCounter);
                 }else if(innerStatement instanceof whileCycle){
-                    CycleInstructions.generateWhileInstructions1((whileCycle) innerStatement, globalSymbolTable, 1);
+                    CycleInstructions.generateWhileInstructions1((whileCycle) innerStatement, globalSymbolTable, innerCounter);
                 } //check for cycles - END
                 solvRecurMultiLine(multiStatement); //recursive call
                 //generate SECOND part of the cycle (after inner statements)
                 if(innerStatement instanceof doWhileCycle){ //check for cycles - START
                     CycleInstructions.generateDoWhileInstructions2((doWhileCycle) innerStatement, globalSymbolTable, 1);
                 }else if(innerStatement instanceof forCycle){
-                    CycleInstructions.generateForInstructions2((forCycle) innerStatement, globalSymbolTable, 1);
+                    CycleInstructions.generateForInstructions2((forCycle) innerStatement, globalSymbolTable, getInstructionCount());
                 }else if(innerStatement instanceof foreachCycle){
                     CycleInstructions.generateForeachInstructions2((foreachCycle) innerStatement, globalSymbolTable, 1);
                 }else if(innerStatement instanceof repeatUntilCycle){
@@ -400,8 +404,10 @@ public class Compiler {
                 }else if(innerStatement instanceof whileCycle){
                     CycleInstructions.generateWhileInstructions2((whileCycle) innerStatement, globalSymbolTable, 1);
                 } //check for cycles - END
+
+                innerCounter -= 1;
             }else{//inner statement is oneline -> solve it
-                generateOneline((IoneLineStatement) innerStatement, innerStatementType);
+                generateOneline((IoneLineStatement) innerStatement, innerStatementType, innerCounter);
             }
         }
     }
@@ -410,8 +416,12 @@ public class Compiler {
      * Accepts one oneline statement (implements IoneLineStatement) for which we then generate PL0 instructions.
      * @param statement instance which represents oneline statement (implements IoneLineStatement)
      * @param statementType HashMap contains concrete type of oneline statement (ie.STRING_DECLARATION and so on)
+     * @param innerLevel level - inner statements
      */
-    private static void generateOneline(IoneLineStatement statement, HashMap<Istatement, EallStatementType> statementType){
+    private static void generateOneline(IoneLineStatement statement, HashMap<Istatement, EallStatementType> statementType, int innerLevel){
+        ((Istatement)statement).setInnerLevel(innerLevel); //assign level first
+        System.out.println("To next oneline assigned level: " + ((Istatement)statement).getInnerLevel());
+
         if(statementType.get(statement) == EallStatementType.ARR_BOOL_ASSIGN){
             System.out.println("Oneline detected - ARR_BOOL_ASSIGN");
         }else if(statementType.get(statement) == EallStatementType.ARR_BOOL_DECLARATION){
@@ -537,5 +547,13 @@ public class Compiler {
         }
 
         return statementTypeMap;
+    }
+
+    /**
+     * Returns number of generated instructions.
+     * @return number of generated instructions
+     */
+    public int getInstructionCount() {
+        return instructions.size();
     }
 }
