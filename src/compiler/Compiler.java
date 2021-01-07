@@ -77,20 +77,49 @@ public class Compiler {
 //            }
 //        }
 
+        System.out.println("Procedure definitions size is: " + procedureDefinitions.size());
         for(int i = 0; i < procedureDefinitions.size(); i++){ //go through procedure definitions
             procedureDefinition procedure = procedureDefinitions.get(i); //get one procedure from the list
             ArrayList<Istatement> statements = procedure.getInnerStatements(); //get statements which are present in procedure
 
-            HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got statement list, ok -> parse them and get its content
+            HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got outer statement list, ok -> parse them and get its content
 
+            System.out.println("Got number of statements: " + statements.size());
             for(int j = 0; j < statements.size(); j++){ //go through statements present in the procedure
                 Istatement statement = statements.get(j); //get one statement present in the procedure
 
                 innerCounter = 0;
                 if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
+                    System.out.println("Detected multiline OUTER: " + statement);
                     ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
+
+                    //generate FIRST part of the cycle (before inner statements)
+                    if(statement instanceof doWhileCycle){ //check for cycles - START
+                        CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof forCycle){
+                        CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof foreachCycle){
+                        CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof repeatUntilCycle){
+                        CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof whileCycle){
+                        CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, 1);
+                    } //check for cycles - END
                     solvRecurMultiLine(multiStatement);
+                    //generate SECOND part of the cycle (after inner statements)
+                    if(statement instanceof doWhileCycle){ //check for cycles - START
+                        CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof forCycle){
+                        CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof foreachCycle){
+                        CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof repeatUntilCycle){
+                        CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof whileCycle){
+                        CycleInstructions.generateWhileInstructions2((whileCycle) statement, globalSymbolTable, 1);
+                    } //check for cycles - END
                 }else{ //statement is oneline - generate respective instructions
+                    System.out.println("Detected oneline OUTER: " + statement);
                     generateOneline((IoneLineStatement) statement, statementType);
                 }
             }
@@ -332,10 +361,13 @@ public class Compiler {
      * @param statement instance which represents multiline statement (implements ImultiLineStatement)
      */
     private void solvRecurMultiLine(ImultiLineStatement statement){
+        System.out.println("Detected multiline in RECURMULTILINE: " + statement);
+
         ArrayList<Istatement> innerStatements = statement.getInnerStatements(); //inner statements included in multiline statement
         HashMap<Istatement, EallStatementType> innerStatementType = parseStatements(innerStatements); //type of inner statements included in multiline statement
 
         for(int j = 0; j < innerStatements.size(); j++){ //go thru inner statements of multiline
+            System.out.println("Going thru inner statements");
             Istatement innerStatement = innerStatements.get(j); //get one inner statement
 
             if(innerStatement instanceof ImultiLineStatement){//inner statement could be multi -> recursive call to retrieve oneline
@@ -344,20 +376,30 @@ public class Compiler {
                 innerCounter += 1;
 
                 //generate FIRST part of the cycle (before inner statements)
-                if(multiStatement instanceof doWhileCycle){ //check for cycles - START
-                    CycleInstructions.generateDoWhileInstructions((doWhileCycle) statement, globalSymbolTable);
-                }else if(multiStatement instanceof forCycle){
-                    CycleInstructions.generateForInstructions((forCycle) statement, globalSymbolTable);
-                }else if(multiStatement instanceof foreachCycle){
-                    CycleInstructions.generateForeachInstructions((foreachCycle) statement, globalSymbolTable);
-                }else if(multiStatement instanceof repeatUntilCycle){
-                    CycleInstructions.generateRepeatUntilInstructions((repeatUntilCycle) statement, globalSymbolTable);
-                }else if(multiStatement instanceof whileCycle){
-                    CycleInstructions.generateWhileInstructions((whileCycle) statement, globalSymbolTable);
+                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                    CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof forCycle){
+                    CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof foreachCycle){
+                    CycleInstructions.generateForeachInstructions1((foreachCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof repeatUntilCycle){
+                    CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof whileCycle){
+                    CycleInstructions.generateWhileInstructions1((whileCycle) innerStatement, globalSymbolTable, 1);
                 } //check for cycles - END
-                //generate SECOND part of the cycle (after inner statements)
-
                 solvRecurMultiLine(multiStatement); //recursive call
+                //generate SECOND part of the cycle (after inner statements)
+                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                    CycleInstructions.generateDoWhileInstructions2((doWhileCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof forCycle){
+                    CycleInstructions.generateForInstructions2((forCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof foreachCycle){
+                    CycleInstructions.generateForeachInstructions2((foreachCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof repeatUntilCycle){
+                    CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof whileCycle){
+                    CycleInstructions.generateWhileInstructions2((whileCycle) innerStatement, globalSymbolTable, 1);
+                } //check for cycles - END
             }else{//inner statement is oneline -> solve it
                 generateOneline((IoneLineStatement) innerStatement, innerStatementType);
             }

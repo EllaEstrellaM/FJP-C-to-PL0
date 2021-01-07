@@ -10,14 +10,13 @@ import java.util.HashMap;
 
 public class CycleInstructions {
     /**
-     * Generates instructions for for cycle.
+     * Generates instructions for for cycle (first part).
      * @param cycle instance of forCycle, represents one for cycle
      * @param table table with symbols
-     * @param instructBefCount number of instructions generated before
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateForInstructions(forCycle cycle, HashMap<String, Symbol> table, int instructBefCount){
-        System.out.println("Generating CYCLE - for");
+    public static ArrayList<Instruction> generateForInstructions1(forCycle cycle, HashMap<String, Symbol> table){
+        System.out.println("Generating CYCLE - for first part");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for forcycle - START
@@ -40,30 +39,53 @@ public class CycleInstructions {
             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, startCycle)); //define start of the cycle
             generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //store start of the cycle on given address
 
-            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifAddr)); //load actual value of var
+            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifAddr)); //load actual value of var <- JUMP HERE FROM END
             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, endCycle)); //define end of the cycle
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 13)); //compare actual value of var with the end of the cycle ; until <=
             generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump to RET
             //CODE INSIDE CYCLE
-            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifAddr)); //now increment value of var - START ; load value of var
-            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
-            generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
-            generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //now increment value of var - END ; save value of var
-            generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, -1)); //now jump to beginning of the cycle????
         }//NOW CHECK FOR TABLE + EXPRESSIONS...
 
         return generatedInstructions;
     }
 
     /**
-     * Generates instructions for foreach cycle.
-     * @param cycle instance of foreachCycle, represents one foreach cycle
+     * Generates instructions for for cycle (second part).
+     * @param cycle instance of forCycle, represents one for cycle
      * @param table table with symbols
-     * @param instructBefCount number of instructions generated before
+     * @param beginCycNum address of instruction to which should be jumped
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateForeachInstructions(foreachCycle cycle, HashMap<String, Symbol> table, int instructBefCount){
-        System.out.println("Generating CYCLE - foreach");
+    public static ArrayList<Instruction> generateForInstructions2(forCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - for second part");
+        ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
+
+        //info relevant for forcycle - START
+        String identifier = cycle.getIdentifierVar(); //name of the variable
+        //info relevant for forcycle - END
+
+        Symbol identifSym = table.get(identifier); //retrieve identifier data from table
+        int identifAddr = identifSym.getAdr();
+
+        //CODE INSIDE CYCLE
+        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifAddr)); //now increment value of var - START ; load value of var
+        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
+        generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
+        generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //now increment value of var - END ; save value of var
+        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle????
+
+        return generatedInstructions;
+    }
+
+    /**
+     * Generates instructions for foreach cycle (first part).
+     * @param cycle instance of foreachCycle, represents one foreach cycle
+     * @param table table with symbols
+     * @param beginCycNum address of instruction to which should be jumped
+     * @return cycle instructions
+     */
+    public static ArrayList<Instruction> generateForeachInstructions1(foreachCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - foreach first");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for foreachcycle - START
@@ -108,14 +130,27 @@ public class CycleInstructions {
     }
 
     /**
-     * Generates instructions for while cycle.
-     * @param cycle instance of whileCycle, represents one while cycle
+     * Generates instructions for foreach cycle (second part).
+     * @param cycle instance of foreachCycle, represents one foreach cycle
      * @param table table with symbols
-     * @param instructBefCount number of instructions generated before
+     * @param beginCycNum address of instruction to which should be jumped
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateWhileInstructions(whileCycle cycle, HashMap<String, Symbol> table, int instructBefCount){
-        System.out.println("Generating CYCLE - while");
+    public static ArrayList<Instruction> generateForeachInstructions2(foreachCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - foreach second");
+        ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
+
+        return generatedInstructions;
+    }
+
+    /**
+     * Generates instructions for while cycle (first part).
+     * @param cycle instance of whileCycle, represents one while cycle
+     * @param table table with symbols
+     * @return cycle instructions
+     */
+    public static ArrayList<Instruction> generateWhileInstructions1(whileCycle cycle, HashMap<String, Symbol> table){
+        System.out.println("Generating CYCLE - while first part");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for whilecycle - START
@@ -141,22 +176,37 @@ public class CycleInstructions {
 
             generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, 13)); //here we should jump to RET????
             //CODE INSIDE CYCLE - here increment the var??
-            generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, 4)); //now jump to beginning of the cycle????
-            generatedInstructions.add(new Instruction(EInstrSet.RET, 0, 0)); //return where???
         }
 
         return generatedInstructions;
     }
 
     /**
-     * Generates instructions for do while cycle.
-     * @param cycle instance of doWhileCycle, represents one do while cycle
+     * Generates instructions for while cycle (second part).
+     * @param cycle instance of whileCycle, represents one while cycle
      * @param table table with symbols
-     * @param instructBefCount number of instructions generated before
+     * @param beginCycNum address of instruction to which should be jumped
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateDoWhileInstructions(doWhileCycle cycle, HashMap<String, Symbol> table, int instructBefCount){
-        System.out.println("Generating CYCLE - dowhile");
+    public static ArrayList<Instruction> generateWhileInstructions2(whileCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - while second part");
+        ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
+
+        //CODE INSIDE CYCLE - here increment the var??
+        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, 4)); //now jump to beginning of the cycle????
+
+        return generatedInstructions;
+    }
+
+    /**
+     * Generates instructions for do while cycle (first part).
+     * @param cycle instance of doWhileCycle, represents one do while cycle
+     * @param table table with symbols
+     * @param beginCycNum address of instruction to which should be jumped
+     * @return cycle instructions
+     */
+    public static ArrayList<Instruction> generateDoWhileInstructions1(doWhileCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - dowhile first");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for dowhilecycle - START
@@ -167,14 +217,50 @@ public class CycleInstructions {
     }
 
     /**
-     * Generates instructions for repeat until cycle.
-     * @param cycle instance of repeatUntilCycle, represents one repeat until cycle
+     * Generates instructions for do while cycle (second part).
+     * @param cycle instance of doWhileCycle, represents one do while cycle
      * @param table table with symbols
-     * @param instructBefCount number of instructions generated before
+     * @param beginCycNum address of instruction to which should be jumped
      * @return cycle instructions
      */
-    public static ArrayList<Instruction> generateRepeatUntilInstructions(repeatUntilCycle cycle, HashMap<String, Symbol> table, int instructBefCount){
-        System.out.println("Generating CYCLE - repeatuntil");
+    public static ArrayList<Instruction> generateDoWhileInstructions2(doWhileCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - dowhile second");
+        ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
+
+        //info relevant for dowhilecycle - START
+        String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after while
+        //info relevant for dowhilecycle - END
+
+        return generatedInstructions;
+    }
+
+    /**
+     * Generates instructions for repeat until cycle (first part).
+     * @param cycle instance of repeatUntilCycle, represents one repeat until cycle
+     * @param table table with symbols
+     * @param beginCycNum address of instruction to which should be jumped
+     * @return cycle instructions
+     */
+    public static ArrayList<Instruction> generateRepeatUntilInstructions1(repeatUntilCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - repeatuntil first");
+        ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
+
+        //info relevant for repeatuntilcycle - START
+        String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after until
+        //info relevant for repeatuntilcycle - END
+
+        return generatedInstructions;
+    }
+
+    /**
+     * Generates instructions for repeat until cycle (second part).
+     * @param cycle instance of repeatUntilCycle, represents one repeat until cycle
+     * @param table table with symbols
+     * @param beginCycNum address of instruction to which should be jumped
+     * @return cycle instructions
+     */
+    public static ArrayList<Instruction> generateRepeatUntilInstructions2(repeatUntilCycle cycle, HashMap<String, Symbol> table, int beginCycNum){
+        System.out.println("Generating CYCLE - repeatuntil second");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for repeatuntilcycle - START
