@@ -8,6 +8,7 @@ import statementInterEnum.Istatement;
 public class constIntDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
@@ -18,6 +19,7 @@ public class constIntDeclaration implements Istatement, IoneLineStatement, IDecl
     public constIntDeclaration(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         minus_sign = false;
@@ -66,5 +68,15 @@ public class constIntDeclaration implements Istatement, IoneLineStatement, IDecl
 
     public void setDecVal(String decVal) {
         this.decVal = decVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

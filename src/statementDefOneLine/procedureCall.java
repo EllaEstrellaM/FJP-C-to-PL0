@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class procedureCall implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the called procedure
@@ -20,6 +21,7 @@ public class procedureCall implements Istatement, IoneLineStatement {
     public procedureCall(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         arguments = "";
@@ -74,5 +76,15 @@ public class procedureCall implements Istatement, IoneLineStatement {
 
     public void setArguments(String arguments) {
         this.arguments = arguments;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

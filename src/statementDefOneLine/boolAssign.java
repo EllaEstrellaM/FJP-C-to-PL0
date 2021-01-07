@@ -7,6 +7,8 @@ import statementInterEnum.Istatement;
 public class boolAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the variable
     String boolVal; //value of the variable
@@ -15,6 +17,7 @@ public class boolAssign implements Istatement, IoneLineStatement {
     public boolAssign(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         boolVal = "";
@@ -54,5 +57,15 @@ public class boolAssign implements Istatement, IoneLineStatement {
 
     public void setBoolVal(String boolVal) {
         this.boolVal = boolVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

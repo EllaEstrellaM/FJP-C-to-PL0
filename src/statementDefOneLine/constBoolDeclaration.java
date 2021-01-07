@@ -8,6 +8,7 @@ import statementInterEnum.Istatement;
 public class constBoolDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
@@ -17,6 +18,7 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement, IDec
     public constBoolDeclaration(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         boolVal = "";
@@ -56,5 +58,15 @@ public class constBoolDeclaration implements Istatement, IoneLineStatement, IDec
 
     public void setBoolVal(String boolVal) {
         this.boolVal = boolVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

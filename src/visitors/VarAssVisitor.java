@@ -640,6 +640,8 @@ public class VarAssVisitor extends ourCBaseVisitor {
             ternarAss.setExprDecBoolTrueVal(exprDecBoolTrueVal);
             ternarAss.setExprDecBoolFalseVal(exprDecBoolFalseVal);
 
+            System.out.println("Got identifier var: " + identifierVar);
+
             addStatement(ternarAss);
         }
         return super.visitTernar_assignment(ctx);

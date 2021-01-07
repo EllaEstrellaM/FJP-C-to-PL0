@@ -10,6 +10,7 @@ public class doWhileCycle implements Istatement, ImultiLineStatement {
     EmultiLineStatementType operationType;
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String exprDecBoolCont; //conditions written in between brackets after while
@@ -20,6 +21,7 @@ public class doWhileCycle implements Istatement, ImultiLineStatement {
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
         exprDecBoolCont = "";
+        innerLevel = 0;
     }
 
     @Override
@@ -58,5 +60,15 @@ public class doWhileCycle implements Istatement, ImultiLineStatement {
 
     public void setExprDecBoolCont(String exprDecBoolCont) {
         this.exprDecBoolCont = exprDecBoolCont;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

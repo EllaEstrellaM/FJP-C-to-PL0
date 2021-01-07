@@ -21,10 +21,6 @@ public class VarAssignmentInstructions {
         //boolean valAtTop = false;
         //int index = -1;
 
-
-
-
-
         if(s.isConst() && s.hasBeenDeclared()){
             // cannot assign to const again - print err
             Error.printConstAssign(s.getName());
