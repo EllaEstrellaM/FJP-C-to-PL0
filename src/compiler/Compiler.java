@@ -37,13 +37,12 @@ public class Compiler {
     public ArrayList<Instruction> compile(){
         this.instructions = new ArrayList<Instruction>();
 
-        // this instruction will always be the first one?
-        // todo or can the address be other than 1?
+        // this instruction will always be the first one
         Instruction firstI = new Instruction(EInstrSet.JMP, 0,1);
 
         // todo then increase the stack 'size' by how much?
         // todo 3 + as_many_as_we_have_variables?
-        Instruction secondI = new Instruction(EInstrSet.INT, 0, 3);
+        Instruction secondI = new Instruction(EInstrSet.INT, 0, BASE_ADDRESS);
 
         instructions.add(firstI);
         instructions.add(secondI);
@@ -53,15 +52,12 @@ public class Compiler {
         for(Istatement st : statements){
             if(st instanceof IDeclaration){
                 resolveDeclaration((IDeclaration) st, proc, globalSymbolTable);
-                //declCounter++;
             }
-//            if(st instanceof ImultiLineStatement){
-//                resolveMultilineStatement((ImultiLineStatement) st);
-//            }
-//            else if(st instanceof IoneLineStatement){
-//                ;;
-//            }
         }
+
+        // insert this as the second instruction: todo no!
+        //instructions.add(1, new Instruction(EInstrSet.INT, 0, BASE_ADDRESS + declCounter));
+
 
         HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got statement list, ok -> parse them and get its content
         for(int i = 0; i < statements.size(); i++){ //go through retrieved statements
@@ -163,7 +159,7 @@ public class Compiler {
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
 
-        (procedureDefinitions.get(0)).getIndivParameters();
+        //(procedureDefinitions.get(0)).getIndivParameters();
         return instructions;
     }
 
@@ -212,6 +208,7 @@ public class Compiler {
         String ternaryCond = null;
         String ternaryTrueVal = null;
         String ternaryFalseVal = null;
+        int intWhat = -1;
 
         // normal declarations:
         if(st instanceof intDeclaration){
@@ -227,6 +224,7 @@ public class Compiler {
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof boolDeclaration){
             name = ((boolDeclaration) st).getIdentifierVar();
@@ -241,6 +239,7 @@ public class Compiler {
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof stringDeclaration){ // todo addresses
             name = ((stringDeclaration) st).getIdentifierVar();
@@ -256,6 +255,7 @@ public class Compiler {
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
+            intWhat = size;
 
         }
         // arrays declarations:
@@ -273,6 +273,7 @@ public class Compiler {
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+= size;
+            intWhat = size;
         }
         else if(st instanceof arrIntDeclaration){
             name = ((arrIntDeclaration) st).getIdentifierVar();
@@ -288,6 +289,7 @@ public class Compiler {
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+=size;
+            intWhat = size;
         }
 
         // consts declaration:
@@ -304,6 +306,7 @@ public class Compiler {
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof constIntDeclaration){
             name = ((constIntDeclaration) st).getIdentifierVar();
@@ -318,6 +321,7 @@ public class Compiler {
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof constStringDeclaration){
             name = ((constStringDeclaration) st).getIdentifierVar();
@@ -332,6 +336,7 @@ public class Compiler {
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
+            intWhat = size;
         }
 
         // ternary declarations:
@@ -347,6 +352,7 @@ public class Compiler {
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
 
         }
         else if(st instanceof intTernarDeclaration){
@@ -361,8 +367,9 @@ public class Compiler {
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
-        else if(st instanceof stringTernarDeclaration){ // todo strings
+        else if(st instanceof stringTernarDeclaration){ // todo strings done?
             name = ((stringTernarDeclaration)st).getIdentifierVar();
             ternaryCond = ((stringTernarDeclaration)st).getExprDecBoolCont();
             ternaryTrueVal = ((stringTernarDeclaration)st).getExprDecBoolTrueVal();
@@ -373,7 +380,7 @@ public class Compiler {
             symb.setLev(0);
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
-            declCounter++; // todo!!!!
+            //declCounter++; // todo!!!!
         }
 
         // procedure definition:
@@ -402,9 +409,18 @@ public class Compiler {
         symbolTable.put(name, symb);
 
         if(st instanceof boolTernarDeclaration || st instanceof intTernarDeclaration || st instanceof stringTernarDeclaration){
+            int ins = this.instructions.size();
             this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable));
+            // value is set in ternary assignment instructions
+
+            if(st instanceof stringTernarDeclaration){
+                declCounter += symb.getValue().length();
+                intWhat = symb.getValue().length();
+            }
+            this.instructions.add(ins, new Instruction(EInstrSet.INT, 0, intWhat));
         }
         else{
+            this.instructions.add(new Instruction(EInstrSet.INT, 0, intWhat));
             if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
                 // array declaration doesn't produce any instructions
                 this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
