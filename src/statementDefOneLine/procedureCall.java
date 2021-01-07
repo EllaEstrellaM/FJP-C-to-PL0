@@ -1,8 +1,12 @@
 package statementDefOneLine;
 
+import compiler.ESymbolType;
+import compiler.Symbol;
 import statementInterEnum.EoneLineStatementType;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
+
+import java.util.ArrayList;
 
 public class procedureCall implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
@@ -19,6 +23,21 @@ public class procedureCall implements Istatement, IoneLineStatement {
 
         identifierVar = "";
         arguments = "";
+    }
+
+    public ArrayList<String> getIndivArguments(){
+        String[] splits = arguments.split(",");
+        ArrayList<String> values = new ArrayList<>(splits.length);
+
+
+        System.out.println("params:");
+        for(int i = 0; i < splits.length; i++){
+            System.out.println(splits[i]);
+
+            values.add(splits[i]);
+        }
+
+        return values;
     }
 
     @Override

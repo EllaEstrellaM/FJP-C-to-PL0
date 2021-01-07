@@ -1,5 +1,6 @@
 package statementDefMultiLine;
 
+import compiler.ESymbolType;
 import compiler.Instruction;
 import compiler.Symbol;
 import statementInterEnum.EmultiLineStatementType;
@@ -33,6 +34,35 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
 
         privateSymbolTable = new HashMap<>();
         instructions = new ArrayList<>();
+    }
+
+    public ArrayList<Symbol> getIndivParameters(){
+        String[] splits = parameters.split(",");
+        ArrayList<Symbol> as = new ArrayList<>(splits.length);
+
+
+        System.out.println("params:");
+        for(int i = 0; i < splits.length; i++){
+            System.out.println(splits[i]);
+
+            Symbol s = new Symbol();
+            if(splits[i].startsWith("int ")){
+                s.setType(ESymbolType.INT);
+                s.setName(splits[i].substring(4));
+            }
+            else if(splits[i].startsWith("bool ")){
+                s.setType(ESymbolType.BOOL);
+                s.setName(splits[i].substring(5));
+            }
+            else if(splits[i].startsWith("string ")){
+                s.setType(ESymbolType.BOOL);
+                s.setName(splits[i].substring(7));
+            }
+
+            as.add(s);
+        }
+
+        return as;
     }
 
     @Override

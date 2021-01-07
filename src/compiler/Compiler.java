@@ -140,6 +140,21 @@ public class Compiler {
 
 
 
+
+                }
+                else if(statement instanceof procedureCall){
+                    procedureCall pc = (procedureCall) statement;
+                    String name = pc.getIdentifierVar();
+
+                    if(globalSymbolTable.containsKey(name)){
+                        // we know such a procedure
+                        // check if number of arguments match
+                        // todo
+
+                    }
+                    else{
+                        Error.printVarNotFound(name);
+                    }
                 }
             }
         }
@@ -148,6 +163,7 @@ public class Compiler {
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
 
+        (procedureDefinitions.get(0)).getIndivParameters();
         return instructions;
     }
 
@@ -184,40 +200,6 @@ public class Compiler {
 
         return instructions;
     }
-
-
-
-    private void resolveOneLineStatement(IoneLineStatement st, String inWhichProc){
-        if(st instanceof IDeclaration){
-
-//            if(parentSt != null){
-//                if(parentSt instanceof procedureDefinition){
-//                    inWhichProc = ((procedureDefinition) parentSt).getIdentifierVar();
-//                }
-//            }
-
-            //resolveDeclaration((IDeclaration) st, inWhichProc);
-        }
-    }
-
-//    String currProc = "";
-//    private void resolveMultilineStatement(ImultiLineStatement st){
-//
-//
-//        if(st instanceof procedureDefinition){
-//            currProc = ((procedureDefinition) st).getIdentifierVar();
-//        }
-//
-//        for(int i = 0; i < st.getInnerStatements().size(); i++){
-//            if(st.getInnerStatements().get(i) instanceof IoneLineStatement){
-//                resolveOneLineStatement((IoneLineStatement) st.getInnerStatements().get(i), currProc);
-//            }
-//            else{
-//                // recursion?
-//                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatements().get(i));
-//            }
-//        }
-//    }
 
 
     /**
@@ -380,7 +362,7 @@ public class Compiler {
             symb.setInProcedure(inProc);
             declCounter++;
         }
-        else if(st instanceof stringTernarDeclaration){ // todo
+        else if(st instanceof stringTernarDeclaration){ // todo strings
             name = ((stringTernarDeclaration)st).getIdentifierVar();
             ternaryCond = ((stringTernarDeclaration)st).getExprDecBoolCont();
             ternaryTrueVal = ((stringTernarDeclaration)st).getExprDecBoolTrueVal();
