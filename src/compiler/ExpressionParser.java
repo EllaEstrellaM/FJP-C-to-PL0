@@ -8,6 +8,8 @@ import java.util.Stack;
 
 public class ExpressionParser {
 
+    public static Symbol retrievedSymbol = null;
+
 
     public static boolean isExpression(String value){
 
@@ -26,7 +28,7 @@ public class ExpressionParser {
                 || value.equals("<") || value.equals("=") || value.equals(">") /*|| value.equals("!")*/;
     }
 
-    private static boolean isNumeric(String str) {
+    public static boolean isNumeric(String str) {
         try {
             Integer.parseInt(str);
             return true;
@@ -100,10 +102,19 @@ public class ExpressionParser {
 
 
                 if(table.containsKey(numBuf.toString())){
+
                     if(table.get(numBuf.toString()).hasBeenDeclared()){
-                        table.get(numBuf.toString()).setNegateValue(negateValue);
-                        table.get(numBuf.toString()).setIndToArray(indToArr);
-                        numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
+
+                        Symbol s = new Symbol(table.get(numBuf)); // deep copy of the symbol
+
+                        //table.get(numBuf.toString()).setNegateValue(negateValue);
+                        s.setNegateValue(negateValue);
+
+                        //table.get(numBuf.toString()).setIndToArray(indToArr); // ???
+                        s.setIndToArray(indToArr); // ???
+
+                        //numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
+                        numbers.push(s); //push buffer containing whole number to stack
                     }
                     else{
                         Error.printVarNotFound(numBuf.toString()); // todo opravdu?
@@ -223,6 +234,37 @@ public class ExpressionParser {
             s.setValue("" + op.getResult());
             s.setPartialResult(true);
             numbers.push(s);
+        }
+
+        if(statementOrder.size() == 0 && numbers.size() == 1){
+            // no operation and one symbol
+            Symbol s = numbers.pop();
+            Symbol ret = new Symbol();
+
+            retrievedSymbol = s;
+
+            // not a stirng
+//            if(s.getType() == ESymbolType.ARRAY){
+//                if(s.getIndToArray() != -1){
+//                    if(s.getIndToArray() >= s.getSizeArr()){
+//                        // todo print out of bounds
+//                    }
+//                    else{
+//                        ret.setAdr(-1);
+//                        ret.setPartialResult(false);
+//                        ret.setValue("" + s.getArrayElements().get(s.getIndToArray()));
+//
+//                        //retrievedSymbol = s.getArrayElements().get(s.getIndToArray());
+//                    }
+//                }
+//                else{
+//                    // todo allow pole1 = pole2?
+//                }
+//            }
+//            else if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
+//
+//            }
+
         }
 
         return statementOrder;

@@ -26,8 +26,7 @@ public class Main {
     static String test2 = "int ahoj = 3;";
 
     public static void main(String[] args){
-
-        String testFile = "test5.txt";
+        String testFile = "testif.txt";
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;
 
@@ -104,7 +103,7 @@ public class Main {
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
 
         for(int i = 0; i < instructions.size(); i++){
-            str = "" + (i + 1) + " " + instructions.get(i).toString() + "\n";
+            str = "" + (i) + " " + instructions.get(i).toString() + "\n";
             writer.write(str);
         }
 

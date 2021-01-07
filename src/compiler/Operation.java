@@ -45,6 +45,24 @@ public class Operation {
         int s1 = Integer.parseInt(symbol1.getValue());
         int s2 = Integer.parseInt(symbol2.getValue());
 
+        if(symbol1.getType() == ESymbolType.ARRAY){
+            if(symbol1.getIndToArray() != -1){
+                s1 = symbol1.getArrayElements().get(symbol1.getIndToArray());
+            }
+            else{
+                // print something?
+            }
+        }
+
+        if(symbol2.getType() == ESymbolType.ARRAY){
+            if(symbol2.getIndToArray() != -1){
+                s1 = symbol2.getArrayElements().get(symbol2.getIndToArray());
+            }
+            else{
+                // print something?
+            }
+        }
+
         switch (operator){
             case UNARY_MINUS: break;
             case PLUS: res = s1 + s2; break;

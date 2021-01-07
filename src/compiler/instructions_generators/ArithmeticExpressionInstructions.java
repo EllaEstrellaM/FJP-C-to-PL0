@@ -11,6 +11,17 @@ public class ArithmeticExpressionInstructions {
     public static ArrayList<Instruction> generateInstructions(Operation op/*, Symbol symbToStoreTo*/){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
+
+
+
+//        if(op.getOperator() == null){
+//            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue()))); // adding just the result...
+//            return generatedInstructions;
+//        }
+
+
+
+
         // if symbToStoreTo has address -1, use LIT
 
         // get the correct addresses:
@@ -38,21 +49,60 @@ public class ArithmeticExpressionInstructions {
 
 
             if(op.getSymbol1().getAdr() == -1){
-                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
-                //generatedInstructions.add(Compiler.generateInstruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
+                if(!op.getSymbol1().isNegateValue()){
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
+                }
+                else{
+                    // todo negation
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
+                }
+
             }
             else{
-                generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr1));
+                if(!op.getSymbol1().isNegateValue()){
+                    generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr1));
+                }
+                else{
+                    // todo negation
+                    generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr1));
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
+                }
+
             }
         }
 
         // store the second number:
         if(!op.getSymbol2().isPartialResult()){
             if(op.getSymbol1().getAdr() == -1){
-                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol2().getValue())));
+                if(op.getSymbol2().isNegateValue()){
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol2().getValue())));
+                }
+                else{
+                    // todo negation
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol2().getValue())));
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
+                }
+
             }
             else{
-                generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr2));
+                if(op.getSymbol2().isNegateValue()){
+                    generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr2));
+                }
+                else{
+                    // todo negation
+                    generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr2));
+                    generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+                    generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
+                }
+
             }
         }
 
@@ -62,18 +112,33 @@ public class ArithmeticExpressionInstructions {
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, op.getOperator().getInstrCode()));
         }
         else{
-            // todo maybe this needs to be done in a more comlicated way?
+            // todo maybe this needs to be done in a more complicated way?
             if(op.getOperator() == EOperator.AND){
-
+                // sum of last 2 values must be 2 (both are 1)
+                generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 2));
+                generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.EQUAL.getInstrCode()));
             }
             else if(op.getOperator() == EOperator.OR){
-
+                generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+                generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0));
+                generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.NOT_EQUAL.getInstrCode()));
             }
-            else if(op.getOperator() == EOperator.NEG){
+//            else if(op.getOperator() == EOperator.NEG){
+//
+//            }
 
-            }
+            //generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, op.getResult())); // adding just the result...
+        }
 
-            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, op.getResult())); // adding just the result...
+
+        // checking if the result needs to be negated:
+        if(op.isNegateResult()){
+            // todo negate result
+            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
+            generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
+            generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
+
         }
 
 

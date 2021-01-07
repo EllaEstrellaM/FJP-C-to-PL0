@@ -1,10 +1,11 @@
 package statementDefOneLine;
 
 import statementInterEnum.EoneLineStatementType;
+import statementInterEnum.IDeclaration;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
-public class intTernarDeclaration implements Istatement, IoneLineStatement {
+public class intTernarDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
     int innerLevel;
