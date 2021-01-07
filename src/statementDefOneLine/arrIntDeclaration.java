@@ -8,6 +8,8 @@ import statementInterEnum.Istatement;
 public class arrIntDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW array
     int decNum; //size of the NEW array
@@ -16,6 +18,7 @@ public class arrIntDeclaration implements Istatement, IoneLineStatement, IDeclar
     public arrIntDeclaration(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         decNum = 0;
@@ -55,5 +58,15 @@ public class arrIntDeclaration implements Istatement, IoneLineStatement, IDeclar
 
     public void setDecNum(int decNum) {
         this.decNum = decNum;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

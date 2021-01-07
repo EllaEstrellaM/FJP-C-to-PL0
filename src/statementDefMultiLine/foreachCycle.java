@@ -10,6 +10,7 @@ public class foreachCycle implements Istatement, ImultiLineStatement {
     EmultiLineStatementType operationType;
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar1;//name of the variable, which will be taken in count (represents one value in array)
@@ -20,6 +21,7 @@ public class foreachCycle implements Istatement, ImultiLineStatement {
         setOperationType();
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
+        innerLevel = 0;
 
         identifierVar1 = "";
         identifierVar2 = "";
@@ -69,5 +71,15 @@ public class foreachCycle implements Istatement, ImultiLineStatement {
 
     public void setIdentifierVar2(String identifierVar2) {
         this.identifierVar2 = identifierVar2;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

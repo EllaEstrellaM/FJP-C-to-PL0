@@ -1,12 +1,14 @@
 package compiler;
 
 import compiler.errors.Error;
+import compiler.instructions_generators.CycleInstructions;
 import compiler.instructions_generators.VarAssignmentInstructions;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
 import statementDefOneLine.*;
 import statementInterEnum.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
@@ -18,18 +20,21 @@ public class Compiler {
     //private ParseTree tree;
     private ArrayList<Istatement> statements;
     private ArrayList<procedureDefinition> procedureDefinitions;
+
     ArrayList<Instruction> instructions;
 
 
     private final int BASE_ADDRESS = 3;
     int declCounter = BASE_ADDRESS;
 
+    private int innerCounter;
+
 
     public Compiler(ArrayList<Istatement> statements){
         globalSymbolTable = new HashMap<String, Symbol>();
         this.procedureDefinitions = new ArrayList<>();
         this.statements = statements;
-
+        this.innerCounter = 0;
     }
 
     public ArrayList<Instruction> compile(){
@@ -50,26 +55,77 @@ public class Compiler {
         String proc = "global";
         for(Istatement st : statements){
             if(st instanceof IDeclaration){
-                //resolveDeclaration((IDeclaration) st, proc, globalSymbolTable); drtikkomentuje
+                resolveDeclaration((IDeclaration) st, proc, globalSymbolTable);
                 //declCounter++;
+            }else if(st instanceof ImultiLineStatement){
+
             }
-//            if(st instanceof ImultiLineStatement){
-//                resolveMultilineStatement((ImultiLineStatement) st);
-//            }
 //            else if(st instanceof IoneLineStatement){
 //                ;;
 //            }
         }
 
-        HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got statement list, ok -> parse them and get its content
-        for(int i = 0; i < statements.size(); i++){ //go through retrieved statements
-            Istatement statement = statements.get(i); //get one statement
+//        HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got statement list, ok -> parse them and get its content
+//        for(int i = 0; i < statements.size(); i++){ //go through retrieved statements
+//            Istatement statement = statements.get(i); //get one statement
+//
+//            innerCounter = 0;
+//            if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
+//                ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
+//                solvRecurMultiLine(multiStatement);
+//            }else{ //statement is oneline - generate respective instructions
+//                generateOneline((IoneLineStatement) statement, statementType);
+//            }
+//        }
 
-            if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
-                ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
-                solvRecurMultiLine(multiStatement);
-            }else{ //statement is oneline - generate respective instructions
-                generateOneline((IoneLineStatement) statement, statementType);
+        System.out.println("Procedure definitions size is: " + procedureDefinitions.size());
+        for(int i = 0; i < procedureDefinitions.size(); i++){ //go through procedure definitions
+            procedureDefinition procedure = procedureDefinitions.get(i); //get one procedure from the list
+            ArrayList<Istatement> statements = procedure.getInnerStatements(); //get statements which are present in procedure
+
+            HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got outer statement list, ok -> parse them and get its content
+
+            System.out.println("Got number of statements: " + statements.size());
+            for(int j = 0; j < statements.size(); j++){ //go through statements present in the procedure
+                Istatement statement = statements.get(j); //get one statement present in the procedure
+
+                innerCounter = 0;
+                if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
+                    System.out.println("Detected multiline OUTER: " + statement);
+                    ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
+
+                    int instructCount = 0;
+                    //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
+                    if(statement instanceof doWhileCycle){ //check for cycles - START
+                        CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, innerCounter);
+                    }else if(statement instanceof forCycle){
+                        instructCount = getInstructionCount();
+
+                        CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, innerCounter);
+                    }else if(statement instanceof foreachCycle){
+                        CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, innerCounter);
+                    }else if(statement instanceof repeatUntilCycle){
+                        CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, globalSymbolTable, innerCounter);
+                    }else if(statement instanceof whileCycle){
+                        CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, innerCounter);
+                    } //check for cycles - END
+                    solvRecurMultiLine(multiStatement);
+                    //generate SECOND part of the cycle (after inner statements)
+                    if(statement instanceof doWhileCycle){ //check for cycles - START
+                        CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof forCycle){
+                        CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, instructCount + 2);
+                    }else if(statement instanceof foreachCycle){
+                        CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof repeatUntilCycle){
+                        CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, 1);
+                    }else if(statement instanceof whileCycle){
+                        CycleInstructions.generateWhileInstructions2((whileCycle) statement, globalSymbolTable, 1);
+                    } //check for cycles - END
+                }else{ //statement is oneline - generate respective instructions
+                    System.out.println("Detected oneline OUTER: " + statement);
+                    generateOneline((IoneLineStatement) statement, statementType, innerCounter); //here assign inner level
+                }
             }
         }
 
@@ -308,18 +364,50 @@ public class Compiler {
      * Accepts one multiline statement (implements ImultiLineStatement) for which PL0 instructions should be generated. Contains recursive logic to get individual oneline statements.
      * @param statement instance which represents multiline statement (implements ImultiLineStatement)
      */
-    private static void solvRecurMultiLine(ImultiLineStatement statement){
+    private void solvRecurMultiLine(ImultiLineStatement statement){
+        System.out.println("Detected multiline in RECURMULTILINE: " + statement);
+
         ArrayList<Istatement> innerStatements = statement.getInnerStatements(); //inner statements included in multiline statement
         HashMap<Istatement, EallStatementType> innerStatementType = parseStatements(innerStatements); //type of inner statements included in multiline statement
 
         for(int j = 0; j < innerStatements.size(); j++){ //go thru inner statements of multiline
+            System.out.println("Going thru inner statements");
             Istatement innerStatement = innerStatements.get(j); //get one inner statement
 
             if(innerStatement instanceof ImultiLineStatement){//inner statement could be multi -> recursive call to retrieve oneline
                 ImultiLineStatement multiStatement = (ImultiLineStatement) innerStatement; //cast to multiline
+
+                innerCounter += 1;
+
+                //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
+                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                    CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, globalSymbolTable, innerCounter);
+                }else if(innerStatement instanceof forCycle){
+                    CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, innerCounter);
+                }else if(innerStatement instanceof foreachCycle){
+                    CycleInstructions.generateForeachInstructions1((foreachCycle) innerStatement, globalSymbolTable, innerCounter);
+                }else if(innerStatement instanceof repeatUntilCycle){
+                    CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) innerStatement, globalSymbolTable, innerCounter);
+                }else if(innerStatement instanceof whileCycle){
+                    CycleInstructions.generateWhileInstructions1((whileCycle) innerStatement, globalSymbolTable, innerCounter);
+                } //check for cycles - END
                 solvRecurMultiLine(multiStatement); //recursive call
+                //generate SECOND part of the cycle (after inner statements)
+                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                    CycleInstructions.generateDoWhileInstructions2((doWhileCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof forCycle){
+                    CycleInstructions.generateForInstructions2((forCycle) innerStatement, globalSymbolTable, getInstructionCount());
+                }else if(innerStatement instanceof foreachCycle){
+                    CycleInstructions.generateForeachInstructions2((foreachCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof repeatUntilCycle){
+                    CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) innerStatement, globalSymbolTable, 1);
+                }else if(innerStatement instanceof whileCycle){
+                    CycleInstructions.generateWhileInstructions2((whileCycle) innerStatement, globalSymbolTable, 1);
+                } //check for cycles - END
+
+                innerCounter -= 1;
             }else{//inner statement is oneline -> solve it
-                generateOneline((IoneLineStatement) innerStatement, innerStatementType);
+                generateOneline((IoneLineStatement) innerStatement, innerStatementType, innerCounter);
             }
         }
     }
@@ -328,8 +416,12 @@ public class Compiler {
      * Accepts one oneline statement (implements IoneLineStatement) for which we then generate PL0 instructions.
      * @param statement instance which represents oneline statement (implements IoneLineStatement)
      * @param statementType HashMap contains concrete type of oneline statement (ie.STRING_DECLARATION and so on)
+     * @param innerLevel level - inner statements
      */
-    private static void generateOneline(IoneLineStatement statement, HashMap<Istatement, EallStatementType> statementType){
+    private static void generateOneline(IoneLineStatement statement, HashMap<Istatement, EallStatementType> statementType, int innerLevel){
+        ((Istatement)statement).setInnerLevel(innerLevel); //assign level first
+        System.out.println("To next oneline assigned level: " + ((Istatement)statement).getInnerLevel());
+
         if(statementType.get(statement) == EallStatementType.ARR_BOOL_ASSIGN){
             System.out.println("Oneline detected - ARR_BOOL_ASSIGN");
         }else if(statementType.get(statement) == EallStatementType.ARR_BOOL_DECLARATION){
@@ -455,5 +547,13 @@ public class Compiler {
         }
 
         return statementTypeMap;
+    }
+
+    /**
+     * Returns number of generated instructions.
+     * @return number of generated instructions
+     */
+    public int getInstructionCount() {
+        return instructions.size();
     }
 }

@@ -17,7 +17,6 @@ public class VarAssignmentInstructions {
         int addr = s.getAdr(); // the address to store the new value to
         int level = s.getLev();
 
-
         boolean valAtTop = false;
         if(ExpressionParser.isExpression(value)){
             ArrayList<Operation> operOrder = ExpressionParser.parseExprDecBool(value, table);
