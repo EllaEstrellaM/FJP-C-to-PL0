@@ -227,6 +227,9 @@ public class Compiler {
     private void resolveDeclaration(IDeclaration st, String inProc, HashMap<String, Symbol> symbolTable){
         Symbol symb = new Symbol();
         String name = null;
+        String ternaryCond = null;
+        String ternaryTrueVal = null;
+        String ternaryFalseVal = null;
 
         // normal declarations:
         if(st instanceof intDeclaration){
@@ -348,6 +351,50 @@ public class Compiler {
             symb.setInProcedure(inProc);
             declCounter+=size;
         }
+
+        // ternary declarations:
+        else if(st instanceof boolTernarDeclaration){ // todo
+            name = ((boolTernarDeclaration)st).getIdentifierVar();
+            ternaryCond = ((boolTernarDeclaration)st).getExprDecBoolCont();
+            ternaryTrueVal = ((boolTernarDeclaration)st).getExprDecBoolTrueVal();
+            ternaryFalseVal = ((boolTernarDeclaration)st).getExprDecBoolFalseVal();
+            symb.setName(name);
+            symb.setConst(false);
+            symb.setAdr(declCounter);
+            symb.setLev(0);
+            symb.setType(ESymbolType.BOOL);
+            symb.setInProcedure(inProc);
+            declCounter++;
+
+        }
+        else if(st instanceof intTernarDeclaration){
+            name = ((intTernarDeclaration)st).getIdentifierVar();
+            ternaryCond = ((intTernarDeclaration)st).getExprDecBoolCont();
+            ternaryTrueVal = ((intTernarDeclaration)st).getExprDecBoolTrueVal();
+            ternaryFalseVal = ((intTernarDeclaration)st).getExprDecBoolFalseVal();
+            symb.setName(name);
+            symb.setConst(false);
+            symb.setAdr(declCounter);
+            symb.setLev(0);
+            symb.setType(ESymbolType.INT);
+            symb.setInProcedure(inProc);
+            declCounter++;
+        }
+        else if(st instanceof stringTernarDeclaration){ // todo
+            name = ((stringTernarDeclaration)st).getIdentifierVar();
+            ternaryCond = ((stringTernarDeclaration)st).getExprDecBoolCont();
+            ternaryTrueVal = ((stringTernarDeclaration)st).getExprDecBoolTrueVal();
+            ternaryFalseVal = ((stringTernarDeclaration)st).getExprDecBoolFalseVal();
+            symb.setName(name);
+            symb.setConst(false);
+            symb.setAdr(declCounter);
+            symb.setLev(0);
+            symb.setType(ESymbolType.INT);
+            symb.setInProcedure(inProc);
+            declCounter++; // todo!!!!
+        }
+
+        // procedure definition:
         else if(st instanceof procedureDefinition){
             name = ((procedureDefinition) st).getIdentifierVar();
             String params = ((procedureDefinition) st).getParameters();
@@ -371,10 +418,18 @@ public class Compiler {
 
         symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
-            // array declaration doesn't produce any instructions
-            this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
+
+        if(st instanceof boolTernarDeclaration || st instanceof intTernarDeclaration || st instanceof stringTernarDeclaration){
+            this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable));
         }
+        else{
+            if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
+                // array declaration doesn't produce any instructions
+                this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
+            }
+        }
+
+
 
 
         symb.setHasBeenDeclared(true);

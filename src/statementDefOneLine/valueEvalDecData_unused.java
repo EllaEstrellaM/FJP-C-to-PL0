@@ -1,11 +1,11 @@
 package statementDefOneLine;
 
-public class valueEvalDecData {
+public class valueEvalDecData_unused {
     String firstVal;
     String secondVal;
     char oper;
 
-    public valueEvalDecData(){
+    public valueEvalDecData_unused(){
         this.firstVal = "";
         this.secondVal = "";
         oper = '+';
