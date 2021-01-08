@@ -4,11 +4,19 @@ public class Instruction {
     private EInstrSet instruction;
     private int level;
     private int address;
+    private String jmpAddr;
 
     public Instruction(EInstrSet instr, int first, int second){
         this.instruction = instr;
         this.level = first;
         this.address = second;
+    }
+
+    public Instruction(String jmpAddr){
+        this.jmpAddr = jmpAddr;
+        this.instruction = null;
+        this.address = -1;
+        this.level = -1;
     }
 
     // getters and setters:
@@ -36,6 +44,9 @@ public class Instruction {
         this.address = address;
     }
 
+    public String getJmpAddr() {
+        return jmpAddr;
+    }
 
     @Override
     public String toString() {

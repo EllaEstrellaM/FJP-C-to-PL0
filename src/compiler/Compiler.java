@@ -1,6 +1,5 @@
 package compiler;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import compiler.errors.Error;
 import compiler.errors.VarNotFoundException;
 import compiler.instructions_generators.CycleInstructions;
@@ -83,8 +82,6 @@ public class Compiler {
                     System.out.println("Detected multiline OUTER: " + statement);
                     ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
 
-                    int instructCount = getInstructionCount(); //get count of instructions generated BEFORE first parts of cycles + if (then must add number of instructs for first parts)
-
                     if(multiStatement instanceof ifCondition){
                         ifCondition ic = (ifCondition) multiStatement;
                         String value = ic.getExprDecBoolCont();
@@ -95,32 +92,32 @@ public class Compiler {
 
                     //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
                     else if(statement instanceof doWhileCycle){ //check for cycles - START
-                        procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, innerCounter));
+                        procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, innerCounter));
                     }else if(statement instanceof forCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, innerCounter));
+                        procedure.getInstructions().addAll(CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
                     }else if(statement instanceof foreachCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, innerCounter));
+                        procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
                     }else if(statement instanceof repeatUntilCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, globalSymbolTable, innerCounter));
+                        procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, innerCounter));
                     }else if(statement instanceof whileCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, innerCounter));
+                        procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
                     } //check for cycles - END
 
 
-                    solvRecurMultiLine(multiStatement);
+                    solvRecurMultiLine(multiStatement, procedure);
 
 
                     //generate SECOND part of the cycle (after inner statements)
                     if(statement instanceof doWhileCycle){ //check for cycles - START
-                        procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, instructCount)); //no instruction generated in first part
+                        procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
                     }else if(statement instanceof forCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, instructCount + 3)); //jump to 3. inst from first part
+                        procedure.getInstructions().addAll(CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //jump to 3. inst from first part
                     }else if(statement instanceof foreachCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable, instructCount + 3)); //jump to 3. inst from first part
+                        procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable)); //jump to 3. inst from first part
                     }else if(statement instanceof repeatUntilCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, instructCount)); //no instruction generated in first part
+                        procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
                     }else if(statement instanceof whileCycle){
-                        procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions2((whileCycle) statement, globalSymbolTable, instructCount)); //jump to 3. inst from first part
+                        procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions2((whileCycle) statement)); //jump to 3. inst from first part
                     } //check for cycles - END
                 }else{ //statement is oneline - generate respective instructions
                     generateOneline((IoneLineStatement) statement, statementType, innerCounter);
@@ -265,6 +262,8 @@ public class Compiler {
             }
         }
 
+
+
         // find main:
         boolean mainFound = false;
         for(procedureDefinition pd : procedureDefinitions){
@@ -281,6 +280,10 @@ public class Compiler {
         // the last but not least return instruction
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
+
+        for(int i = 0; i < instructions.size(); i++){ //go through generated instructions - find matching
+
+        }
 
         //(procedureDefinitions.get(0)).getIndivParameters();
 
@@ -582,7 +585,7 @@ public class Compiler {
      * Accepts one multiline statement (implements ImultiLineStatement) for which PL0 instructions should be generated. Contains recursive logic to get individual oneline statements.
      * @param statement instance which represents multiline statement (implements ImultiLineStatement)
      */
-    private void solvRecurMultiLine(ImultiLineStatement statement){
+    private void solvRecurMultiLine(ImultiLineStatement statement, procedureDefinition procedure){
         System.out.println("Detected multiline in RECURMULTILINE: " + statement);
 
         ArrayList<Istatement> innerStatements = statement.getInnerStatements(); //inner statements included in multiline statement
@@ -591,6 +594,7 @@ public class Compiler {
         for(int j = 0; j < innerStatements.size(); j++){ //go thru inner statements of multiline
             System.out.println("Going thru inner statements");
             Istatement innerStatement = innerStatements.get(j); //get one inner statement
+
 
             if(innerStatement instanceof ImultiLineStatement){//inner statement could be multi -> recursive call to retrieve oneline
                 ImultiLineStatement multiStatement = (ImultiLineStatement) innerStatement; //cast to multiline
@@ -603,29 +607,29 @@ public class Compiler {
                     //this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable)); // todo
                 }
                 //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
-                else if(innerStatement instanceof doWhileCycle){ //check for cycles - START
-                    CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, globalSymbolTable, innerCounter);
-                }else if(innerStatement instanceof forCycle){
-                    CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, innerCounter);
-                }else if(innerStatement instanceof foreachCycle){
-                    CycleInstructions.generateForeachInstructions1((foreachCycle) innerStatement, globalSymbolTable, innerCounter);
-                }else if(innerStatement instanceof repeatUntilCycle){
-                    CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) innerStatement, globalSymbolTable, innerCounter);
-                }else if(innerStatement instanceof whileCycle){
-                    CycleInstructions.generateWhileInstructions1((whileCycle) innerStatement, globalSymbolTable, innerCounter);
+                else if(statement instanceof doWhileCycle){ //check for cycles - START
+                    procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, innerCounter));
+                }else if(statement instanceof forCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
+                }else if(statement instanceof foreachCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
+                }else if(statement instanceof repeatUntilCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, innerCounter));
+                }else if(statement instanceof whileCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
                 } //check for cycles - END
-                solvRecurMultiLine(multiStatement); //recursive call
+                solvRecurMultiLine(multiStatement, procedure); //recursive call
                 //generate SECOND part of the cycle (after inner statements)
-                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
-                    CycleInstructions.generateDoWhileInstructions2((doWhileCycle) innerStatement, globalSymbolTable, 1);
-                }else if(innerStatement instanceof forCycle){
-                    CycleInstructions.generateForInstructions2((forCycle) innerStatement, globalSymbolTable, getInstructionCount());
-                }else if(innerStatement instanceof foreachCycle){
-                    CycleInstructions.generateForeachInstructions2((foreachCycle) innerStatement, globalSymbolTable, 1);
-                }else if(innerStatement instanceof repeatUntilCycle){
-                    CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) innerStatement, globalSymbolTable, 1);
-                }else if(innerStatement instanceof whileCycle){
-                    CycleInstructions.generateWhileInstructions2((whileCycle) innerStatement, globalSymbolTable, 1);
+                if(statement instanceof doWhileCycle){ //check for cycles - START
+                    procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
+                }else if(statement instanceof forCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //jump to 3. inst from first part
+                }else if(statement instanceof foreachCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable)); //jump to 3. inst from first part
+                }else if(statement instanceof repeatUntilCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
+                }else if(statement instanceof whileCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions2((whileCycle) statement)); //jump to 3. inst from first part
                 } //check for cycles - END
 
                 innerCounter -= 1;

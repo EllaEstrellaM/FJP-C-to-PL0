@@ -11,7 +11,6 @@ public class IfInstructions {
 
     public static int resultVal;
 
-
     public static ArrayList<Instruction> generateInstructions(String cond/*Operation conditionOp*/, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
