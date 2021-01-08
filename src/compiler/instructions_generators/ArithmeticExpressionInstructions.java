@@ -78,8 +78,8 @@ public class ArithmeticExpressionInstructions {
 
         // store the second number:
         if(!op.getSymbol2().isPartialResult()){
-            if(op.getSymbol1().getAdr() == -1){
-                if(op.getSymbol2().isNegateValue()){
+            if(op.getSymbol2().getAdr() == -1){
+                if(!op.getSymbol2().isNegateValue()){
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol2().getValue())));
                 }
                 else{
@@ -92,7 +92,7 @@ public class ArithmeticExpressionInstructions {
 
             }
             else{
-                if(op.getSymbol2().isNegateValue()){
+                if(!op.getSymbol2().isNegateValue()){
                     generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr2));
                 }
                 else{
