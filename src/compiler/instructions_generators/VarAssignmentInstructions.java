@@ -9,7 +9,6 @@ import java.util.Stack;
 
 public class VarAssignmentInstructions {
 
-    // todo index when we want to change one element in an array / string
     // todo what should we do, when arr1 = arr2 happens? -> point to the same memory?
     // in value there is the whole right side
     public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable, boolean assignToSymbol){
@@ -213,7 +212,7 @@ public class VarAssignmentInstructions {
         }
 
 
-        // todo set in correct table
+
         System.out.println("actual val being assigned to " + s.getName() + ": " + actualVal);
         // now whatever it is, it should be at the top of the stack
         if(indexToAssignTo == -1){

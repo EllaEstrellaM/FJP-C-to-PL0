@@ -243,7 +243,7 @@ public class Compiler {
                             }
 
                             if(pc.getIndivArguments().size() != calledProc.getArgs().size()){
-                                // todo print args mismatch error
+                                Error.printUnmatchingArgs(calledProc.getIdentifierVar());
                             }
                             else {
                                 // set the values to the appropriate symbols - that ought to do it?
