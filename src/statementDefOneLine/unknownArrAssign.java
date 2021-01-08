@@ -7,6 +7,7 @@ import statementInterEnum.Istatement;
 public class unknownArrAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the array
@@ -18,6 +19,7 @@ public class unknownArrAssign implements Istatement, IoneLineStatement {
     public unknownArrAssign(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         minusSign = false;
@@ -75,5 +77,15 @@ public class unknownArrAssign implements Istatement, IoneLineStatement {
 
     public void setIndexToAssign(int indexToAssign) {
         this.indexToAssign = indexToAssign;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

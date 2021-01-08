@@ -26,7 +26,6 @@ public class Main {
     static String test2 = "int ahoj = 3;";
 
     public static void main(String[] args){
-
         String testFile = "testif.txt";
         String filesPath = "testFiles";
         String path = filesPath + File.separator + testFile;

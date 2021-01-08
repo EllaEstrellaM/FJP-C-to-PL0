@@ -7,6 +7,8 @@ import statementInterEnum.Istatement;
 public class arrBoolAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the array
     int decNum; //index to array
@@ -16,6 +18,7 @@ public class arrBoolAssign implements Istatement, IoneLineStatement {
     public arrBoolAssign(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         decNum = 0;
@@ -64,5 +67,15 @@ public class arrBoolAssign implements Istatement, IoneLineStatement {
 
     public void setBoolVal(boolean boolVal) {
         this.boolVal = boolVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

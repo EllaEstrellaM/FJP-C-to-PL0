@@ -8,6 +8,7 @@ import statementInterEnum.Istatement;
 public class boolTernarDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the variable, which we want to assign value
@@ -19,6 +20,7 @@ public class boolTernarDeclaration implements Istatement, IoneLineStatement, IDe
     public boolTernarDeclaration(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         exprDecBoolCont = "";
@@ -76,5 +78,15 @@ public class boolTernarDeclaration implements Istatement, IoneLineStatement, IDe
 
     public void setExprDecBoolFalseVal(String exprDecBoolFalseVal) {
         this.exprDecBoolFalseVal = exprDecBoolFalseVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

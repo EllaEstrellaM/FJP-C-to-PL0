@@ -15,6 +15,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
     EmultiLineStatementType operationType;
     String wholeContent;
     ArrayList<Istatement> innerStatementsList;
+    int innerLevel;
 
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW procedure
@@ -28,6 +29,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
         setOperationType();
         wholeContent = "";
         innerStatementsList = new ArrayList<Istatement>();
+        innerLevel = 0;
 
         identifierVar = "";
         parameters = "";
@@ -129,5 +131,15 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
 
     public void setInstructions(ArrayList<Instruction> instructions) {
         this.instructions = instructions;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

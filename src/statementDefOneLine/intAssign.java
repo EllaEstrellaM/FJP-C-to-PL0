@@ -7,6 +7,8 @@ import statementInterEnum.Istatement;
 public class intAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the variable
     boolean minus_sign; //true if value is <= 0, ie minus sign is present ; else false (if ommited or plus sign present)
@@ -16,6 +18,7 @@ public class intAssign implements Istatement, IoneLineStatement {
     public intAssign(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         minus_sign = false;
@@ -64,5 +67,15 @@ public class intAssign implements Istatement, IoneLineStatement {
 
     public void setDecVal(int decVal) {
         this.decVal = decVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

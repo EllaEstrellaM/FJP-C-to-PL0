@@ -8,6 +8,8 @@ import statementInterEnum.Istatement;
 public class stringDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
+    int innerLevel;
+
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
     String stringVal; //value of the NEW variable
@@ -16,6 +18,7 @@ public class stringDeclaration implements Istatement, IoneLineStatement, IDeclar
     public stringDeclaration(){
         setOperationType();
         wholeContent = "";
+        innerLevel = 0;
 
         identifierVar = "";
         stringVal = "";
@@ -55,5 +58,15 @@ public class stringDeclaration implements Istatement, IoneLineStatement, IDeclar
 
     public void setStringVal(String stringVal) {
         this.stringVal = stringVal;
+    }
+
+    @Override
+    public void setInnerLevel(int level) {
+        this.innerLevel = level;
+    }
+
+    @Override
+    public int getInnerLevel() {
+        return innerLevel;
     }
 }

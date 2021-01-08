@@ -5,4 +5,7 @@ public interface Istatement {
     String getWholeContent(); //gets content of above
 
     void setOperationType(); //sets operation type from statementInterEnum.EoneLineStatementType (one-line statement) or statementInterEnum.EmultiLineStatementType (multi-line statement)
+
+    void setInnerLevel(int level); //sets level of inner
+    int getInnerLevel(); //gets level of inner
 }
