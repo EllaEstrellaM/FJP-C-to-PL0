@@ -14,6 +14,7 @@ import statementInterEnum.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Stack;
 
 public class Compiler {
@@ -281,12 +282,38 @@ public class Compiler {
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
 
-        for(int i = 0; i < instructions.size(); i++){ //go through generated instructions - find matching
+        ArrayList<Integer> startInst = new ArrayList<>();
+        ArrayList<Integer> all = new ArrayList<>();
 
+        for(int i = 0; i < instructions.size(); i++){ //go through generated instructions - find matching
+            Instruction instr = instructions.get(i);
+
+            if(instr.getInstruction() == null){ //got start or end
+                all.add(i);
+            }
         }
 
+        for(int i = 0; i < all.size() / 2; i++){ //go through null instr - find match!
+            int start = all.get(i);
+            startInst.add(start);
+            int end = all.get(all.size() - i - 1);
+            System.out.println("Start is: " + start);
+            System.out.println("End is: " + end);
+
+            Instruction endInstr = instructions.get(end);
+            endInstr.setAddress(start - i);
+            endInstr.setInstruction(EInstrSet.JMP);
+            endInstr.setLevel(0);
+        }
         //(procedureDefinitions.get(0)).getIndivParameters();
 
+        ArrayList<Instruction> instructionsEdit = new ArrayList<>();
+
+        for(int i = 0; i < instructions.size(); i++){
+            if(!startInst.contains(i)){
+                instructionsEdit.add(instructions.get(i));
+            }
+        }
 
         for (int i = 0; i < procedureDefinitions.size(); i++){
             System.out.println("INSTRUCTIONS PROC " + procedureDefinitions.get(i).getIdentifierVar());
@@ -296,7 +323,7 @@ public class Compiler {
         }
 
 
-        return instructions;
+        return instructionsEdit;
     }
 
 //    public static Instruction generateInstruction(EInstrSet instr, int par1, int par2){
