@@ -1,0 +1,24 @@
+
+int a = 66;
+int b = 55;
+
+
+procedure ahoj(){
+    string ahoj = "pozdrav!";
+}
+
+
+procedure pr(int a, bool cond){
+    int c = 99;
+
+    //if(cond | false){
+        //c = c - 1;
+    //}
+
+    ahoj();
+
+}
+
+procedure main(){
+    pr(1 * 2 + 8 - (10 + 6), true);
+}
