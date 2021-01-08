@@ -1,8 +1,7 @@
 
 
-int a = (true | false) ? 1 : 3 * 6;
-//a = (true | false) ? 1 : 3 * 6;
+string ahoj = "ahojahoj";
+string s = "lol";
 
-procedure p(string a, bool b){
+ahoj = s + "haha";
 
-}

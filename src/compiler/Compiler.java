@@ -2,6 +2,8 @@ package compiler;
 
 import compiler.errors.Error;
 import compiler.instructions_generators.CycleInstructions;
+import compiler.instructions_generators.IfInstructions;
+import compiler.instructions_generators.TernaryAssignmentInstructions;
 import compiler.instructions_generators.VarAssignmentInstructions;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementDefMultiLine.*;
@@ -40,13 +42,12 @@ public class Compiler {
     public ArrayList<Instruction> compile(){
         this.instructions = new ArrayList<Instruction>();
 
-        // this instruction will always be the first one?
-        // todo or can the address be other than 1?
+        // this instruction will always be the first one
         Instruction firstI = new Instruction(EInstrSet.JMP, 0,1);
 
         // todo then increase the stack 'size' by how much?
         // todo 3 + as_many_as_we_have_variables?
-        Instruction secondI = new Instruction(EInstrSet.INT, 0, 3);
+        Instruction secondI = new Instruction(EInstrSet.INT, 0, BASE_ADDRESS);
 
         instructions.add(firstI);
         instructions.add(secondI);
@@ -56,27 +57,12 @@ public class Compiler {
         for(Istatement st : statements){
             if(st instanceof IDeclaration){
                 resolveDeclaration((IDeclaration) st, proc, globalSymbolTable);
-                //declCounter++;
-            }else if(st instanceof ImultiLineStatement){
-
             }
-//            else if(st instanceof IoneLineStatement){
-//                ;;
-//            }
         }
 
-//        HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got statement list, ok -> parse them and get its content
-//        for(int i = 0; i < statements.size(); i++){ //go through retrieved statements
-//            Istatement statement = statements.get(i); //get one statement
-//
-//            innerCounter = 0;
-//            if(statement instanceof ImultiLineStatement){ //statement is multiline, retrieve its content
-//                ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
-//                solvRecurMultiLine(multiStatement);
-//            }else{ //statement is oneline - generate respective instructions
-//                generateOneline((IoneLineStatement) statement, statementType);
-//            }
-//        }
+        // insert this as the second instruction: todo no!
+        //instructions.add(1, new Instruction(EInstrSet.INT, 0, BASE_ADDRESS + declCounter));
+
 
         System.out.println("Procedure definitions size is: " + procedureDefinitions.size());
         for(int i = 0; i < procedureDefinitions.size(); i++){ //go through procedure definitions
@@ -95,8 +81,15 @@ public class Compiler {
                     ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
 
                     int instructCount = 0;
+
+                    if(multiStatement instanceof ifCondition){
+                        ifCondition ic = (ifCondition) multiStatement;
+                        String value = ic.getExprDecBoolCont();
+                        this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable));
+                    }
+
                     //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
-                    if(statement instanceof doWhileCycle){ //check for cycles - START
+                    else if(statement instanceof doWhileCycle){ //check for cycles - START
                         CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof forCycle){
                         instructCount = getInstructionCount();
@@ -123,8 +116,84 @@ public class Compiler {
                         CycleInstructions.generateWhileInstructions2((whileCycle) statement, globalSymbolTable, 1);
                     } //check for cycles - END
                 }else{ //statement is oneline - generate respective instructions
-                    System.out.println("Detected oneline OUTER: " + statement);
-                    generateOneline((IoneLineStatement) statement, statementType, innerCounter); //here assign inner level
+                    generateOneline((IoneLineStatement) statement, statementType, innerCounter);
+
+
+                    if(statement instanceof unknownAssign){
+                        unknownAssign ua = (unknownAssign)statement;
+                        String ident = ua.getIdentifierVar();
+                        String value = ua.getValueVar();
+
+                        if(globalSymbolTable.containsKey(ident)){
+
+                            Symbol s = globalSymbolTable.get(ident);
+
+                            this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
+                        }
+                        else{
+                            Error.printVarNotFound(ident);
+                        }
+                    }
+                    else if(statement instanceof unknownArrAssign){
+                        unknownArrAssign uaa = (unknownArrAssign) statement;
+                        String ident = uaa.getIdentifierVar();
+                        String value = uaa.getValueVar();
+                        int indexToAssignTo = uaa.getIndexToAssign();
+
+
+                        if(globalSymbolTable.containsKey(ident)){
+
+                            Symbol s = globalSymbolTable.get(ident);
+
+
+                            if(indexToAssignTo >= s.getSizeArr()){
+                                Error.printOutOfBounds(ident, indexToAssignTo);
+                            }
+
+
+                            this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
+                        }
+                        else{
+                            Error.printVarNotFound(ident);
+                        }
+                    }
+                    else if(statement instanceof ternarAssign){
+                        ternarAssign ta = (ternarAssign) statement;
+                        String ident = ta.getIdentifierVar();
+                        String cond = ta.getExprDecBoolCont();
+                        String trueVal = ta.getExprDecBoolTrueVal();
+                        String falseVal = ta.getExprDecBoolFalseVal();
+
+                        if(globalSymbolTable.containsKey(ident)){
+
+                            Symbol s = globalSymbolTable.get(ident);
+
+                            // todo arrays
+
+                            this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
+                        }
+                        else{
+                            Error.printVarNotFound(ident);
+                        }
+
+
+
+
+                    }
+                    else if(statement instanceof procedureCall){
+                        procedureCall pc = (procedureCall) statement;
+                        String name = pc.getIdentifierVar();
+
+                        if(globalSymbolTable.containsKey(name)){
+                            // we know such a procedure
+                            // check if number of arguments match
+                            // todo
+
+                        }
+                        else{
+                            Error.printVarNotFound(name);
+                        }
+                    }
                 }
             }
         }
@@ -133,6 +202,7 @@ public class Compiler {
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
 
+        //(procedureDefinitions.get(0)).getIndivParameters();
         return instructions;
     }
 
@@ -171,40 +241,6 @@ public class Compiler {
     }
 
 
-
-    private void resolveOneLineStatement(IoneLineStatement st, String inWhichProc){
-        if(st instanceof IDeclaration){
-
-//            if(parentSt != null){
-//                if(parentSt instanceof procedureDefinition){
-//                    inWhichProc = ((procedureDefinition) parentSt).getIdentifierVar();
-//                }
-//            }
-
-            //resolveDeclaration((IDeclaration) st, inWhichProc);
-        }
-    }
-
-    String currProc = "";
-    private void resolveMultilineStatement(ImultiLineStatement st){
-
-
-        if(st instanceof procedureDefinition){
-            currProc = ((procedureDefinition) st).getIdentifierVar();
-        }
-
-        for(int i = 0; i < st.getInnerStatements().size(); i++){
-            if(st.getInnerStatements().get(i) instanceof IoneLineStatement){
-                resolveOneLineStatement((IoneLineStatement) st.getInnerStatements().get(i), currProc);
-            }
-            else{
-                // recursion?
-                resolveMultilineStatement((ImultiLineStatement) st.getInnerStatements().get(i));
-            }
-        }
-    }
-
-
     /**
      * Adds new symbol to the table
      * @param st
@@ -212,6 +248,10 @@ public class Compiler {
     private void resolveDeclaration(IDeclaration st, String inProc, HashMap<String, Symbol> symbolTable){
         Symbol symb = new Symbol();
         String name = null;
+        String ternaryCond = null;
+        String ternaryTrueVal = null;
+        String ternaryFalseVal = null;
+        int intWhat = -1;
 
         // normal declarations:
         if(st instanceof intDeclaration){
@@ -227,6 +267,7 @@ public class Compiler {
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof boolDeclaration){
             name = ((boolDeclaration) st).getIdentifierVar();
@@ -241,11 +282,12 @@ public class Compiler {
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
-        else if(st instanceof stringDeclaration){
+        else if(st instanceof stringDeclaration){ // todo addresses
             name = ((stringDeclaration) st).getIdentifierVar();
             String value = ((stringDeclaration) st).getStringVal();
-            int size = value.length();
+            int size = value.length() - 2;
 
             symb.setValue(value);
             symb.setName(name);
@@ -256,6 +298,7 @@ public class Compiler {
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
+            intWhat = size;
 
         }
         // arrays declarations:
@@ -273,6 +316,7 @@ public class Compiler {
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+= size;
+            intWhat = size;
         }
         else if(st instanceof arrIntDeclaration){
             name = ((arrIntDeclaration) st).getIdentifierVar();
@@ -288,6 +332,7 @@ public class Compiler {
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+=size;
+            intWhat = size;
         }
 
         // consts declaration:
@@ -304,6 +349,7 @@ public class Compiler {
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof constIntDeclaration){
             name = ((constIntDeclaration) st).getIdentifierVar();
@@ -318,11 +364,12 @@ public class Compiler {
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
+            intWhat = 1;
         }
         else if(st instanceof constStringDeclaration){
             name = ((constStringDeclaration) st).getIdentifierVar();
             String value = ((constStringDeclaration) st).getStringVal();
-            int size = value.length();
+            int size = value.length() - 2;
 
             symb.setValue(value);
             symb.setName(name);
@@ -332,7 +379,54 @@ public class Compiler {
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
+            intWhat = size;
         }
+
+        // ternary declarations:
+        else if(st instanceof boolTernarDeclaration){ // todo
+            name = ((boolTernarDeclaration)st).getIdentifierVar();
+            ternaryCond = ((boolTernarDeclaration)st).getExprDecBoolCont();
+            ternaryTrueVal = ((boolTernarDeclaration)st).getExprDecBoolTrueVal();
+            ternaryFalseVal = ((boolTernarDeclaration)st).getExprDecBoolFalseVal();
+            symb.setName(name);
+            symb.setConst(false);
+            symb.setAdr(declCounter);
+            symb.setLev(0);
+            symb.setType(ESymbolType.BOOL);
+            symb.setInProcedure(inProc);
+            declCounter++;
+            intWhat = 1;
+
+        }
+        else if(st instanceof intTernarDeclaration){
+            name = ((intTernarDeclaration)st).getIdentifierVar();
+            ternaryCond = ((intTernarDeclaration)st).getExprDecBoolCont();
+            ternaryTrueVal = ((intTernarDeclaration)st).getExprDecBoolTrueVal();
+            ternaryFalseVal = ((intTernarDeclaration)st).getExprDecBoolFalseVal();
+            symb.setName(name);
+            symb.setConst(false);
+            symb.setAdr(declCounter);
+            symb.setLev(0);
+            symb.setType(ESymbolType.INT);
+            symb.setInProcedure(inProc);
+            declCounter++;
+            intWhat = 1;
+        }
+        else if(st instanceof stringTernarDeclaration){ // todo strings done?
+            name = ((stringTernarDeclaration)st).getIdentifierVar();
+            ternaryCond = ((stringTernarDeclaration)st).getExprDecBoolCont();
+            ternaryTrueVal = ((stringTernarDeclaration)st).getExprDecBoolTrueVal();
+            ternaryFalseVal = ((stringTernarDeclaration)st).getExprDecBoolFalseVal();
+            symb.setName(name);
+            symb.setConst(false);
+            symb.setAdr(declCounter);
+            symb.setLev(0);
+            symb.setType(ESymbolType.INT);
+            symb.setInProcedure(inProc);
+            //declCounter++; // todo!!!!
+        }
+
+        // procedure definition:
         else if(st instanceof procedureDefinition){
             name = ((procedureDefinition) st).getIdentifierVar();
             String params = ((procedureDefinition) st).getParameters();
@@ -356,7 +450,29 @@ public class Compiler {
 
         symb.setHasBeenDeclared(false);
         symbolTable.put(name, symb);
-        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), 0, symbolTable));
+
+        if(st instanceof boolTernarDeclaration || st instanceof intTernarDeclaration || st instanceof stringTernarDeclaration){
+            int ins = this.instructions.size();
+            this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable));
+            // value is set in ternary assignment instructions
+
+            if(st instanceof stringTernarDeclaration){
+                declCounter += symb.getValue().length();
+                intWhat = symb.getValue().length();
+            }
+            this.instructions.add(ins, new Instruction(EInstrSet.INT, 0, intWhat));
+        }
+        else{
+            this.instructions.add(new Instruction(EInstrSet.INT, 0, intWhat));
+            if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
+                // array declaration doesn't produce any instructions
+                this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
+            }
+        }
+
+
+
+
         symb.setHasBeenDeclared(true);
     }
 
@@ -379,8 +495,13 @@ public class Compiler {
 
                 innerCounter += 1;
 
+                if(innerStatement instanceof ifCondition){
+                    ifCondition ic = (ifCondition) multiStatement;
+                    String value = ic.getExprDecBoolCont();
+                    this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable));
+                }
                 //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
-                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                else if(innerStatement instanceof doWhileCycle){ //check for cycles - START
                     CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, globalSymbolTable, innerCounter);
                 }else if(innerStatement instanceof forCycle){
                     CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, innerCounter);
@@ -408,6 +529,82 @@ public class Compiler {
                 innerCounter -= 1;
             }else{//inner statement is oneline -> solve it
                 generateOneline((IoneLineStatement) innerStatement, innerStatementType, innerCounter);
+
+                if(statement instanceof unknownAssign){
+                    unknownAssign ua = (unknownAssign)statement;
+                    String ident = ua.getIdentifierVar();
+                    String value = ua.getValueVar();
+
+                    if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+                }
+                else if(statement instanceof unknownArrAssign){
+                    unknownArrAssign uaa = (unknownArrAssign) statement;
+                    String ident = uaa.getIdentifierVar();
+                    String value = uaa.getValueVar();
+                    int indexToAssignTo = uaa.getIndexToAssign();
+
+
+                    if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+
+                        if(indexToAssignTo >= s.getSizeArr()){
+                            Error.printOutOfBounds(ident, indexToAssignTo);
+                        }
+
+
+                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+                }
+                else if(statement instanceof ternarAssign){
+                    ternarAssign ta = (ternarAssign) statement;
+                    String ident = ta.getIdentifierVar();
+                    String cond = ta.getExprDecBoolCont();
+                    String trueVal = ta.getExprDecBoolTrueVal();
+                    String falseVal = ta.getExprDecBoolFalseVal();
+
+                    if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+                        // todo arrays
+
+                        this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+
+
+
+
+                }
+                else if(statement instanceof procedureCall){
+                    procedureCall pc = (procedureCall) statement;
+                    String name = pc.getIdentifierVar();
+
+                    if(globalSymbolTable.containsKey(name)){
+                        // we know such a procedure
+                        // check if number of arguments match
+                        // todo
+
+                    }
+                    else{
+                        Error.printVarNotFound(name);
+                    }
+                }
             }
         }
     }
