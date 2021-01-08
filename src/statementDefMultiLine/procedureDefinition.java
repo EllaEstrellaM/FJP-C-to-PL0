@@ -23,6 +23,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
     /* relevant statement info to keep - END */
 
     private HashMap<String, Symbol> privateSymbolTable;
+    private ArrayList<Symbol> args;
     private ArrayList<Instruction> instructions;
 
     public procedureDefinition(){
@@ -35,13 +36,17 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
         parameters = "";
 
         privateSymbolTable = new HashMap<>();
+        args = new ArrayList<>();
         instructions = new ArrayList<>();
     }
 
     public ArrayList<Symbol> getIndivParameters(){
         String[] splits = parameters.split(",");
-        ArrayList<Symbol> as = new ArrayList<>(splits.length);
+        ArrayList<Symbol> as = new ArrayList<>();
 
+//        if(splits.length == 1 && splits[0].equals("")){
+//            return null; // todo?
+//        }
 
         System.out.println("params:");
         for(int i = 0; i < splits.length; i++){
@@ -51,17 +56,19 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
             if(splits[i].startsWith("int ")){
                 s.setType(ESymbolType.INT);
                 s.setName(splits[i].substring(4));
+                as.add(s);
             }
             else if(splits[i].startsWith("bool ")){
                 s.setType(ESymbolType.BOOL);
                 s.setName(splits[i].substring(5));
+                as.add(s);
             }
-            else if(splits[i].startsWith("string ")){
-                s.setType(ESymbolType.BOOL);
-                s.setName(splits[i].substring(7));
-            }
+//            else if(splits[i].startsWith("string ")){
+//                s.setType(ESymbolType.BOOL);
+//                s.setName(splits[i].substring(7));
+//            }
 
-            as.add(s);
+
         }
 
         return as;
@@ -141,5 +148,9 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
     @Override
     public int getInnerLevel() {
         return innerLevel;
+    }
+
+    public ArrayList<Symbol> getArgs() {
+        return args;
     }
 }

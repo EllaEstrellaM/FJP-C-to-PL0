@@ -29,14 +29,15 @@ public class procedureCall implements Istatement, IoneLineStatement {
 
     public ArrayList<String> getIndivArguments(){
         String[] splits = arguments.split(",");
-        ArrayList<String> values = new ArrayList<>(splits.length);
+        ArrayList<String> values = new ArrayList<>();
 
 
         System.out.println("params:");
         for(int i = 0; i < splits.length; i++){
             System.out.println(splits[i]);
 
-            values.add(splits[i]);
+            if(splits[i].length() > 0)
+                values.add(splits[i]);
         }
 
         return values;

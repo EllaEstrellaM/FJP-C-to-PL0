@@ -9,10 +9,9 @@ import java.util.Stack;
 
 public class VarAssignmentInstructions {
 
-    // todo index when we want to change one element in an array / string
     // todo what should we do, when arr1 = arr2 happens? -> point to the same memory?
     // in value there is the whole right side
-    public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> table, boolean assignToSymbol){
+    public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable, boolean assignToSymbol){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         int addr = s.getAdr(); // the address to store the new value to
@@ -20,6 +19,7 @@ public class VarAssignmentInstructions {
         String actualVal = value;
         //boolean valAtTop = false;
         //int index = -1;
+        boolean setInGlob = true;
 
         if(s.isConst() && s.hasBeenDeclared()){
             // cannot assign to const again - print err
@@ -53,13 +53,28 @@ public class VarAssignmentInstructions {
                     }
                     else{
                         // var name?
-                        if(table.containsKey(splits[i])) {
+                        if(privTable.containsKey(splits[i])) {
                             // there is a var with this name
-                            if (table.get(splits[i]).getType() == ESymbolType.STRING) {
-                                result += table.get(splits[i]).getValue();
+                            if (privTable.get(splits[i]).getType() == ESymbolType.STRING) {
+                                result += privTable.get(splits[i]).getValue();
 
-                                results.add(table.get(splits[i]).getValue());
-                                results_addrs.add(table.get(splits[i]).getAdr());
+                                results.add(privTable.get(splits[i]).getValue());
+                                results_addrs.add(privTable.get(splits[i]).getAdr());
+                                //setInGlob = false;
+                            }
+                            else{
+                                // cannot assign
+                                Error.printCannotAssign(s.getName(), splits[i]);
+                            }
+                        }
+                        else if(globTable.containsKey(splits[i])) {
+                            // there is a var with this name
+                            if (globTable.get(splits[i]).getType() == ESymbolType.STRING) {
+                                result += globTable.get(splits[i]).getValue();
+
+                                results.add(globTable.get(splits[i]).getValue());
+                                results_addrs.add(globTable.get(splits[i]).getAdr());
+                                //setInGlob = true;
                             }
                             else{
                                 // cannot assign
@@ -116,7 +131,7 @@ public class VarAssignmentInstructions {
 
         // took care of strings ^^
         // try to parse the value as expression:
-        ArrayList<Operation> opOrd = ExpressionParser.parseExprDecBool(value, table);
+        ArrayList<Operation> opOrd = ExpressionParser.parseExprDecBool(value, globTable, privTable);
         if(opOrd.size() > 0){
             // is expression
             // generate the arithmetic instructions:
@@ -197,18 +212,42 @@ public class VarAssignmentInstructions {
         }
 
 
+
         System.out.println("actual val being assigned to " + s.getName() + ": " + actualVal);
         // now whatever it is, it should be at the top of the stack
         if(indexToAssignTo == -1){
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr));
-            if(assignToSymbol)
-                table.get(s.getName()).setValue(actualVal);
+            if(assignToSymbol){
+
+                if(globTable.containsKey(s.getName())){
+                    globTable.get(s.getName()).setValue(actualVal);
+                }
+                else if(privTable.containsKey(s.getName())){
+                    privTable.get(s.getName()).setValue(actualVal);
+                }
+                else{
+                    Error.printVarNotFound(s.getName());
+                }
+
+            }
+
             //s.setValue(actualVal);
         }
         else{
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + indexToAssignTo));
-            if(assignToSymbol)
-                table.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+            if(assignToSymbol){
+                if(globTable.containsKey(s.getName())){
+                    globTable.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+                }
+                else if(privTable.containsKey(s.getName())){
+                    privTable.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+                }
+                else{
+                    Error.printVarNotFound(s.getName());
+                }
+
+            }
+
         }
 
 

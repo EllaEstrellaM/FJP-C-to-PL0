@@ -1,6 +1,7 @@
 package compiler;
 
 import compiler.errors.Error;
+import compiler.errors.VarNotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Stack;
 public class ExpressionParser {
 
     public static Symbol retrievedSymbol = null;
+    public static boolean setInGlobal = false;
 
 
     public static boolean isExpression(String value){
@@ -48,8 +50,7 @@ public class ExpressionParser {
     }
 
 
-    // todo bool vars and keywords too?
-    public static ArrayList<Operation> parseExprDecBool(String exprDecBool, HashMap<String, Symbol> table){
+    public static ArrayList<Operation> parseExprDecBool(String exprDecBool, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
         ArrayList<Operation> statementOrder = new ArrayList<Operation>();
 
         char[] splitted = exprDecBool.toCharArray(); //split to indiv "letters" (numbers + operators)
@@ -101,23 +102,43 @@ public class ExpressionParser {
                 }
 
 
-                if(table.containsKey(numBuf.toString())){
+                if(privTable.containsKey(numBuf)){ // check the private table first
+                    if(privTable.get(numBuf).hasBeenDeclared()){
+                        Symbol s = new Symbol(privTable.get(numBuf)); // deep copy of the symbol
 
-                    if(table.get(numBuf.toString()).hasBeenDeclared()){
-
-                        Symbol s = new Symbol(table.get(numBuf)); // deep copy of the symbol
-
-                        //table.get(numBuf.toString()).setNegateValue(negateValue);
+                        //globTable.get(numBuf.toString()).setNegateValue(negateValue);
                         s.setNegateValue(negateValue);
 
-                        //table.get(numBuf.toString()).setIndToArray(indToArr); // ???
+                        //globTable.get(numBuf.toString()).setIndToArray(indToArr); // ???
                         s.setIndToArray(indToArr); // ???
 
-                        //numbers.push(table.get(numBuf.toString())); //push buffer containing whole number to stack
+                        //numbers.push(globTable.get(numBuf.toString())); //push buffer containing whole number to stack
+                        numbers.push(s); //push buffer containing whole number to stack
+                        setInGlobal = false;
+                    }
+                    else{
+                        Error.printVarNotFound(numBuf.toString()); // todo opravdu?
+                        //throw new VarNotFoundException(numBuf);
+                    }
+                }
+                else if(globTable.containsKey(numBuf.toString())){ // then check the global
+
+                    if(globTable.get(numBuf.toString()).hasBeenDeclared()){
+
+                        Symbol s = new Symbol(globTable.get(numBuf)); // deep copy of the symbol
+
+                        //globTable.get(numBuf.toString()).setNegateValue(negateValue);
+                        s.setNegateValue(negateValue);
+
+                        //globTable.get(numBuf.toString()).setIndToArray(indToArr); // ???
+                        s.setIndToArray(indToArr); // ???
+
+                        //numbers.push(globTable.get(numBuf.toString())); //push buffer containing whole number to stack
                         numbers.push(s); //push buffer containing whole number to stack
                     }
                     else{
                         Error.printVarNotFound(numBuf.toString()); // todo opravdu?
+                        //throw new VarNotFoundException(numBuf);
                     }
 
                 }
@@ -139,6 +160,7 @@ public class ExpressionParser {
                     }
                     else{
                         Error.printVarNotFound(numBuf.toString()); // todo opravdu?
+                        //throw new VarNotFoundException(numBuf);
                     }
 
                 }

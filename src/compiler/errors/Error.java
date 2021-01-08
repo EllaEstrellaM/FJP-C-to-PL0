@@ -48,4 +48,9 @@ public class Error {
         System.err.println("Index " + index + " out of bounds of array " + arrIdent + ".");
         System.exit(0);
     }
+
+    public static void printUnmatchingArgs(String proc){
+        System.err.println("Number of arguments doesn't match in procedure call of " + proc + ".");
+        System.exit(0);
+    }
 }
