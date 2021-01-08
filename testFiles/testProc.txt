@@ -20,5 +20,7 @@ procedure pr(int a, bool cond){
 }
 
 procedure main(){
-    pr(1 * 2 + 8 - (10 + 6), true);
+    //pr(1 * 2 + 8 - (10 + 6), true);
+    int i = 0;
+    while(i < 4){i = 1;}
 }

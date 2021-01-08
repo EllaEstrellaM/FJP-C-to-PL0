@@ -37,7 +37,7 @@ public class CycleInstructions {
         generatedInstructions.addAll(genInstrExpr);
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //store start of the cycle on given address
 
-        generatedInstructions.add(new Instruction("JUMP_FOR_START*" + cycle));
+        generatedInstructions.add(new Instruction(cycle + ""));
         generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifAddr)); //load actual value of var <- JUMP HERE FROM END
         ArrayList<Instruction> genInstrExpr2 = ExpressionParser.solveExpr(end, table, privTable); //define end of the cycle
         generatedInstructions.addAll(genInstrExpr2);
@@ -78,7 +78,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //now increment value of var - END ; save value of var
-        generatedInstructions.add(new Instruction("JUMP_FOR_END*" + cycle)); //now jump to beginning of the cycle
+        generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
 
         return generatedInstructions;
     }
@@ -128,7 +128,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0)); //define start of the cycle
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, traverseHlpAddr)); //store start of the cycle on given address
 
-        generatedInstructions.add(new Instruction("JUMP_FOREACH_START*" + cycle));
+        generatedInstructions.add(new Instruction(cycle + ""));
         generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, traverseHlpAddr)); //load actual value of traversing var <- JUMP HERE FROM END
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, identifArraySym.getSizeArr())); //define end of the cycle
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 10)); //compare actual value of var with the end of the array ; until <
@@ -164,7 +164,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, traverseHlpAddr)); //now increment value of var - END ; save value of var
-        generatedInstructions.add(new Instruction("JUMP_FOREACH_END*" + cycle)); //now jump to beginning of the cycle
+        generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
 
         return generatedInstructions;
     }
