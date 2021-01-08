@@ -92,7 +92,6 @@ public class VarAssVisitor extends ourCBaseVisitor {
             if(ctx.expr_dec_bool() != null){
                 ourCParser.Expr_dec_boolContext treeItem1 = ctx.expr_dec_bool().get(0);
                 exprDecBoolCont = treeItem1.getText();
-
                 doWhileCycle doWhileCyc = new doWhileCycle();
                 doWhileCyc.setExprDecBoolCont(exprDecBoolCont);
                 addStatement(doWhileCyc);
