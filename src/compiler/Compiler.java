@@ -80,7 +80,7 @@ public class Compiler {
                     System.out.println("Detected multiline OUTER: " + statement);
                     ImultiLineStatement multiStatement = (ImultiLineStatement) statement; //cast to multiline
 
-                    int instructCount = 0;
+                    int instructCount = getInstructionCount(); //get count of instructions generated BEFORE first parts of cycles + if (then must add number of instructs for first parts)
 
                     if(multiStatement instanceof ifCondition){
                         ifCondition ic = (ifCondition) multiStatement;
@@ -92,8 +92,6 @@ public class Compiler {
                     else if(statement instanceof doWhileCycle){ //check for cycles - START
                         CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof forCycle){
-                        instructCount = getInstructionCount();
-
                         CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, innerCounter);
                     }else if(statement instanceof foreachCycle){
                         CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, innerCounter);
@@ -105,15 +103,15 @@ public class Compiler {
                     solvRecurMultiLine(multiStatement);
                     //generate SECOND part of the cycle (after inner statements)
                     if(statement instanceof doWhileCycle){ //check for cycles - START
-                        CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, instructCount); //no instruction generated in first part
                     }else if(statement instanceof forCycle){
-                        CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, instructCount + 2);
+                        CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, instructCount + 3); //jump to 3. inst from first part
                     }else if(statement instanceof foreachCycle){
-                        CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable, instructCount + 3); //jump to 3. inst from first part
                     }else if(statement instanceof repeatUntilCycle){
-                        CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, instructCount); //no instruction generated in first part
                     }else if(statement instanceof whileCycle){
-                        CycleInstructions.generateWhileInstructions2((whileCycle) statement, globalSymbolTable, 1);
+                        CycleInstructions.generateWhileInstructions2((whileCycle) statement, globalSymbolTable, instructCount); //jump to 3. inst from first part
                     } //check for cycles - END
                 }else{ //statement is oneline - generate respective instructions
                     generateOneline((IoneLineStatement) statement, statementType, innerCounter);

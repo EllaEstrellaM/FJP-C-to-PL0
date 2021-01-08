@@ -75,7 +75,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //now increment value of var - END ; save value of var
-        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle????
+        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle
 
         return generatedInstructions;
     }
@@ -151,7 +151,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1)); //increment by +1 ; define
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, traverseHlpAddr)); //now increment value of var - END ; save value of var
-        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, -1)); //now jump to beginning of the cycle????
+        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle
 
         return generatedInstructions;
     }
@@ -186,11 +186,10 @@ public class CycleInstructions {
         if(endNum){ //if end is specified by plain number
             int endCycle = Integer.valueOf(splitCond[0]);
 
-            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, varSamAddr)); //load actual value of var
+            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, varSamAddr)); //load actual value of var <- JUMP HERE FROM END
             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, endCycle)); //define end of the cycle
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, getInstructionNum(splitCond[1]))); //now generate instruction depending on operator located between variable and number
-
-            generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, 13)); //here we should jump to RET????
+            generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump to RET
             //CODE INSIDE CYCLE - here increment the var??
         }
 
@@ -209,7 +208,7 @@ public class CycleInstructions {
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //CODE INSIDE CYCLE - here increment the var??
-        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, 4)); //now jump to beginning of the cycle????
+        generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle
 
         return generatedInstructions;
     }
@@ -226,11 +225,7 @@ public class CycleInstructions {
 
         System.out.println("Generating CYCLE - dowhile first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
-
-        //info relevant for dowhilecycle - START
-        String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after while
-        //info relevant for dowhilecycle - END
-
+        //CODE INSIDE CYCLE - here increment the var?? <- JUMP HERE FROM END
         return generatedInstructions;
     }
 
@@ -249,6 +244,28 @@ public class CycleInstructions {
         String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after while
         //info relevant for dowhilecycle - END
 
+        //split the condition to get the name of the variable - START
+        String[] splitCond = condition.split("<"); //split by < and on first index should be var ; second = number, expression..
+        //split the condition to get the name of the variable - END
+
+        System.out.println("Searching in table for: " + splitCond[0]);
+        Symbol varSam = table.get(splitCond[0]); //retrieve variable data from table
+        int varSamAddr = varSam.getAdr();
+        System.out.println("Addr do-while is: " + varSamAddr + ", item is: " + varSam.getName() + "end is: " + splitCond[1]);
+
+        boolean endNum = isNum(splitCond[1]); //check if end value is plain number
+
+        //CODE INSIDE CYCLE
+        if(endNum){ //if end is specified by plain number
+            int endCycle = Integer.valueOf(splitCond[1]);
+
+            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, varSamAddr)); //load actual value of var
+            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, endCycle)); //define end of the cycle
+            generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, getInstructionNum(splitCond[1]))); //now generate instruction depending on operator located between variable and number
+            generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump NEXT STATEMENTS (+1)!!!
+            generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle
+        }
+
         return generatedInstructions;
     }
 
@@ -264,11 +281,7 @@ public class CycleInstructions {
 
         System.out.println("Generating CYCLE - repeatuntil first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
-
-        //info relevant for repeatuntilcycle - START
-        String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after until
-        //info relevant for repeatuntilcycle - END
-
+        //CODE INSIDE CYCLE - here increment the var?? <- JUMP HERE FROM END
         return generatedInstructions;
     }
 
@@ -283,9 +296,31 @@ public class CycleInstructions {
         System.out.println("Generating CYCLE - repeatuntil second");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
-        //info relevant for repeatuntilcycle - START
-        String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after until
-        //info relevant for repeatuntilcycle - END
+        //info relevant for dowhilecycle - START
+        String condition = cycle.getExprDecBoolCont(); //conditions written in between brackets after while
+        //info relevant for dowhilecycle - END
+
+        //split the condition to get the name of the variable - START
+        String[] splitCond = condition.split("<"); //split by < and on first index should be var ; second = number, expression..
+        //split the condition to get the name of the variable - END
+
+        System.out.println("Searching in table for: " + splitCond[0]);
+        Symbol varSam = table.get(splitCond[0]); //retrieve variable data from table
+        int varSamAddr = varSam.getAdr();
+        System.out.println("Addr do-while is: " + varSamAddr + ", item is: " + varSam.getName() + "end is: " + splitCond[1]);
+
+        boolean endNum = isNum(splitCond[1]); //check if end value is plain number
+
+        //CODE INSIDE CYCLE
+        if(endNum){ //if end is specified by plain number
+            int endCycle = Integer.valueOf(splitCond[1]);
+
+            generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, varSamAddr)); //load actual value of var
+            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, endCycle)); //define end of the cycle
+            generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, getInstructionNum(splitCond[1]))); //now generate instruction depending on operator located between variable and number
+            generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump NEXT STATEMENTS (+1)!!!
+            generatedInstructions.add(new Instruction(EInstrSet.JMP, 0, beginCycNum)); //now jump to beginning of the cycle
+        }
 
         return generatedInstructions;
     }
