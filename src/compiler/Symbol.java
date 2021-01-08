@@ -38,7 +38,7 @@ public class Symbol {
 
     public Symbol(){
         this.name = "";
-        this.lev = 1;
+        this.lev = 0;
         this.adr = -1;
         this.sizeArr = -1;
         this.type = null;

@@ -2,6 +2,7 @@ package compiler;
 
 import com.sun.xml.internal.bind.v2.model.core.ID;
 import compiler.errors.Error;
+import compiler.errors.VarNotFoundException;
 import compiler.instructions_generators.CycleInstructions;
 import compiler.instructions_generators.IfInstructions;
 import compiler.instructions_generators.TernaryAssignmentInstructions;
@@ -87,7 +88,9 @@ public class Compiler {
                     if(multiStatement instanceof ifCondition){
                         ifCondition ic = (ifCondition) multiStatement;
                         String value = ic.getExprDecBoolCont();
-                        procedure.getInstructions().addAll(IfInstructions.generateInstructions(value, globalSymbolTable));
+
+                        procedure.getInstructions().addAll(IfInstructions.generateInstructions(value, globalSymbolTable, procedure.getPrivateSymbolTable()));
+
                     }
 
                     //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
@@ -134,16 +137,18 @@ public class Compiler {
                         String ident = ua.getIdentifierVar();
                         String value = ua.getValueVar();
 
+
+
                         if(procedure.getPrivateSymbolTable().containsKey(ident)){ // look in the local table first
                             Symbol s = procedure.getPrivateSymbolTable().get(ident);
 
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, procedure.getPrivateSymbolTable(), true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
                         }
                         else if(globalSymbolTable.containsKey(ident)){
 
                             Symbol s = globalSymbolTable.get(ident);
 
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
                         }
                         else{
                             Error.printVarNotFound(ident);
@@ -166,7 +171,7 @@ public class Compiler {
                             }
 
 
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, procedure.getPrivateSymbolTable(), true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
                         }
                         else if(globalSymbolTable.containsKey(ident)){
 
@@ -178,7 +183,7 @@ public class Compiler {
                             }
 
 
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
                         }
                         else{
                             Error.printVarNotFound(ident);
@@ -196,18 +201,15 @@ public class Compiler {
 
                             Symbol s = procedure.getPrivateSymbolTable().get(ident);
 
-                            // todo arrays
 
-                            procedure.getInstructions().addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, procedure.getPrivateSymbolTable()));
+                            procedure.getInstructions().addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable, procedure.getPrivateSymbolTable()));
                         }
 
                         else if(globalSymbolTable.containsKey(ident)){
 
                             Symbol s = globalSymbolTable.get(ident);
 
-                            // todo arrays
-
-                            procedure.getInstructions().addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
+                            procedure.getInstructions().addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable, procedure.getPrivateSymbolTable()));
                         }
                         else{
                             Error.printVarNotFound(ident);
@@ -249,7 +251,7 @@ public class Compiler {
                                 for(int k = 0; k < calledProc.getArgs().size(); k++){
                                     Symbol s = calledProc.getArgs().get(k);
                                     String valInArg = pc.getIndivArguments().get(k);
-                                    procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, calledProc.getPrivateSymbolTable(), true));
+                                    procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, calledProc.getPrivateSymbolTable(), true));
                                 }
 
                                 // and add the called procedure's instructions to the current procedure's instructions:
@@ -313,21 +315,6 @@ public class Compiler {
 //        Instruction newInstr = new Instruction(instr, par1, par2);
 //        return newInstr;
 //
-//    }
-
-
-//    private ArrayList<Instruction> generateInstructionsForProcedure(procedureDefinition pd){
-//        ArrayList<Instruction> instructions = new ArrayList<>();
-//
-//        String currProcName = pd.getIdentifierVar();
-//
-//        for(Istatement pdSt : pd.getInnerStatements()){
-//            if(pdSt instanceof IDeclaration){
-//                resolveDeclaration((IDeclaration) pdSt, currProcName, pd.getPrivateSymbolTable()); // todo merge the private and global table?
-//            }
-//        }
-//
-//        return instructions;
 //    }
 
 
@@ -538,6 +525,7 @@ public class Compiler {
                 declCounter++;
                 ((procedureDefinition)st).getPrivateSymbolTable().put(args.get(i).getName(), args.get(i));
                 ((procedureDefinition)st).getArgs().add(args.get(i)); // adding the same instance to both
+                args.get(i).setHasBeenDeclared(true);
             }
 
             // prepare the space in the stack:
@@ -547,8 +535,9 @@ public class Compiler {
 
             procedureDefinitions.add((procedureDefinition)st);
 
-            symbolTable.put(name, symb);
             symb.setHasBeenDeclared(true);
+            symbolTable.put(name, symb);
+
             return;
         }
 
@@ -564,7 +553,7 @@ public class Compiler {
         if(st instanceof boolTernarDeclaration || st instanceof intTernarDeclaration || st instanceof stringTernarDeclaration){
             int ins = instrs.size();//this.instructions.size();
             //this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable));
-            instrs.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable));
+            instrs.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, symbolTable, symbolTable));
             // value is set in ternary assignment instructions
 
             if(st instanceof stringTernarDeclaration){
@@ -581,7 +570,7 @@ public class Compiler {
             if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
                 // array declaration doesn't produce any instructions
                 //this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
-                instrs.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
+                instrs.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, symbolTable, true));
             }
         }
 
@@ -613,7 +602,7 @@ public class Compiler {
                 if(innerStatement instanceof ifCondition){
                     ifCondition ic = (ifCondition) multiStatement;
                     String value = ic.getExprDecBoolCont();
-                    this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable));
+                    //this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable)); // todo
                 }
                 //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
                 else if(innerStatement instanceof doWhileCycle){ //check for cycles - START
@@ -645,81 +634,81 @@ public class Compiler {
             }else{//inner statement is oneline -> solve it
                 generateOneline((IoneLineStatement) innerStatement, innerStatementType, innerCounter);
 
-                if(statement instanceof unknownAssign){
-                    unknownAssign ua = (unknownAssign)statement;
-                    String ident = ua.getIdentifierVar();
-                    String value = ua.getValueVar();
-
-                    if(globalSymbolTable.containsKey(ident)){
-
-                        Symbol s = globalSymbolTable.get(ident);
-
-                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
-                    }
-                    else{
-                        Error.printVarNotFound(ident);
-                    }
-                }
-                else if(statement instanceof unknownArrAssign){
-                    unknownArrAssign uaa = (unknownArrAssign) statement;
-                    String ident = uaa.getIdentifierVar();
-                    String value = uaa.getValueVar();
-                    int indexToAssignTo = uaa.getIndexToAssign();
-
-
-                    if(globalSymbolTable.containsKey(ident)){
-
-                        Symbol s = globalSymbolTable.get(ident);
-
-
-                        if(indexToAssignTo >= s.getSizeArr()){
-                            Error.printOutOfBounds(ident, indexToAssignTo);
-                        }
-
-
-                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
-                    }
-                    else{
-                        Error.printVarNotFound(ident);
-                    }
-                }
-                else if(statement instanceof ternarAssign){
-                    ternarAssign ta = (ternarAssign) statement;
-                    String ident = ta.getIdentifierVar();
-                    String cond = ta.getExprDecBoolCont();
-                    String trueVal = ta.getExprDecBoolTrueVal();
-                    String falseVal = ta.getExprDecBoolFalseVal();
-
-                    if(globalSymbolTable.containsKey(ident)){
-
-                        Symbol s = globalSymbolTable.get(ident);
-
-                        // todo arrays
-
-                        this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
-                    }
-                    else{
-                        Error.printVarNotFound(ident);
-                    }
-
-
-
-
-                }
-                else if(statement instanceof procedureCall){
-                    procedureCall pc = (procedureCall) statement;
-                    String name = pc.getIdentifierVar();
-
-                    if(globalSymbolTable.containsKey(name)){
-                        // we know such a procedure
-                        // check if number of arguments match
-                        // todo
-
-                    }
-                    else{
-                        Error.printVarNotFound(name);
-                    }
-                }
+//                if(statement instanceof unknownAssign){
+//                    unknownAssign ua = (unknownAssign)statement;
+//                    String ident = ua.getIdentifierVar();
+//                    String value = ua.getValueVar();
+//
+//                    if(globalSymbolTable.containsKey(ident)){
+//
+//                        Symbol s = globalSymbolTable.get(ident);
+//
+//                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
+//                    }
+//                    else{
+//                        Error.printVarNotFound(ident);
+//                    }
+//                }
+//                else if(statement instanceof unknownArrAssign){
+//                    unknownArrAssign uaa = (unknownArrAssign) statement;
+//                    String ident = uaa.getIdentifierVar();
+//                    String value = uaa.getValueVar();
+//                    int indexToAssignTo = uaa.getIndexToAssign();
+//
+//
+//                    if(globalSymbolTable.containsKey(ident)){
+//
+//                        Symbol s = globalSymbolTable.get(ident);
+//
+//
+//                        if(indexToAssignTo >= s.getSizeArr()){
+//                            Error.printOutOfBounds(ident, indexToAssignTo);
+//                        }
+//
+//
+//                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
+//                    }
+//                    else{
+//                        Error.printVarNotFound(ident);
+//                    }
+//                }
+//                else if(statement instanceof ternarAssign){
+//                    ternarAssign ta = (ternarAssign) statement;
+//                    String ident = ta.getIdentifierVar();
+//                    String cond = ta.getExprDecBoolCont();
+//                    String trueVal = ta.getExprDecBoolTrueVal();
+//                    String falseVal = ta.getExprDecBoolFalseVal();
+//
+//                    if(globalSymbolTable.containsKey(ident)){
+//
+//                        Symbol s = globalSymbolTable.get(ident);
+//
+//                        // todo arrays
+//
+//                        this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
+//                    }
+//                    else{
+//                        Error.printVarNotFound(ident);
+//                    }
+//
+//
+//
+//
+//                }
+//                else if(statement instanceof procedureCall){
+//                    procedureCall pc = (procedureCall) statement;
+//                    String name = pc.getIdentifierVar();
+//
+//                    if(globalSymbolTable.containsKey(name)){
+//                        // we know such a procedure
+//                        // check if number of arguments match
+//                        // todo
+//
+//                    }
+//                    else{
+//                        Error.printVarNotFound(name);
+//                    }
+//                }
             }
         }
     }

@@ -2,14 +2,23 @@
 int a = 66;
 int b = 55;
 
-procedure pr(int a){
+
+procedure ahoj(){
+    string ahoj = "pozdrav!";
+}
+
+
+procedure pr(int a, bool cond){
     int c = 99;
-    //int a  = 0;
-    //a = 77;
+
+    //if(cond | false){
+        //c = c - 1;
+    //}
+
+    ahoj();
 
 }
 
 procedure main(){
-    //string s = "hahahhahha";
-    pr(1);
+    pr(1, true);
 }

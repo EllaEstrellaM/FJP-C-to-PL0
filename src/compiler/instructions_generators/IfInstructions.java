@@ -2,6 +2,7 @@ package compiler.instructions_generators;
 
 import compiler.*;
 import compiler.errors.Error;
+import compiler.errors.VarNotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,13 +12,15 @@ public class IfInstructions {
     public static int resultVal;
 
 
-    public static ArrayList<Instruction> generateInstructions(String cond/*Operation conditionOp*/, HashMap<String, Symbol> table){
+    public static ArrayList<Instruction> generateInstructions(String cond/*Operation conditionOp*/, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
 
         // perform arithmetics on the condition and let it store the result at the top of the stack:
         // there will be no strings
-        ArrayList<Operation> opOrd = ExpressionParser.parseExprDecBool(cond, table);
+
+        ArrayList<Operation> opOrd = ExpressionParser.parseExprDecBool(cond, globTable, privTable);
+
         if(opOrd.size() > 0){
             // is expression
             // generate the arithmetic instructions:
