@@ -1,0 +1,15 @@
+
+int a = 66;
+int b = 55;
+
+procedure pr(int a){
+    int c = 99;
+    //int a  = 0;
+    //a = 77;
+
+}
+
+procedure main(){
+    //string s = "hahahhahha";
+    pr(1);
+}
