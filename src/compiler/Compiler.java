@@ -427,8 +427,18 @@ public class Compiler {
 
         // normal declarations:
         if(st instanceof intDeclaration){
+
+
+//            if(((intDeclaration)st).getIdentifierMulti().size() > 0){
+//                // we have multi assign
+//                for(int i = 0; i < ((intDeclaration)st).getIdentifierMulti().size(); i++){
+//
+//                }
+//            }
+
+
             name = ((intDeclaration) st).getIdentifierVar();
-            String value = /*(((intDeclaration) st).isMinus_sign() ? "-" : "") + */((intDeclaration) st).getDecVal();
+            String value = ((intDeclaration) st).getDecVal();
 
 
             symb.setValue(value);
@@ -440,6 +450,9 @@ public class Compiler {
             symb.setInProcedure(inProc);
             declCounter++;
             intWhat = 1;
+
+
+
         }
         else if(st instanceof boolDeclaration){
             name = ((boolDeclaration) st).getIdentifierVar();
@@ -648,7 +661,7 @@ public class Compiler {
         if(st instanceof boolTernarDeclaration || st instanceof intTernarDeclaration || st instanceof stringTernarDeclaration){
             int ins = instrs.size();//this.instructions.size();
             //this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable));
-            instrs.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, symbolTable, symbolTable));
+            instrs.addAll(TernaryAssignmentInstructions.generateInstructions(symb, ternaryCond, ternaryTrueVal, ternaryFalseVal, -1, globalSymbolTable, symbolTable));
             // value is set in ternary assignment instructions
 
             if(st instanceof stringTernarDeclaration){
@@ -665,7 +678,56 @@ public class Compiler {
             if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
                 // array declaration doesn't produce any instructions
                 //this.instructions.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, true));
-                instrs.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, symbolTable, symbolTable, true));
+                instrs.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, globalSymbolTable, symbolTable, true));
+
+                symb.setHasBeenDeclared(true);
+
+                // multi?
+                if(((IoneLineStatement)st).getIdentifierMulti().size() > 0){
+                    IoneLineStatement oneLine = ((IoneLineStatement)st);
+                    ArrayList<String> idents = oneLine.getIdentifierMulti();
+
+
+                    for(int i = 0; i < idents.size(); i++){
+
+                        if(st instanceof stringDeclaration || st instanceof constStringDeclaration){
+                            Symbol newS = new Symbol(symb);
+                            newS.setName(idents.get(i));
+                            newS.setAdr(declCounter);
+                            newS.setHasBeenDeclared(true);
+                            declCounter+=symb.getValue().length();
+
+                            instrs.add(new Instruction(EInstrSet.INT, 0, symb.getValue().length()));
+
+                            for(int j = 0; j < symb.getValue().length(); j++){
+                                instrs.add(new Instruction(EInstrSet.LOD, 0, symb.getAdr() + j));
+                                instrs.add(new Instruction(EInstrSet.STO, 0, newS.getAdr() + j));
+                            }
+
+                            symbolTable.put(newS.getName(), newS);
+
+                        }
+                        else{
+                            Symbol newS = new Symbol(symb);
+                            newS.setName(idents.get(i));
+                            newS.setAdr(declCounter);
+                            newS.setHasBeenDeclared(true);
+                            declCounter++;
+
+                            instrs.add(new Instruction(EInstrSet.INT, 0, 1));
+                            instrs.add(new Instruction(EInstrSet.LOD, 0, symb.getAdr()));
+                            instrs.add(new Instruction(EInstrSet.STO, 0, newS.getAdr()));
+
+                            symbolTable.put(newS.getName(), newS);
+                        }
+
+
+
+                    }
+
+
+                }
+
             }
         }
 

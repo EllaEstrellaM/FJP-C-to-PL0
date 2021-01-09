@@ -5,6 +5,8 @@ import statementInterEnum.IDeclaration;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
+import java.util.ArrayList;
+
 public class arrIntDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
@@ -32,6 +34,11 @@ public class arrIntDeclaration implements Istatement, IoneLineStatement, IDeclar
     @Override
     public EoneLineStatementType getOperationType() {
         return operationType;
+    }
+
+    @Override
+    public ArrayList<String> getIdentifierMulti() {
+        return null;
     }
 
     @Override

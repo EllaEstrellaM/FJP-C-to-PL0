@@ -18,6 +18,11 @@ public class procedureCall implements Istatement, IoneLineStatement {
     String arguments; //arguments given in between brackets after procedure name
     /* relevant statement info to keep - END */
 
+    @Override
+    public ArrayList<String> getIdentifierMulti() {
+        return null;
+    }
+
     public procedureCall(){
         setOperationType();
         wholeContent = "";

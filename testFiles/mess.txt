@@ -1,5 +1,12 @@
 
 
-int abc = 0;
-int ahoj = 2;
-int a = 8 - 7 * abc + 9 * (ahoj + 6) or true and (5 or (6 + abc));
+
+
+
+string a = b = ahoj = "mr";
+
+
+procedure main(){
+    string c = a;
+    //int d = ahoj;
+}
