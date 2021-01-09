@@ -5,6 +5,8 @@ import statementInterEnum.IDeclaration;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
+import java.util.ArrayList;
+
 public class intDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
@@ -14,6 +16,7 @@ public class intDeclaration implements Istatement, IoneLineStatement, IDeclarati
     String identifierVar; //name of the NEW variable
     boolean minus_sign; //true if value of NEW variable is <= 0, ie minus sign is present ; else false (if ommited or plus sign present)
     String decVal; //value of the NEW variable (could be name of the identifier or direct value...)
+    ArrayList<String> identifierMulti; //list of multiassign
     /* relevant statement info to keep - END */
 
     public intDeclaration(){
@@ -24,6 +27,15 @@ public class intDeclaration implements Istatement, IoneLineStatement, IDeclarati
         identifierVar = "";
         minus_sign = false;
         decVal = "";
+        identifierMulti = new ArrayList<>();
+    }
+
+    public void addToIdentifMulti(String ident){
+        identifierMulti.add(ident);
+    }
+
+    public ArrayList<String> getIdentifierMulti(){
+        return identifierMulti;
     }
 
     @Override

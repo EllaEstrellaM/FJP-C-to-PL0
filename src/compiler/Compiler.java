@@ -88,7 +88,6 @@ public class Compiler {
                         String value = ic.getExprDecBoolCont();
 
                         procedure.getInstructions().addAll(IfInstructions.generateInstructions(value, globalSymbolTable, procedure.getPrivateSymbolTable()));
-
                     }
 
                     //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
@@ -282,60 +281,104 @@ public class Compiler {
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
 
-        ArrayList<Integer> startInst = new ArrayList<>();
-        ArrayList<Integer> endInstr = new ArrayList<>();
+        System.out.println("First is is: " + instructions.size());
 
-        ArrayList<Integer> all = new ArrayList<>();
-        ArrayList<Instruction> instructs = new ArrayList<>();
+        ArrayList<Integer> startInstJMP = new ArrayList<>(); //original - where to JMP
+        ArrayList<Integer> endInstrJMP = new ArrayList<>(); //original - where to JMP
 
-        for(int i = 0; i < instructions.size(); i++){ //go through generated instructions - find matching
+        ArrayList<Integer> startInstJMC = new ArrayList<>(); //where to JMC
+        ArrayList<Integer> endInstrJMC = new ArrayList<>(); //where to JMC
+
+        ArrayList<Integer> all = new ArrayList<>(); //NUMBERS of tagged instructions
+        ArrayList<Instruction> instructs = new ArrayList<>(); //list of tagged instructions
+
+        for(int i = 0; i < instructions.size(); i++){ //go through generated instructions
             Instruction instr = instructions.get(i);
 
-            if(instr.getInstruction() == null){ //got start or end
+            if(instr.getInstruction() == null){ //found tagged instruction
                 all.add(i);
                 instructs.add(instr);
             }
         }
 
-        for(int i = 0; i < instructs.size(); i++){
+        for(int i = 0; i < instructs.size(); i++){ //find matching tagged instruction
             Instruction firstOcc = instructs.get(i);
-            String firstOccIdent = firstOcc.getJmpAddr();
+            String firstOccIdent = firstOcc.getJmpAddr(); //get first occ
 
             for(int j = i + 1; j < instructs.size(); j++){
                 Instruction secOcc = instructs.get(j);
                 String secOccIdent = secOcc.getJmpAddr();
 
-                if(firstOccIdent.equals(secOccIdent)){
-                    startInst.add(all.get(i));
-                    endInstr.add(all.get(j));
+                if(firstOccIdent.equals(secOccIdent)){ //found second occ
+                    //check whether JMP or JMC
+                    if(!firstOcc.getJmpAddr().contains("JMC")){ //JMP addr
+                        System.out.println("Found JMP match: " + firstOccIdent + " " + secOccIdent);
+                        startInstJMP.add(all.get(i));
+                        endInstrJMP.add(all.get(j));
 
-                    Instruction endIns = instructions.get(all.get(j));
-                    endIns.setAddress(all.get(i) - i);
-                    endIns.setInstruction(EInstrSet.JMP);
-                    endIns.setLevel(0);
+                        Instruction endIns = instructions.get(all.get(j));
+                        endIns.setAddress(all.get(i) - i);
+                        endIns.setInstruction(EInstrSet.JMP);
+                        endIns.setLevel(0);
+                    }
                 }
             }
         }
 
-//        for(int i = 0; i < all.size() / 2; i++){ //go through null instr - find match!
-//            int start = all.get(i);
-//            startInst.add(start);
-//            int end = all.get(all.size() - i - 1);
-//            System.out.println("Start is: " + start);
-//            System.out.println("End is: " + end);
-//
-//            Instruction endInstr = instructions.get(end);
-//            endInstr.setAddress(start - i);
-//            endInstr.setInstruction(EInstrSet.JMP);
-//            endInstr.setLevel(0);
-//        }
-        //(procedureDefinitions.get(0)).getIndivParameters();
-
         ArrayList<Instruction> instructionsEdit = new ArrayList<>();
 
         for(int i = 0; i < instructions.size(); i++){
-            if(!startInst.contains(i)){
+            if(!startInstJMP.contains(i)){
                 instructionsEdit.add(instructions.get(i));
+            }
+        }
+        System.out.println("Instruct size is: " + instructs.size());
+        instructs.clear();
+        all.clear();
+
+        for(int i = 0; i < instructionsEdit.size(); i++){ //go through generated instructions
+            Instruction instr = instructionsEdit.get(i);
+
+            if(instr.getInstruction() == null){ //found tagged instruction
+                all.add(i);
+                instructs.add(instr);
+            }
+        }
+
+        System.out.println("Instruct size is: " + instructs.size());
+        for(int i = 0; i < instructs.size(); i++){ //find matching tagged instruction
+            Instruction firstOcc = instructs.get(i);
+            String firstOccIdent = firstOcc.getJmpAddr(); //get first occ
+
+            for(int j = i + 1; j < instructs.size(); j++){
+                Instruction secOcc = instructs.get(j);
+                String secOccIdent = secOcc.getJmpAddr();
+
+                if(firstOccIdent.equals(secOccIdent)){ //found second occ
+                    //check whether JMP or JMC
+                    if(firstOcc.getJmpAddr().contains("JMC")){ //JMC addr
+                        System.out.println("Found JMC match: " + firstOccIdent + " " + secOccIdent);
+
+                        startInstJMC.add(all.get(i));
+                        System.out.println("iiiii: " + i);
+                        System.out.println("I got: " + all.get(i));
+                        endInstrJMC.add(all.get(j));
+                        System.out.println("J got: " + all.get(j));
+
+                        Instruction startIns = instructionsEdit.get(all.get(i));
+                        startIns.setAddress(all.get(j) - i + 1);
+                        startIns.setInstruction(EInstrSet.JMC);
+                        startIns.setLevel(0);
+                    }
+                }
+            }
+        }
+
+        ArrayList<Instruction> instructionsEdit2 = new ArrayList<>();
+
+        for(int i = 0; i < instructionsEdit.size(); i++){
+            if(!endInstrJMC.contains(i)){
+                instructionsEdit2.add(instructionsEdit.get(i));
             }
         }
 
@@ -346,8 +389,8 @@ public class Compiler {
             }
         }
 
-
-        return instructionsEdit;
+        System.out.println("FInal is: " + instructionsEdit2.size());
+        return instructionsEdit2;
     }
 
 //    public static Instruction generateInstruction(EInstrSet instr, int par1, int par2){

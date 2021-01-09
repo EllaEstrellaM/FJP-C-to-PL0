@@ -5,6 +5,8 @@ import statementInterEnum.IDeclaration;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
+import java.util.ArrayList;
+
 public class constStringDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
@@ -13,6 +15,7 @@ public class constStringDeclaration implements Istatement, IoneLineStatement, ID
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
     String stringVal; //value of the NEW variable
+    ArrayList<String> identifierMulti; //list of multiassign
     /* relevant statement info to keep - END */
 
     public constStringDeclaration(){
@@ -22,6 +25,15 @@ public class constStringDeclaration implements Istatement, IoneLineStatement, ID
 
         identifierVar = "";
         stringVal = "";
+        identifierMulti = new ArrayList<>();
+    }
+
+    public void addToIdentifMulti(String ident){
+        identifierMulti.add(ident);
+    }
+
+    public ArrayList<String> getIdentifierMulti(){
+        return identifierMulti;
     }
 
     @Override

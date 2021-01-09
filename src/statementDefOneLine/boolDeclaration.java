@@ -5,6 +5,8 @@ import statementInterEnum.IDeclaration;
 import statementInterEnum.IoneLineStatement;
 import statementInterEnum.Istatement;
 
+import java.util.ArrayList;
+
 public class boolDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;
@@ -13,6 +15,7 @@ public class boolDeclaration implements Istatement, IoneLineStatement, IDeclarat
     /* relevant statement info to keep - START */
     String identifierVar; //name of the NEW variable
     String boolVal; //value of the NEW variable
+    ArrayList<String> identifierMulti; //list of multiassign
     /* relevant statement info to keep - END */
 
     public boolDeclaration(){
@@ -22,6 +25,15 @@ public class boolDeclaration implements Istatement, IoneLineStatement, IDeclarat
 
         identifierVar = "";
         boolVal = "";
+        identifierMulti = new ArrayList<>();
+    }
+
+    public void addToIdentifMulti(String ident){
+        identifierMulti.add(ident);
+    }
+
+    public ArrayList<String> getIdentifierMulti(){
+        return identifierMulti;
     }
 
     @Override

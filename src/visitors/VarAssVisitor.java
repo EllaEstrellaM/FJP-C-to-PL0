@@ -342,6 +342,14 @@ public class VarAssVisitor extends ourCBaseVisitor {
             intDeclar.setIdentifierVar(declVarName);
             intDeclar.setMinus_sign(declVarMinusSign);
             intDeclar.setDecVal(declVarValue);
+            //add multiassign data
+            if(treeItem1.multi_assign() != null){
+                List<ourCParser.Multi_assignContext> treeItem2 = treeItem1.multi_assign();
+
+                for(int i = 0; i < treeItem2.size(); i++){
+                    intDeclar.addToIdentifMulti(treeItem2.get(i).identifier_var().IDENT().getText()); //name of the variable
+                }
+            }
 
             addStatement(intDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
@@ -353,6 +361,16 @@ public class VarAssVisitor extends ourCBaseVisitor {
             boolDeclaration boolDeclar = new boolDeclaration();
             boolDeclar.setIdentifierVar(declVarName);
             boolDeclar.setBoolVal(declVarValue);
+
+            //add multiassign data
+            if(treeItem1.multi_assign() != null){
+                List<ourCParser.Multi_assignContext> treeItem2 = treeItem1.multi_assign();
+
+                for(int i = 0; i < treeItem2.size(); i++){
+                    boolDeclar.addToIdentifMulti(treeItem2.get(i).identifier_var().IDENT().getText()); //name of the variable
+                }
+            }
+
             addStatement(boolDeclar);
         }else if(ctx.string_var_dec() != null){ //string value
             ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
@@ -363,6 +381,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
             stringDeclaration stringDeclar = new stringDeclaration();
             stringDeclar.setIdentifierVar(declVarName);
             stringDeclar.setStringVal(declVarValue);
+
+            //add multiassign data
+            if(treeItem1.multi_assign() != null){
+                List<ourCParser.Multi_assignContext> treeItem2 = treeItem1.multi_assign();
+
+                for(int i = 0; i < treeItem2.size(); i++){
+                    stringDeclar.addToIdentifMulti(treeItem2.get(i).identifier_var().IDENT().getText()); //name of the variable
+                }
+            }
 
             addStatement(stringDeclar);
         }else if(ctx.array_var_dec() != null){
@@ -425,6 +452,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constIntDeclar.setMinus_sign(declVarMinusSign);
             constIntDeclar.setDecVal(declVarValue);
 
+            //add multiassign data
+            if(treeItem1.multi_assign() != null){
+                List<ourCParser.Multi_assignContext> treeItem2 = treeItem1.multi_assign();
+
+                for(int i = 0; i < treeItem2.size(); i++){
+                    constIntDeclar.addToIdentifMulti(treeItem2.get(i).identifier_var().IDENT().getText()); //name of the variable
+                }
+            }
+
             addStatement(constIntDeclar);
         }else if(ctx.bool_var_dec() != null){ //bool value
             ourCParser.Bool_var_decContext treeItem1 = ctx.bool_var_dec();
@@ -436,6 +472,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constBoolDeclar.setIdentifierVar(declVarName);
             constBoolDeclar.setBoolVal(declVarValue);
 
+            //add multiassign data
+            if(treeItem1.multi_assign() != null){
+                List<ourCParser.Multi_assignContext> treeItem2 = treeItem1.multi_assign();
+
+                for(int i = 0; i < treeItem2.size(); i++){
+                    constBoolDeclar.addToIdentifMulti(treeItem2.get(i).identifier_var().IDENT().getText()); //name of the variable
+                }
+            }
+
             addStatement(constBoolDeclar);
         }else if(ctx.string_var_dec() != null){ //string value
             ourCParser.String_var_decContext treeItem1 = ctx.string_var_dec();
@@ -446,6 +491,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
             constStringDeclaration constStringDeclar = new constStringDeclaration();
             constStringDeclar.setIdentifierVar(declVarName);
             constStringDeclar.setStringVal(declVarValue);
+
+            //add multiassign data
+            if(treeItem1.multi_assign() != null){
+                List<ourCParser.Multi_assignContext> treeItem2 = treeItem1.multi_assign();
+
+                for(int i = 0; i < treeItem2.size(); i++){
+                    constStringDeclar.addToIdentifMulti(treeItem2.get(i).identifier_var().IDENT().getText()); //name of the variable
+                }
+            }
 
             addStatement(constStringDeclar);
         }else if(ctx.array_var_dec() != null){

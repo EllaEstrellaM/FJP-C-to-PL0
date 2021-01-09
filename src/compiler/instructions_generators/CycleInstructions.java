@@ -50,7 +50,7 @@ public class CycleInstructions {
         ArrayList<Instruction> genInstrExpr2 = ExpressionParser.solveExpr(end, table, privTable); //define end of the cycle
         generatedInstructions.addAll(genInstrExpr2);
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 13)); //compare actual value of var with the end of the cycle ; until <=
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump to RET
+        generatedInstructions.add(new Instruction(cycle + "JMC")); //here we should jump to RET
         //CODE INSIDE CYCLE
 
         return generatedInstructions;
@@ -87,6 +87,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifAddr)); //now increment value of var - END ; save value of var
         generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
 
         return generatedInstructions;
     }
@@ -140,7 +141,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, traverseHlpAddr)); //load actual value of traversing var <- JUMP HERE FROM END
         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, identifArraySym.getSizeArr())); //define end of the cycle
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 10)); //compare actual value of var with the end of the array ; until <
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump to RET
+        generatedInstructions.add(new Instruction(cycle + "JMC")); //here we should jump to RET
         //load one item from arr to var - START
         generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, identifArraySymAddr)); //load start address of the cycle
         generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, traverseHlpAddr)); //load traversing state of the cycle
@@ -173,6 +174,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; +
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, traverseHlpAddr)); //now increment value of var - END ; save value of var
         generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
 
         return generatedInstructions;
     }
@@ -197,7 +199,7 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(cycle + ""));
         ArrayList<Instruction> genInstrExpr2 = ExpressionParser.solveExpr(condition, table, privTable);
         generatedInstructions.addAll(genInstrExpr2);
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump to next
+        generatedInstructions.add(new Instruction(cycle + "JMC")); //here we should jump to next
         //CODE INSIDE CYCLE - here increment the var??
 
         return generatedInstructions;
@@ -212,8 +214,9 @@ public class CycleInstructions {
         System.out.println("Generating CYCLE - while second part");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
-        //CODE INSIDE CYCLE - here increment the var??
+        //CODE INSIDE CYCLE
         generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
 
         return generatedInstructions;
     }
@@ -251,9 +254,9 @@ public class CycleInstructions {
         //CODE INSIDE CYCLE
         ArrayList<Instruction> genInstrExpr2 = ExpressionParser.solveExpr(condition, table, privTable);
         generatedInstructions.addAll(genInstrExpr2);
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump NEXT STATEMENTS (+1)!!!
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
         generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
-
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
         return generatedInstructions;
     }
 
@@ -290,9 +293,9 @@ public class CycleInstructions {
         //CODE INSIDE CYCLE
         ArrayList<Instruction> genInstrExpr2 = ExpressionParser.solveExpr(condition, table, privTable);
         generatedInstructions.addAll(genInstrExpr2);
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); //here we should jump NEXT STATEMENTS (+1)!!!
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
         generatedInstructions.add(new Instruction(cycle + "")); //now jump to beginning of the cycle
-
+        generatedInstructions.add(new Instruction(cycle + "JMC"));
         return generatedInstructions;
     }
 }

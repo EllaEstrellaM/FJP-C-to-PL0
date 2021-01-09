@@ -20,7 +20,7 @@ procedure pr(int a, bool cond){
 }
 
 procedure main(){
-    //pr(1 * 2 + 8 - (10 + 6), true);
+    const string a = b = c = d = "hsaioh";
     int i = 0;
-    while(i < 4){i = 1;for(i = 1 to 66){i = 20;}}
+    while(i < 4){i = 1;}for(i = 1 to 66){i = 20;}
 }
