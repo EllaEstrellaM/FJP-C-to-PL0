@@ -48,6 +48,10 @@ public class Instruction {
         return jmpAddr;
     }
 
+    public void setJmpAddr(String jmpAddr) {
+        this.jmpAddr = jmpAddr;
+    }
+
     @Override
     public String toString() {
         return "" + instruction + " " + level + " " + address;
