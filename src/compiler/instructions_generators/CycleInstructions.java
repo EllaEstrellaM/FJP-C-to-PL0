@@ -36,7 +36,7 @@ public class CycleInstructions {
         }else if(table.containsKey(identifier)){
             identifSym = table.get(identifier);
         }else{
-            //todo error
+
         }
 
         int identifAddr = identifSym.getAdr();
@@ -76,7 +76,7 @@ public class CycleInstructions {
         }else if(table.containsKey(identifier)){
             identifSym = table.get(identifier);
         }else{
-            //todo error
+
         }
 
         int identifAddr = identifSym.getAdr();

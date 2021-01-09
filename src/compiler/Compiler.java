@@ -46,9 +46,6 @@ public class Compiler {
 
         // this instruction will always be the first one
         Instruction firstI = new Instruction(EInstrSet.JMP, 0,1);
-
-        // todo then increase the stack 'size' by how much?
-        // todo 3 + as_many_as_we_have_variables?
         Instruction secondI = new Instruction(EInstrSet.INT, 0, BASE_ADDRESS);
 
         instructions.add(firstI);
@@ -61,10 +58,6 @@ public class Compiler {
                 resolveDeclaration((IDeclaration) st, proc, globalSymbolTable, this.instructions);
             }
         }
-
-        // insert this as the second instruction: todo no!
-        //instructions.add(1, new Instruction(EInstrSet.INT, 0, BASE_ADDRESS + declCounter));
-
 
         System.out.println("Procedure definitions size is: " + procedureDefinitions.size());
         for(int i = 0; i < procedureDefinitions.size(); i++){ //go through procedure definitions
@@ -234,7 +227,6 @@ public class Compiler {
                             }
 
                             if(calledProc == null){
-                                // todo brutal fatal error, but shouldn't occur
                                 break;
                             }
 
@@ -468,7 +460,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -486,13 +478,13 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
             intWhat = 1;
         }
-        else if(st instanceof stringDeclaration){ // todo addresses
+        else if(st instanceof stringDeclaration){
             name = ((stringDeclaration) st).getIdentifierVar();
             String value = ((stringDeclaration) st).getStringVal();
             int size = value.length() - 2;
@@ -502,7 +494,7 @@ public class Compiler {
             symb.setSizeArr(size);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -520,7 +512,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+= size;
@@ -536,7 +528,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(false);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.ARRAY);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -553,7 +545,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.BOOL);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -568,7 +560,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
             declCounter++;
@@ -583,7 +575,7 @@ public class Compiler {
             symb.setName(name);
             symb.setConst(true);
             symb.setAdr(declCounter);
-            symb.setLev(0); // todo ???
+            symb.setLev(0);
             symb.setType(ESymbolType.STRING);
             symb.setInProcedure(inProc);
             declCounter+=size;
@@ -591,7 +583,7 @@ public class Compiler {
         }
 
         // ternary declarations:
-        else if(st instanceof boolTernarDeclaration){ // todo
+        else if(st instanceof boolTernarDeclaration){
             name = ((boolTernarDeclaration)st).getIdentifierVar();
             ternaryCond = ((boolTernarDeclaration)st).getExprDecBoolCont();
             ternaryTrueVal = ((boolTernarDeclaration)st).getExprDecBoolTrueVal();
@@ -620,7 +612,7 @@ public class Compiler {
             declCounter++;
             intWhat = 1;
         }
-        else if(st instanceof stringTernarDeclaration){ // todo strings done?
+        else if(st instanceof stringTernarDeclaration){
             name = ((stringTernarDeclaration)st).getIdentifierVar();
             ternaryCond = ((stringTernarDeclaration)st).getExprDecBoolCont();
             ternaryTrueVal = ((stringTernarDeclaration)st).getExprDecBoolTrueVal();
@@ -631,7 +623,6 @@ public class Compiler {
             symb.setLev(0);
             symb.setType(ESymbolType.INT);
             symb.setInProcedure(inProc);
-            //declCounter++; // todo!!!!
         }
 
         // procedure definition:
@@ -641,11 +632,11 @@ public class Compiler {
 
             symb.setName(name);
             symb.setProcParameters(params);
-            symb.setAdr(declCounter); // ???
-            symb.setLev(0); // todo ???
+            symb.setAdr(declCounter);
+            symb.setLev(0);
             symb.setType(ESymbolType.PROCEDURE);
-            symb.setInProcedure(inProc); // todo we probably dont support nested procedures anyway
-            //declCounter++; // todo???
+            symb.setInProcedure(inProc);
+            //declCounter++;
 
 
             // prepare addresses for arguments and store them in the private table
@@ -696,7 +687,7 @@ public class Compiler {
         }
         else{
             //this.instructions.add(new Instruction(EInstrSet.INT, 0, intWhat));
-            if(!(st instanceof procedureDefinition)) // todo?
+            if(!(st instanceof procedureDefinition))
                 instrs.add(new Instruction(EInstrSet.INT, 0, intWhat));
             if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
                 // array declaration doesn't produce any instructions
@@ -926,7 +917,6 @@ public class Compiler {
                         }
 
                         if(calledProc == null){
-                            // todo brutal fatal error, but shouldn't occur
                             break;
                         }
 

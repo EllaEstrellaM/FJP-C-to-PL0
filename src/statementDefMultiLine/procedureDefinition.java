@@ -44,10 +44,6 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
         String[] splits = parameters.split(",");
         ArrayList<Symbol> as = new ArrayList<>();
 
-//        if(splits.length == 1 && splits[0].equals("")){
-//            return null; // todo?
-//        }
-
         System.out.println("params:");
         for(int i = 0; i < splits.length; i++){
             System.out.println(splits[i]);

@@ -33,13 +33,13 @@ public enum EOperator {
 
     public static EOperator getOperFromString(String str){
         switch (str){
-            case "unary minus": return UNARY_MINUS; // todo?
+            case "unary minus": return UNARY_MINUS;
             case "+": return PLUS;
             case "-": return MINUS;
             case "*": return MULT;
             case "/": return DIV;
             case "%": return MOD;
-            case "odd": return ODD;  // todo?
+            case "odd": return ODD;
             case "==": return EQUAL;
             case "!=": return NOT_EQUAL;
             case "<": return LT;

@@ -5,9 +5,6 @@ import compiler.errors.Error;
 import java.util.ArrayList;
 
 public class Operation {
-
-    // todo if we want the symbol to not be an actual variable, but only a number, the address will be -1
-
     // symbols must always have a value assigned
     private Symbol symbol1;
     private Symbol symbol2;

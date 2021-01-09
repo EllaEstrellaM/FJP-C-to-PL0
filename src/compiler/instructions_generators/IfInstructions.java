@@ -37,7 +37,7 @@ public class IfInstructions {
             }
         }
         else {
-            Symbol retrSymb = ExpressionParser.retrievedSymbol; // todo negation!!!!
+            Symbol retrSymb = ExpressionParser.retrievedSymbol;
             if(retrSymb != null){
                 //if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
                 if(retrSymb.getAdr() == -1){
@@ -46,7 +46,6 @@ public class IfInstructions {
                         resultVal = Integer.parseInt(retrSymb.getValue());
                     }
                     else{
-                        // todo negation
                         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(retrSymb.getValue())));
                         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -62,7 +61,6 @@ public class IfInstructions {
                             resultVal = Integer.parseInt(retrSymb.getValue());
                         }
                         else{
-                            // todo negation
                             generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr()));
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -78,13 +76,11 @@ public class IfInstructions {
                             resultVal = retrSymb.getArrayElements().get(retrSymb.getIndToArray());
                         }
                         else{
-                            // todo negation
                             generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr() + retrSymb.getIndToArray()));
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
                             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
                             resultVal = retrSymb.negate();
-
                         }
 
                     }
@@ -96,17 +92,7 @@ public class IfInstructions {
                 System.out.println("weird");
             }
         }
-
-
-        // now the result is stored at the top
-        //generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0)); // load 0
-        //generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.NOT_EQUAL.getInstrCode())); // compare if ne to 0
-        //generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); // todo set addr
         generatedInstructions.add(new Instruction(ifCond + "JMC")); //here we should jump to RET
-
-
-
-
 
         return generatedInstructions;
 
@@ -114,7 +100,6 @@ public class IfInstructions {
 
     public static ArrayList<Instruction> generateInstructionsEnd(Object st){
         ArrayList<Instruction> generatedInstructions = new ArrayList<>();
-
 
         generatedInstructions.add(new Instruction(st + "JMC"));
 

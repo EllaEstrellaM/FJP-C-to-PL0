@@ -12,7 +12,6 @@ public class Symbol {
     private boolean hasBeenDeclared;
 
     // save everything as a string - all ints, bools, strings and arrays
-    // todo is this a good idea?
     private String value;
 
     private String inProcedure;

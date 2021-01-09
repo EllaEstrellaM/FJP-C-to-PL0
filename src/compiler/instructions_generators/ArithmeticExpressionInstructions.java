@@ -52,7 +52,6 @@ public class ArithmeticExpressionInstructions {
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
                 }
                 else{
-                    // todo negation
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                     generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -65,7 +64,6 @@ public class ArithmeticExpressionInstructions {
                     generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr1));
                 }
                 else{
-                    // todo negation
                     generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr1));
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                     generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -82,7 +80,6 @@ public class ArithmeticExpressionInstructions {
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol2().getValue())));
                 }
                 else{
-                    // todo negation
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol2().getValue())));
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                     generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -95,7 +92,6 @@ public class ArithmeticExpressionInstructions {
                     generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr2));
                 }
                 else{
-                    // todo negation
                     generatedInstructions.add(new Instruction(EInstrSet.LOD, op.getSymbol1().getLev(), adr2));
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                     generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -111,7 +107,6 @@ public class ArithmeticExpressionInstructions {
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, op.getOperator().getInstrCode()));
         }
         else{
-            // todo maybe this needs to be done in a more complicated way?
             if(op.getOperator() == EOperator.AND){
                 // sum of last 2 values must be 2 (both are 1)
                 generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -133,32 +128,11 @@ public class ArithmeticExpressionInstructions {
 
         // checking if the result needs to be negated:
         if(op.isNegateResult()){
-            // todo negate result
             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
 
         }
-
-
-
-
-
-
-        //int resToStore = op.getResult();
-        //generatedInstructions.add(new Instruction(EInstrSet.STO, 0, resToStore)); // todo
-
-        // then store it in the symbol or in stack
-//        if(symbToStoreTo.getAdr() == -1){
-//
-//            // put it to stack
-//            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, resToStore));
-//        }
-//        else{
-//            // todo we dont have to push it to stack at all?
-//            symbToStoreTo.setValue("" + resToStore);
-//        }
-
 
         // now there should be the whole result at the top of the stack
         return generatedInstructions;

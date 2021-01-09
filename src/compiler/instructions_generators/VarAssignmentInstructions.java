@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Stack;
 
 public class VarAssignmentInstructions {
-
-    // todo what should we do, when arr1 = arr2 happens? -> point to the same memory?
     // in value there is the whole right side
     public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable, boolean assignToSymbol){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
@@ -114,7 +112,7 @@ public class VarAssignmentInstructions {
                 else{
                     // already stored string var
                     for(int j = 0; j < currResult.length(); j++){
-                        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, currAddr + j)); // todo 0?
+                        generatedInstructions.add(new Instruction(EInstrSet.LOD, 0, currAddr + j));
                         generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + currInd));
                         currInd++;
                     }
@@ -148,7 +146,7 @@ public class VarAssignmentInstructions {
             //valAtTop = true;
         }
         else {
-            Symbol retrSymb = ExpressionParser.retrievedSymbol; // todo negation!!!!
+            Symbol retrSymb = ExpressionParser.retrievedSymbol;
             if(retrSymb != null){
                 //if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
                     if(retrSymb.getAdr() == -1){
@@ -157,7 +155,6 @@ public class VarAssignmentInstructions {
                             actualVal = retrSymb.getValue(); // ??
                         }
                         else{
-                            // todo negation
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(retrSymb.getValue())));
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -173,7 +170,6 @@ public class VarAssignmentInstructions {
                                 actualVal = retrSymb.getValue();
                             }
                             else{
-                                // todo negation
                                 generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr()));
                                 generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                                 generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -193,7 +189,6 @@ public class VarAssignmentInstructions {
                                 actualVal = "" + retrSymb.getArrayElements().get(retrSymb.getIndToArray());
                             }
                             else{
-                                // todo negation
                                 generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr() + retrSymb.getIndToArray()));
                                 generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                                 generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));

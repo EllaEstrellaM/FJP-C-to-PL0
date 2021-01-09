@@ -87,8 +87,6 @@ public class Main {
         return contentBuilder.toString();
     }
 
-
-    // todo is this a good idea? what about var names, etc..?
     private static String editInput(String content){
         String res = content.replaceAll("true", "1");
         res = res.replaceAll("false", "0");

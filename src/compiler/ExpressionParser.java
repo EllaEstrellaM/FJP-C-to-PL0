@@ -73,7 +73,7 @@ public class ExpressionParser {
             }
         }
         else {
-            Symbol retrSymb = ExpressionParser.retrievedSymbol; // todo negation!!!!
+            Symbol retrSymb = ExpressionParser.retrievedSymbol;
             if(retrSymb != null){
                 //if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
                 if(retrSymb.getAdr() == -1){
@@ -82,7 +82,6 @@ public class ExpressionParser {
                         //resultVal = Integer.parseInt(retrSymb.getValue());
                     }
                     else{
-                        // todo negation
                         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(retrSymb.getValue())));
                         generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -98,7 +97,6 @@ public class ExpressionParser {
                             //resultVal = Integer.parseInt(retrSymb.getValue());
                         }
                         else{
-                            // todo negation
                             generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr()));
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -114,7 +112,6 @@ public class ExpressionParser {
                             //resultVal = retrSymb.getArrayElements().get(retrSymb.getIndToArray());
                         }
                         else{
-                            // todo negation
                             generatedInstructions.add(new Instruction(EInstrSet.LOD, retrSymb.getLev(), retrSymb.getAdr() + retrSymb.getIndToArray()));
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 1));
                             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.PLUS.getInstrCode()));
@@ -202,8 +199,7 @@ public class ExpressionParser {
                         setInGlobal = false;
                     }
                     else{
-                        Error.printVarNotFound(numBuf.toString()); // todo opravdu?
-                        //throw new VarNotFoundException(numBuf);
+                        Error.printVarNotFound(numBuf.toString());
                     }
                 }
                 else if(globTable.containsKey(numBuf.toString())){ // then check the global
@@ -222,8 +218,7 @@ public class ExpressionParser {
                         numbers.push(s); //push buffer containing whole number to stack
                     }
                     else{
-                        Error.printVarNotFound(numBuf.toString()); // todo opravdu?
-                        //throw new VarNotFoundException(numBuf);
+                        Error.printVarNotFound(numBuf.toString());
                     }
 
                 }
@@ -244,8 +239,7 @@ public class ExpressionParser {
                         numbers.push(s);
                     }
                     else{
-                        Error.printVarNotFound(numBuf.toString()); // todo opravdu?
-                        //throw new VarNotFoundException(numBuf);
+                        Error.printVarNotFound(numBuf.toString());
                     }
 
                 }
@@ -287,7 +281,7 @@ public class ExpressionParser {
                 }
 
                 if(opers.peek().equals("!(")){
-                    statementOrder.get(statementOrder.size() - 1).setNegateResult(true); // todo out of bounds
+                    statementOrder.get(statementOrder.size() - 1).setNegateResult(true);
                 }
                 opers.pop();
                 // negate result of this operation if ! before opening parentheses
@@ -349,29 +343,6 @@ public class ExpressionParser {
             Symbol ret = new Symbol();
 
             retrievedSymbol = s;
-
-            // not a stirng
-//            if(s.getType() == ESymbolType.ARRAY){
-//                if(s.getIndToArray() != -1){
-//                    if(s.getIndToArray() >= s.getSizeArr()){
-//                        // todo print out of bounds
-//                    }
-//                    else{
-//                        ret.setAdr(-1);
-//                        ret.setPartialResult(false);
-//                        ret.setValue("" + s.getArrayElements().get(s.getIndToArray()));
-//
-//                        //retrievedSymbol = s.getArrayElements().get(s.getIndToArray());
-//                    }
-//                }
-//                else{
-//                    // todo allow pole1 = pole2?
-//                }
-//            }
-//            else if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
-//
-//            }
-
         }
 
         return statementOrder;
