@@ -7,6 +7,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents ternar declaration of boolean.
+ */
 public class boolTernarDeclaration implements Istatement, IoneLineStatement, IDeclaration {
     EoneLineStatementType operationType;
     String wholeContent;

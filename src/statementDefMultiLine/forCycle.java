@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents for cycle.
+ */
 public class forCycle implements Istatement, ImultiLineStatement {
     EmultiLineStatementType operationType;
     String wholeContent;

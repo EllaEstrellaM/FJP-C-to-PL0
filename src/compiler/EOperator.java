@@ -1,5 +1,8 @@
 package compiler;
 
+/**
+ * Contains possible PL/0 comparison operators.
+ */
 public enum EOperator {
     UNARY_MINUS(1),
     PLUS(2),
@@ -15,7 +18,7 @@ public enum EOperator {
     GT(12),
     LE(13),
 
-    // these that follow aren't part of the instruction set!!:
+    // these that follow aren't part of the instruction set:
     OR(-1),
     AND(-1),
     NEG(-1);
@@ -26,11 +29,15 @@ public enum EOperator {
         this.instrCode = instrCode;
     }
 
-
     public int getInstrCode() {
         return instrCode;
     }
 
+    /**
+     * Returns PL/0 instruction code corresponding to given String.
+     * @param str represents symbol to which we want to get specific instruction code
+     * @return PL/0 instruction code
+     */
     public static EOperator getOperFromString(String str){
         switch (str){
             case "unary minus": return UNARY_MINUS;

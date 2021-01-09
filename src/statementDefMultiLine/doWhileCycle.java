@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents do while cycle.
+ */
 public class doWhileCycle implements Istatement, ImultiLineStatement {
     EmultiLineStatementType operationType;
     String wholeContent;

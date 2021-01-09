@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents int assign.
+ */
 public class intAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;

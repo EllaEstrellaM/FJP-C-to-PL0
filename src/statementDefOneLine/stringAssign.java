@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents string assign.
+ */
 public class stringAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;

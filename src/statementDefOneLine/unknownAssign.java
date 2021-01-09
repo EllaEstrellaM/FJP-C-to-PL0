@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents assign to variable (could be of any type)
+ */
 public class unknownAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;

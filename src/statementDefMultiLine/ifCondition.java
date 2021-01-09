@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents if condition.
+ */
 public class ifCondition implements Istatement, ImultiLineStatement {
     EmultiLineStatementType operationType;
     String wholeContent;

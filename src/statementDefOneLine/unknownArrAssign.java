@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents assign to array (could be of any type)
+ */
 public class unknownArrAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;

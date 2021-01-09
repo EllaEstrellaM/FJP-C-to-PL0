@@ -2,6 +2,9 @@ package compiler;
 
 import java.util.ArrayList;
 
+/**
+ * Represents one symbol which is present in symbols table.
+ */
 public class Symbol {
     private String name;
     private int lev;
@@ -17,23 +20,11 @@ public class Symbol {
     private String inProcedure;
     private String procParameters;
 
-
     private boolean negateValue;
     private int indToArray;
     private boolean isPartialResult;
 
     private ArrayList<Integer> arrayElements;
-
-//    public Symbol(String name, int level, int address, int sizeArr, ESymbolType type, boolean isConst, String value, String inProcedure){
-//        this.name = name;
-//        this.lev = level;
-//        this.adr = address;
-//        this.sizeArr = sizeArr;
-//        this.type = type;
-//        this.isConst = isConst;
-//        this.value = value;
-//        this.inProcedure = inProcedure;
-//    }
 
     public Symbol(){
         this.name = "";
@@ -64,11 +55,7 @@ public class Symbol {
         this.indToArray = copy.getIndToArray();
         this.isPartialResult = copy.isPartialResult();
         this.arrayElements = copy.getArrayElements();
-
     }
-
-
-
 
     // getters and setters:
     public String getName() {
@@ -130,17 +117,6 @@ public class Symbol {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public void printInfo(){
-        System.out.println("--- symbol info ---");
-        System.out.println("name: " + name);
-        System.out.println("lev: " + lev);
-        System.out.println("adr: " + adr);
-        System.out.println("size: " + sizeArr);
-        System.out.println("type: " + type);
-        System.out.println("isConst: " + isConst);
-        System.out.println("value: " + value);
     }
 
     public String getInProcedure() {

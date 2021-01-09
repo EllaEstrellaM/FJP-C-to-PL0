@@ -1,17 +1,30 @@
 package compiler;
 
+/**
+ * Each instance represents one PL/0 instruction.
+ */
 public class Instruction {
     private EInstrSet instruction;
     private int level;
     private int address;
     private String jmpAddr;
 
+    /**
+     * Constructor accepts instruction type, level and address.
+     * @param instr type of instruction
+     * @param first level
+     * @param second address
+     */
     public Instruction(EInstrSet instr, int first, int second){
         this.instruction = instr;
         this.level = first;
         this.address = second;
     }
 
+    /**
+     * Used for tagging instructions (address which should be changed afterwards).
+     * @param jmpAddr unique identifier
+     */
     public Instruction(String jmpAddr){
         this.jmpAddr = jmpAddr;
         this.instruction = null;
@@ -19,6 +32,10 @@ public class Instruction {
         this.level = -1;
     }
 
+    /**
+     * Used for creating "deep copy".
+     * @param other another instance of this class
+     */
     public Instruction(Instruction other){
         this.address = other.getAddress();
         this.instruction = other.getInstruction();

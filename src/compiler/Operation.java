@@ -2,8 +2,9 @@ package compiler;
 
 import compiler.errors.Error;
 
-import java.util.ArrayList;
-
+/**
+ * Represents one operation between two numbers / symbols.
+ */
 public class Operation {
     // symbols must always have a value assigned
     private Symbol symbol1;
@@ -11,7 +12,6 @@ public class Operation {
     private EOperator operator;
 
     private boolean negateResult = false;
-
 
     public EOperator getOperator() {
         return operator;
@@ -47,7 +47,7 @@ public class Operation {
                 s1 = symbol1.getArrayElements().get(symbol1.getIndToArray());
             }
             else{
-                // print something?
+
             }
         }
 
@@ -56,7 +56,7 @@ public class Operation {
                 s1 = symbol2.getArrayElements().get(symbol2.getIndToArray());
             }
             else{
-                // print something?
+
             }
         }
 

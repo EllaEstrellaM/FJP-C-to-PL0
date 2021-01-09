@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents assign to array of bools.
+ */
 public class arrBoolAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;

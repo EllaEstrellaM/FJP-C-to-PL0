@@ -6,6 +6,9 @@ import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 
+/**
+ * Represents ternar assign of string.
+ */
 public class ternarAssign implements Istatement, IoneLineStatement {
     EoneLineStatementType operationType;
     String wholeContent;

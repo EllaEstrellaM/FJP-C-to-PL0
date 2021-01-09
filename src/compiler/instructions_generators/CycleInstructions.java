@@ -1,27 +1,28 @@
 package compiler.instructions_generators;
 
-import compiler.*;
 import compiler.Compiler;
+import compiler.*;
 import compiler.errors.Error;
 import statementDefMultiLine.*;
-import statementDefOneLine.intDeclaration;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Takes care of generating instructions specific for cycles.
+ */
 public class CycleInstructions {
     /**
      * Generates instructions for for cycle (first part).
      * @param cycle instance of forCycle, represents one for cycle
      * @param table table with symbols
+     * @param privTable private table with symbols
      * @param innerLevel level - inner statements
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateForInstructions1(forCycle cycle, HashMap<String, Symbol> table, HashMap<String, Symbol> privTable, int innerLevel){
         cycle.setInnerLevel(innerLevel); //assign level first
 
-        System.out.println("Generating CYCLE - for first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for forcycle - START
@@ -35,8 +36,6 @@ public class CycleInstructions {
             identifSym = privTable.get(identifier);
         }else if(table.containsKey(identifier)){
             identifSym = table.get(identifier);
-        }else{
-
         }
 
         int identifAddr = identifSym.getAdr();
@@ -60,10 +59,10 @@ public class CycleInstructions {
      * Generates instructions for for cycle (second part).
      * @param cycle instance of forCycle, represents one for cycle
      * @param table table with symbols
+     * @param privTable private table with symbols
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateForInstructions2(forCycle cycle, HashMap<String, Symbol> table, HashMap<String, Symbol> privTable){
-        System.out.println("Generating CYCLE - for second part");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for forcycle - START
@@ -75,8 +74,6 @@ public class CycleInstructions {
             identifSym = privTable.get(identifier);
         }else if(table.containsKey(identifier)){
             identifSym = table.get(identifier);
-        }else{
-
         }
 
         int identifAddr = identifSym.getAdr();
@@ -96,13 +93,13 @@ public class CycleInstructions {
      * Generates instructions for foreach cycle (first part).
      * @param cycle instance of foreachCycle, represents one foreach cycle
      * @param table table with symbols
+     * @param privTable private table with symbols
      * @param innerLevel level - inner statements
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateForeachInstructions1(foreachCycle cycle, HashMap<String, Symbol> table, HashMap<String, Symbol> privTable, int innerLevel){
         cycle.setInnerLevel(innerLevel); //assign level first
 
-        System.out.println("Generating CYCLE - foreach first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for foreachcycle - START
@@ -115,7 +112,6 @@ public class CycleInstructions {
 
 
         if(!table.containsKey("SYSTEM_RESERVED_1")){
-
             Symbol sysS = new Symbol();
             String name = "SYSTEM_RESERVED_1";
             String value = "0";
@@ -184,7 +180,6 @@ public class CycleInstructions {
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateForeachInstructions2(foreachCycle cycle, HashMap<String, Symbol> table){
-        System.out.println("Generating CYCLE - foreach second");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         Symbol traverseHlp = table.get("SYSTEM_RESERVED_1"); //go through array, keep current index
@@ -205,13 +200,13 @@ public class CycleInstructions {
      * Generates instructions for while cycle (first part).
      * @param cycle instance of whileCycle, represents one while cycle
      * @param table table with symbols
+     * @param privTable private table with symbols
      * @param innerLevel level - inner statements
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateWhileInstructions1(whileCycle cycle, HashMap<String, Symbol> table, HashMap<String, Symbol> privTable, int innerLevel){
         cycle.setInnerLevel(innerLevel); //assign level first
 
-        System.out.println("Generating CYCLE - while first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for whilecycle - START
@@ -233,7 +228,6 @@ public class CycleInstructions {
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateWhileInstructions2(whileCycle cycle){
-        System.out.println("Generating CYCLE - while second part");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //CODE INSIDE CYCLE
@@ -252,7 +246,6 @@ public class CycleInstructions {
     public static ArrayList<Instruction> generateDoWhileInstructions1(doWhileCycle cycle, int innerLevel){
         cycle.setInnerLevel(innerLevel); //assign level first
 
-        System.out.println("Generating CYCLE - dowhile first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
         //CODE INSIDE CYCLE - here increment the var?? <- JUMP HERE FROM END
         generatedInstructions.add(new Instruction(cycle + ""));
@@ -263,10 +256,10 @@ public class CycleInstructions {
      * Generates instructions for do while cycle (second part).
      * @param cycle instance of doWhileCycle, represents one do while cycle
      * @param table table with symbols
+     * @param privTable private table with symbols
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateDoWhileInstructions2(doWhileCycle cycle, HashMap<String, Symbol> table, HashMap<String, Symbol> privTable){
-        System.out.println("Generating CYCLE - dowhile second");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for dowhilecycle - START
@@ -291,7 +284,6 @@ public class CycleInstructions {
     public static ArrayList<Instruction> generateRepeatUntilInstructions1(repeatUntilCycle cycle, int innerLevel){
         cycle.setInnerLevel(innerLevel); //assign level first
 
-        System.out.println("Generating CYCLE - repeatuntil first lvl " + cycle.getInnerLevel());
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
         //CODE INSIDE CYCLE - here increment the var?? <- JUMP HERE FROM END
         generatedInstructions.add(new Instruction(cycle + ""));
@@ -302,10 +294,10 @@ public class CycleInstructions {
      * Generates instructions for repeat until cycle (second part).
      * @param cycle instance of repeatUntilCycle, represents one repeat until cycle
      * @param table table with symbols
+     * @param privTable private table with symbols
      * @return cycle instructions
      */
     public static ArrayList<Instruction> generateRepeatUntilInstructions2(repeatUntilCycle cycle, HashMap<String, Symbol> table, HashMap<String, Symbol> privTable){
-        System.out.println("Generating CYCLE - repeatuntil second");
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         //info relevant for dowhilecycle - START

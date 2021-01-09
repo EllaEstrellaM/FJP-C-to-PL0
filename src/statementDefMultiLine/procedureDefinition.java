@@ -11,6 +11,9 @@ import statementInterEnum.Istatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Represents procedure definition.
+ */
 public class procedureDefinition implements Istatement, ImultiLineStatement, IDeclaration {
     EmultiLineStatementType operationType;
     String wholeContent;
@@ -44,10 +47,7 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
         String[] splits = parameters.split(",");
         ArrayList<Symbol> as = new ArrayList<>();
 
-        System.out.println("params:");
         for(int i = 0; i < splits.length; i++){
-            System.out.println(splits[i]);
-
             Symbol s = new Symbol();
             if(splits[i].startsWith("int ")){
                 s.setType(ESymbolType.INT);
@@ -59,12 +59,6 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
                 s.setName(splits[i].substring(5));
                 as.add(s);
             }
-//            else if(splits[i].startsWith("string ")){
-//                s.setType(ESymbolType.BOOL);
-//                s.setName(splits[i].substring(7));
-//            }
-
-
         }
 
         return as;
@@ -122,10 +116,6 @@ public class procedureDefinition implements Istatement, ImultiLineStatement, IDe
 
     public void setPrivateSymbolTable(HashMap<String, Symbol> privateSymbolTable) {
         this.privateSymbolTable = privateSymbolTable;
-    }
-
-    public void addToLocalSymbolTable(String key, Symbol symbol){
-        this.privateSymbolTable.put(key, symbol);
     }
 
     public ArrayList<Instruction> getInstructions() {

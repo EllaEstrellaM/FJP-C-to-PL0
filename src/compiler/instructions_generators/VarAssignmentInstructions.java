@@ -5,43 +5,42 @@ import compiler.errors.Error;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
 
+/**
+ * Class takes care of generating PL/0 instructions regarding to variable assignment.
+ */
 public class VarAssignmentInstructions {
-    // in value there is the whole right side
+    /**
+     * Generates instructions for PL/0 variable assignment.
+     * @param s corresponding table symbol
+     * @param value value which should be assigned
+     * @param indexToAssignTo index to which value should be assigned
+     * @param globTable global symbol table
+     * @param privTable private symbol table
+     * @param assignToSymbol to which symbol we should assign
+     * @return variable assignment instructions
+     */
     public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable, boolean assignToSymbol){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         int addr = s.getAdr(); // the address to store the new value to
         int level = s.getLev();
         String actualVal = value;
-        //boolean valAtTop = false;
-        //int index = -1;
-        boolean setInGlob = true;
 
         if(s.isConst() && s.hasBeenDeclared()){
             // cannot assign to const again - print err
             Error.printConstAssign(s.getName());
         }
 
-
-
         // we can assign only string to a string
-        if(s.getType() == ESymbolType.STRING /*&& !ExpressionParser.isNumeric(value) && !ExpressionParser.isExpression(value)*/){
+        if(s.getType() == ESymbolType.STRING){
             // it's not a number and it's not an expression - can be var name or string
-            // ok assignment to string
-
-            // merge the right side:
-            //if(value.contains("+")){
-                // concatenating used
                 String[] splits = value.split("\\+");
                 String result = "";
                 ArrayList<String> results = new ArrayList<>(splits.length);
                 ArrayList<Integer> results_addrs = new ArrayList<>(splits.length);
 
                 for(int i = 0; i < splits.length; i++){
-                    //System.out.println(splits[i]);
-
                     if(splits[i].charAt(0) == '\"' && splits[i].charAt(splits[i].length() - 1) == '\"'){
                         // literal
                         result += splits[i].substring(1,splits[i].length() - 1);
@@ -58,7 +57,6 @@ public class VarAssignmentInstructions {
 
                                 results.add(privTable.get(splits[i]).getValue());
                                 results_addrs.add(privTable.get(splits[i]).getAdr());
-                                //setInGlob = false;
                             }
                             else{
                                 // cannot assign
@@ -72,7 +70,6 @@ public class VarAssignmentInstructions {
 
                                 results.add(globTable.get(splits[i]).getValue());
                                 results_addrs.add(globTable.get(splits[i]).getAdr());
-                                //setInGlob = true;
                             }
                             else{
                                 // cannot assign
@@ -86,9 +83,6 @@ public class VarAssignmentInstructions {
                     }
 
                 }
-
-                System.out.println("result: " + result);
-            //}
 
             // we have the right side merged.
             if(result.length() > s.getValue().length()){
@@ -142,13 +136,10 @@ public class VarAssignmentInstructions {
             if(opOrd.get(opOrd.size() - 1).isNegateResult()){
                 actualVal = "" + opOrd.get(opOrd.size() - 1).getNegatedResult();
             }
-
-            //valAtTop = true;
         }
         else {
             Symbol retrSymb = ExpressionParser.retrievedSymbol;
             if(retrSymb != null){
-                //if(s.getType() == ESymbolType.INT || s.getType() == ESymbolType.BOOL){
                     if(retrSymb.getAdr() == -1){
                         if(!retrSymb.isNegateValue()){
                             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(retrSymb.getValue())));
@@ -199,16 +190,12 @@ public class VarAssignmentInstructions {
                         }
 
                     }
-                //}
             }
             else{
-                System.out.println("weird");
+
             }
         }
 
-
-
-        System.out.println("actual val being assigned to " + s.getName() + ": " + actualVal);
         // now whatever it is, it should be at the top of the stack
         if(indexToAssignTo == -1){
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr));
@@ -225,8 +212,6 @@ public class VarAssignmentInstructions {
                 }
 
             }
-
-            //s.setValue(actualVal);
         }
         else{
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + indexToAssignTo));
@@ -244,7 +229,6 @@ public class VarAssignmentInstructions {
             }
 
         }
-
 
         return generatedInstructions;
     }

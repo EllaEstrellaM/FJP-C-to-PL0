@@ -1,27 +1,20 @@
 package compiler.instructions_generators;
 
 import compiler.*;
-import compiler.Compiler;
 
 import java.util.ArrayList;
 
+/**
+ * Performs arithmetic instructions on provided symbols / numbers.
+ */
 public class ArithmeticExpressionInstructions {
-
-    public static ArrayList<Instruction> generateInstructions(Operation op/*, Symbol symbToStoreTo*/){
+    /**
+     * Generates instructions for two specific symbols / numbers.
+     * @param op instance of class Operation which contains two numbers and operation, which should be performed
+     * @return corresponding instructions
+     */
+    public static ArrayList<Instruction> generateInstructions(Operation op){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
-
-
-
-
-//        if(op.getOperator() == null){
-//            generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue()))); // adding just the result...
-//            return generatedInstructions;
-//        }
-
-
-
-
-        // if symbToStoreTo has address -1, use LIT
 
         // get the correct addresses:
         int adr1 = -1;
@@ -41,12 +34,8 @@ public class ArithmeticExpressionInstructions {
             adr2 = op.getSymbol2().getAdr();
         }
 
-
-
         // store the first number:
         if(!op.getSymbol1().isPartialResult()){
-
-
             if(op.getSymbol1().getAdr() == -1){
                 if(!op.getSymbol1().isNegateValue()){
                     generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, Integer.parseInt(op.getSymbol1().getValue())));
@@ -118,13 +107,7 @@ public class ArithmeticExpressionInstructions {
                 generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0));
                 generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.NOT_EQUAL.getInstrCode()));
             }
-//            else if(op.getOperator() == EOperator.NEG){
-//
-//            }
-
-            //generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, op.getResult())); // adding just the result...
         }
-
 
         // checking if the result needs to be negated:
         if(op.isNegateResult()){
@@ -133,10 +116,7 @@ public class ArithmeticExpressionInstructions {
             generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.ODD.getInstrCode()));
 
         }
-
         // now there should be the whole result at the top of the stack
         return generatedInstructions;
-
     }
-
 }
