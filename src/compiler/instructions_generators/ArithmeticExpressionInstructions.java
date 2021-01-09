@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class ArithmeticExpressionInstructions {
 
-    // todo negate value and/or result!!!
     public static ArrayList<Instruction> generateInstructions(Operation op/*, Symbol symbToStoreTo*/){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 

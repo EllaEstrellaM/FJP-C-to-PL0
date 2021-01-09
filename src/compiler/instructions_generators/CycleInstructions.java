@@ -1,10 +1,10 @@
 package compiler.instructions_generators;
 
-import compiler.EInstrSet;
-import compiler.ExpressionParser;
-import compiler.Instruction;
-import compiler.Symbol;
+import compiler.*;
+import compiler.Compiler;
+import compiler.errors.Error;
 import statementDefMultiLine.*;
+import statementDefOneLine.intDeclaration;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -112,6 +112,29 @@ public class CycleInstructions {
 
         Symbol identifItemSym = null; //retrieve identifier data from table
         Symbol identifArraySym = null; //retrieve array data from table
+
+
+        if(!table.containsKey("SYSTEM_RESERVED_1")){
+
+            Symbol sysS = new Symbol();
+            String name = "SYSTEM_RESERVED_1";
+            String value = "0";
+
+            sysS.setValue(value);
+            sysS.setName(name);
+            sysS.setConst(false);
+            sysS.setAdr(Compiler.declCounter);
+            sysS.setLev(0);
+            sysS.setType(ESymbolType.INT);
+            sysS.setInProcedure("global");
+            sysS.setHasBeenDeclared(true);
+            Compiler.declCounter++;
+
+            generatedInstructions.add(new Instruction(EInstrSet.INT, 0, 1));
+            table.put(name, sysS);
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(sysS, sysS.getValue(), -1, table, privTable, true));
+        }
+
         Symbol traverseHlp = table.get("SYSTEM_RESERVED_1"); //go through array, keep current index
 
         if(privTable.containsKey(identifierItem)){
@@ -119,7 +142,7 @@ public class CycleInstructions {
         }else if(table.containsKey(identifierItem)){
             identifItemSym = table.get(identifierItem);
         }else{
-            //todo error
+            Error.printVarNotFound(identifierItem);
         }
 
         if(privTable.containsKey(identifierArray)){
@@ -127,7 +150,7 @@ public class CycleInstructions {
         }else if(table.containsKey(identifierArray)){
             identifArraySym = table.get(identifierArray);
         }else{
-            //todo error
+            Error.printVarNotFound(identifierArray);
         }
 
         int identifItemSymAddr = identifItemSym.getAdr(); //address of identifier representing one item
@@ -148,7 +171,6 @@ public class CycleInstructions {
         generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, 2)); //perform oper add ; + ; get address of new value (within the cycle)
         generatedInstructions.add(new Instruction(EInstrSet.LDA, 0, 0)); //to top of stack load value from address on top of stack (currently)
         generatedInstructions.add(new Instruction(EInstrSet.STO, 0, identifItemSymAddr)); //store retrieved number to variable
-        //now load item on address which is on top of stack???
         //load one item from arr to var - END
 
         //CODE INSIDE CYCLE

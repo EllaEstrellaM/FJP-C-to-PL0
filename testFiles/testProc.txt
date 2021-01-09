@@ -20,12 +20,20 @@ procedure pr(int a, bool cond){
 }
 
 procedure main(){
-    while(i < 4)
-    {
-        i = 1;
-        for(i = 1 to 66){i = 20;}
+    //while(i < 4)
+    //{
+      //  i = 1;
+       // for(i = 1 to 66){i = 20;}
+
+    //}
+    //for(i = 1 to 55){i = 99;}
+
+
+    int pole[3];
+    pole[0] = 2;
+    foreach(i : pole){
+        b = 2;
 
     }
-    for(i = 1 to 55){i = 99;}
 
 }

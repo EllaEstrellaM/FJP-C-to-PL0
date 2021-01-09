@@ -3,6 +3,9 @@ package compiler.instructions_generators;
 import compiler.*;
 import compiler.errors.Error;
 import compiler.errors.VarNotFoundException;
+import statementDefMultiLine.ifCondition;
+import statementInterEnum.IoneLineStatement;
+import statementInterEnum.Istatement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +14,7 @@ public class IfInstructions {
 
     public static int resultVal;
 
-    public static ArrayList<Instruction> generateInstructions(String cond/*Operation conditionOp*/, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
+    public static ArrayList<Instruction> generateInstructions(Object ifCond, String cond/*Operation conditionOp*/, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
 
@@ -96,9 +99,10 @@ public class IfInstructions {
 
 
         // now the result is stored at the top
-        generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0)); // load 0
-        generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.NOT_EQUAL.getInstrCode())); // compare if ne to 0
-        generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); // todo set addr
+        //generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0)); // load 0
+        //generatedInstructions.add(new Instruction(EInstrSet.OPR, 0, EOperator.NOT_EQUAL.getInstrCode())); // compare if ne to 0
+        //generatedInstructions.add(new Instruction(EInstrSet.JMC, 0, -1)); // todo set addr
+        generatedInstructions.add(new Instruction(ifCond + "JMC")); //here we should jump to RET
 
 
 
@@ -107,4 +111,14 @@ public class IfInstructions {
         return generatedInstructions;
 
     }
+
+    public static ArrayList<Instruction> generateInstructionsEnd(Object st){
+        ArrayList<Instruction> generatedInstructions = new ArrayList<>();
+
+
+        generatedInstructions.add(new Instruction(st + "JMC"));
+
+        return generatedInstructions;
+    }
+
 }

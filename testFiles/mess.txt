@@ -3,10 +3,9 @@
 
 
 
-string a = b = ahoj = "mr";
-
-
 procedure main(){
-    string c = a;
-    //int d = ahoj;
+int i = 66;
+    while(true){
+        i = 6;
+    }
 }
