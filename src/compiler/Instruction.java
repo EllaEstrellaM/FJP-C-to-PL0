@@ -19,6 +19,13 @@ public class Instruction {
         this.level = -1;
     }
 
+    public Instruction(Instruction other){
+        this.address = other.getAddress();
+        this.instruction = other.getInstruction();
+        this.level = other.getLevel();
+        this.jmpAddr = other.getJmpAddr();
+    }
+
     // getters and setters:
     public int getLevel() {
         return level;

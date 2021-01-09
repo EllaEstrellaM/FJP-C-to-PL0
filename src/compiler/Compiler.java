@@ -303,7 +303,13 @@ public class Compiler {
 
         System.out.println("Size: " + instructs.size());
         int matchCount = 0;
-        ArrayList<Instruction> editedInstr = new ArrayList<>();
+        //ArrayList<Instruction> editedInstr = new ArrayList<>();
+        ArrayList<Instruction> copiedInstr = new ArrayList<>();
+
+        for (Instruction in : instructions){
+            copiedInstr.add(new Instruction(in));
+        }
+
 
         for(int i = 0; i < instructs.size(); i++){ //find matching tagged instruction
             Instruction firstOcc = instructs.get(i);
@@ -321,25 +327,32 @@ public class Compiler {
                         startInstJMP.add(all.get(i));
                         endInstrJMP.add(all.get(j));
 
-                        Instruction endIns = instructions.get(all.get(j));
 
-                        Instruction newInstr = new Instruction(EInstrSet.JMP, 0, all.get(i) - removedFromList(instructions, all.get(i)));
-                        editedInstr.add(newInstr);
-//                        endIns.setAddress(all.get(i) - removedFromList(instructions, all.get(i)));
-//                        endIns.setInstruction(EInstrSet.JMP);
-//                        endIns.setLevel(0);
+
+//                        Instruction newInstr = new Instruction(EInstrSet.JMP, 0, all.get(i) - removedFromList(instructions, all.get(i)));
+//                        editedInstr.add(newInstr);
+
+                        System.out.println("There will be removed JMP: " + removedFromList(copiedInstr, all.get(i)));
+                        System.out.println("Sending num to HM: " + all.get(i));
+                        Instruction endIns = instructions.get(all.get(j));
+                        endIns.setAddress(all.get(i) - removedFromList(copiedInstr, all.get(i)));
+                        endIns.setInstruction(EInstrSet.JMP);
+                        endIns.setLevel(0);
                     }else{ //JMC addr
                         System.out.println("Found JMC match: " + firstOccIdent + " " + secOccIdent);
 
                         startInstJMC.add(all.get(i));
                         endInstrJMC.add(all.get(j));
 
-                        Instruction newInstr = new Instruction(EInstrSet.JMC, 0, all.get(j) - removedFromList(instructions, all.get(j)));
-                        editedInstr.add(newInstr);
-//                        Instruction startIns = instructions.get(all.get(i));
-//                        startIns.setAddress(all.get(j) - removedFromList(instructions, all.get(j)));
-//                        startIns.setInstruction(EInstrSet.JMC);
-//                        startIns.setLevel(0);
+//                        Instruction newInstr = new Instruction(EInstrSet.JMC, 0, all.get(j) - removedFromList(instructions, all.get(j)));
+//                        editedInstr.add(newInstr);
+
+                        System.out.println("There will be removed JMC: " + removedFromList(copiedInstr, all.get(j)));
+                        System.out.println("Sending num to HM: " + all.get(j));
+                        Instruction startIns = instructions.get(all.get(i));
+                        startIns.setAddress(all.get(j) - removedFromList(copiedInstr, all.get(j)));
+                        startIns.setInstruction(EInstrSet.JMC);
+                        startIns.setLevel(0);
                     }
                     matchCount++;
                 }
@@ -349,24 +362,24 @@ public class Compiler {
         ArrayList<Instruction> instructionsEdit = new ArrayList<>();
 
         for(int i = 0; i < instructions.size(); i++) {
-            for(int j = 0; j < editedInstr.size(); j++){
-                if(editedInstr.get(j).getAddress() == i){
-                    instructionsEdit.add(editedInstr.get(j));
-                    break;
-                }
-            }
+//            for(int j = 0; j < editedInstr.size(); j++){
+//                if(editedInstr.get(j).getAddress() == i){
+//                    instructionsEdit.add(editedInstr.get(j));
+//                    break;
+//                }
+//            }
 
             if (!startInstJMP.contains(i) && !endInstrJMC.contains(i) && instructions.get(i).getInstruction() != null) {
                 instructionsEdit.add(instructions.get(i));
             }
         }
 
-        for (int i = 0; i < procedureDefinitions.size(); i++){
-            System.out.println("INSTRUCTIONS PROC " + procedureDefinitions.get(i).getIdentifierVar());
-            for(int j = 0; j < procedureDefinitions.get(i).getInstructions().size(); j++){
-                System.out.println(procedureDefinitions.get(i).getInstructions().get(j).toString());
-            }
-        }
+//        for (int i = 0; i < procedureDefinitions.size(); i++){
+//            System.out.println("INSTRUCTIONS PROC " + procedureDefinitions.get(i).getIdentifierVar());
+//            for(int j = 0; j < procedureDefinitions.get(i).getInstructions().size(); j++){
+//                System.out.println(procedureDefinitions.get(i).getInstructions().get(j).toString());
+//            }
+//        }
 
         System.out.println("FInal is: " + instructionsEdit.size());
         return instructionsEdit;
@@ -387,12 +400,15 @@ public class Compiler {
             Instruction instr = instructions.get(i);
 
             if(instr.getInstruction() == null){ //tagged one
+
                 if(!instr.getJmpAddr().contains("JMC")){ //JMP
+
                     System.out.println("Got JMP");
                     if(!occurHM.containsKey(instr.getJmpAddr())){ //first occ JMP
                         count++;
+                        occurHM.put(instr.getJmpAddr(), 1);
                     }else{ //second occ JMP
-                        occurHM.put(instr.getJmpAddr(), 0);
+                        occurHM.put(instr.getJmpAddr(), 1);
                     }
                 }else{ //JMC
                     System.out.println("Got JMC");
