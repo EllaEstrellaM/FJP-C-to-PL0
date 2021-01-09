@@ -1,7 +1,7 @@
 
 int a = 66;
 int b = 55;
-
+int i = 0;
 
 procedure ahoj(){
     string ahoj = "pozdrav!";
@@ -20,7 +20,5 @@ procedure pr(int a, bool cond){
 }
 
 procedure main(){
-    const string a = b = c = d = "hsaioh";
-    int i = 0;
     while(i < 4){i = 1;}for(i = 1 to 66){i = 20;}
 }
