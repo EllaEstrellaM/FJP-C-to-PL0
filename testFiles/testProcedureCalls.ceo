@@ -1,0 +1,30 @@
+
+int c = 10;
+
+procedure p1(int a){
+    int b = a * 4;
+}
+
+procedure p2(){
+
+    c = 22;
+
+}
+
+procedure p3(bool foo, int a){
+
+    if(foo){
+        c = a * 7;
+    }
+
+}
+
+
+procedure main(){
+
+    p1(2 * 7 - 8);
+    p2();
+    p3(!true & ((10 - 9) > 7), c);
+
+
+}

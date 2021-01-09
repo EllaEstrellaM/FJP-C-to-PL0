@@ -1,0 +1,11 @@
+
+
+procedure main(){
+
+    int i = 1;
+    int j = 10;
+    repeat{
+        j = 10 * i;
+    }until(i < 10);
+
+}

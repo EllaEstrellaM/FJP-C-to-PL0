@@ -1,0 +1,11 @@
+
+
+procedure main(){
+
+    int i = 1;
+    int j = 10;
+    do{
+        j = 10 * i;
+    }while(i < 10);
+
+}

@@ -1,0 +1,9 @@
+
+
+procedure main(){
+
+    int a = 8;
+    int b = 7;
+    int min = (a < b) ? a : b;
+
+}

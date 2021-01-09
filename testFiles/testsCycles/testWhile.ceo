@@ -1,0 +1,10 @@
+
+
+procedure main(){
+
+    bool b = 10 < (2 * 6);
+    while(!(true | false) & (b | false)){
+        b = false;
+    }
+
+}

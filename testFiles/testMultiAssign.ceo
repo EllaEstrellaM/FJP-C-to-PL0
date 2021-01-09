@@ -1,0 +1,7 @@
+
+
+procedure main(){
+
+    int a = b = c = 3 * 6;
+
+}
