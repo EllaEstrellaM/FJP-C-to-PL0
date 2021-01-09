@@ -283,28 +283,52 @@ public class Compiler {
         instructions.add(lastI);
 
         ArrayList<Integer> startInst = new ArrayList<>();
+        ArrayList<Integer> endInstr = new ArrayList<>();
+
         ArrayList<Integer> all = new ArrayList<>();
+        ArrayList<Instruction> instructs = new ArrayList<>();
 
         for(int i = 0; i < instructions.size(); i++){ //go through generated instructions - find matching
             Instruction instr = instructions.get(i);
 
             if(instr.getInstruction() == null){ //got start or end
                 all.add(i);
+                instructs.add(instr);
             }
         }
 
-        for(int i = 0; i < all.size() / 2; i++){ //go through null instr - find match!
-            int start = all.get(i);
-            startInst.add(start);
-            int end = all.get(all.size() - i - 1);
-            System.out.println("Start is: " + start);
-            System.out.println("End is: " + end);
+        for(int i = 0; i < instructs.size(); i++){
+            Instruction firstOcc = instructs.get(i);
+            String firstOccIdent = firstOcc.getJmpAddr();
 
-            Instruction endInstr = instructions.get(end);
-            endInstr.setAddress(start - i);
-            endInstr.setInstruction(EInstrSet.JMP);
-            endInstr.setLevel(0);
+            for(int j = i + 1; j < instructs.size(); j++){
+                Instruction secOcc = instructs.get(j);
+                String secOccIdent = secOcc.getJmpAddr();
+
+                if(firstOccIdent.equals(secOccIdent)){
+                    startInst.add(all.get(i));
+                    endInstr.add(all.get(j));
+
+                    Instruction endIns = instructions.get(all.get(j));
+                    endIns.setAddress(all.get(i) - i);
+                    endIns.setInstruction(EInstrSet.JMP);
+                    endIns.setLevel(0);
+                }
+            }
         }
+
+//        for(int i = 0; i < all.size() / 2; i++){ //go through null instr - find match!
+//            int start = all.get(i);
+//            startInst.add(start);
+//            int end = all.get(all.size() - i - 1);
+//            System.out.println("Start is: " + start);
+//            System.out.println("End is: " + end);
+//
+//            Instruction endInstr = instructions.get(end);
+//            endInstr.setAddress(start - i);
+//            endInstr.setInstruction(EInstrSet.JMP);
+//            endInstr.setLevel(0);
+//        }
         //(procedureDefinitions.get(0)).getIndivParameters();
 
         ArrayList<Instruction> instructionsEdit = new ArrayList<>();
@@ -622,7 +646,6 @@ public class Compiler {
             System.out.println("Going thru inner statements");
             Istatement innerStatement = innerStatements.get(j); //get one inner statement
 
-
             if(innerStatement instanceof ImultiLineStatement){//inner statement could be multi -> recursive call to retrieve oneline
                 ImultiLineStatement multiStatement = (ImultiLineStatement) innerStatement; //cast to multiline
 
@@ -634,110 +657,169 @@ public class Compiler {
                     //this.instructions.addAll(IfInstructions.generateInstructions(value, globalSymbolTable)); // todo
                 }
                 //generate FIRST part of the cycle (before inner statements) + HERE ASSIGN INNER LEVEL
-                else if(statement instanceof doWhileCycle){ //check for cycles - START
-                    procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions1((doWhileCycle) statement, innerCounter));
-                }else if(statement instanceof forCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateForInstructions1((forCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
-                }else if(statement instanceof foreachCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions1((foreachCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
-                }else if(statement instanceof repeatUntilCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) statement, innerCounter));
-                }else if(statement instanceof whileCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions1((whileCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
+                else if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                    procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions1((doWhileCycle) innerStatement, innerCounter));
+                }else if(innerStatement instanceof forCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForInstructions1((forCycle) innerStatement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
+                }else if(innerStatement instanceof foreachCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions1((foreachCycle) innerStatement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
+                }else if(innerStatement instanceof repeatUntilCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions1((repeatUntilCycle) innerStatement, innerCounter));
+                }else if(innerStatement instanceof whileCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions1((whileCycle) innerStatement, globalSymbolTable, procedure.getPrivateSymbolTable(), innerCounter));
                 } //check for cycles - END
                 solvRecurMultiLine(multiStatement, procedure); //recursive call
                 //generate SECOND part of the cycle (after inner statements)
-                if(statement instanceof doWhileCycle){ //check for cycles - START
-                    procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions2((doWhileCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
-                }else if(statement instanceof forCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateForInstructions2((forCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //jump to 3. inst from first part
-                }else if(statement instanceof foreachCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions2((foreachCycle) statement, globalSymbolTable)); //jump to 3. inst from first part
-                }else if(statement instanceof repeatUntilCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) statement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
-                }else if(statement instanceof whileCycle){
-                    procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions2((whileCycle) statement)); //jump to 3. inst from first part
+                if(innerStatement instanceof doWhileCycle){ //check for cycles - START
+                    procedure.getInstructions().addAll(CycleInstructions.generateDoWhileInstructions2((doWhileCycle) innerStatement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
+                }else if(innerStatement instanceof forCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForInstructions2((forCycle) innerStatement, globalSymbolTable, procedure.getPrivateSymbolTable())); //jump to 3. inst from first part
+                }else if(innerStatement instanceof foreachCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateForeachInstructions2((foreachCycle) innerStatement, globalSymbolTable)); //jump to 3. inst from first part
+                }else if(innerStatement instanceof repeatUntilCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateRepeatUntilInstructions2((repeatUntilCycle) innerStatement, globalSymbolTable, procedure.getPrivateSymbolTable())); //no instruction generated in first part
+                }else if(innerStatement instanceof whileCycle){
+                    procedure.getInstructions().addAll(CycleInstructions.generateWhileInstructions2((whileCycle) innerStatement)); //jump to 3. inst from first part
                 } //check for cycles - END
 
                 innerCounter -= 1;
-            }else{//inner statement is oneline -> solve it
-                generateOneline((IoneLineStatement) innerStatement, innerStatementType, innerCounter);
+            }else{ //statement is oneline - generate respective instructions
+                // declaration won't be nested in multilines???
+                if(innerStatement instanceof IDeclaration){
+                    resolveDeclaration((IDeclaration) innerStatement, procedure.getIdentifierVar(), procedure.getPrivateSymbolTable(), procedure.getInstructions());
+                }
 
-//                if(statement instanceof unknownAssign){
-//                    unknownAssign ua = (unknownAssign)statement;
-//                    String ident = ua.getIdentifierVar();
-//                    String value = ua.getValueVar();
-//
-//                    if(globalSymbolTable.containsKey(ident)){
-//
-//                        Symbol s = globalSymbolTable.get(ident);
-//
-//                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, true));
-//                    }
-//                    else{
-//                        Error.printVarNotFound(ident);
-//                    }
-//                }
-//                else if(statement instanceof unknownArrAssign){
-//                    unknownArrAssign uaa = (unknownArrAssign) statement;
-//                    String ident = uaa.getIdentifierVar();
-//                    String value = uaa.getValueVar();
-//                    int indexToAssignTo = uaa.getIndexToAssign();
-//
-//
-//                    if(globalSymbolTable.containsKey(ident)){
-//
-//                        Symbol s = globalSymbolTable.get(ident);
-//
-//
-//                        if(indexToAssignTo >= s.getSizeArr()){
-//                            Error.printOutOfBounds(ident, indexToAssignTo);
-//                        }
-//
-//
-//                        this.instructions.addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, true));
-//                    }
-//                    else{
-//                        Error.printVarNotFound(ident);
-//                    }
-//                }
-//                else if(statement instanceof ternarAssign){
-//                    ternarAssign ta = (ternarAssign) statement;
-//                    String ident = ta.getIdentifierVar();
-//                    String cond = ta.getExprDecBoolCont();
-//                    String trueVal = ta.getExprDecBoolTrueVal();
-//                    String falseVal = ta.getExprDecBoolFalseVal();
-//
-//                    if(globalSymbolTable.containsKey(ident)){
-//
-//                        Symbol s = globalSymbolTable.get(ident);
-//
-//                        // todo arrays
-//
-//                        this.instructions.addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable));
-//                    }
-//                    else{
-//                        Error.printVarNotFound(ident);
-//                    }
-//
-//
-//
-//
-//                }
-//                else if(statement instanceof procedureCall){
-//                    procedureCall pc = (procedureCall) statement;
-//                    String name = pc.getIdentifierVar();
-//
-//                    if(globalSymbolTable.containsKey(name)){
-//                        // we know such a procedure
-//                        // check if number of arguments match
-//                        // todo
-//
-//                    }
-//                    else{
-//                        Error.printVarNotFound(name);
-//                    }
-//                }
+                else if(innerStatement instanceof unknownAssign){
+                    unknownAssign ua = (unknownAssign)innerStatement;
+                    String ident = ua.getIdentifierVar();
+                    String value = ua.getValueVar();
+
+
+
+                    if(procedure.getPrivateSymbolTable().containsKey(ident)){ // look in the local table first
+                        Symbol s = procedure.getPrivateSymbolTable().get(ident);
+
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
+                    }
+                    else if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+                }
+                else if(innerStatement instanceof unknownArrAssign){
+                    unknownArrAssign uaa = (unknownArrAssign) innerStatement;
+                    String ident = uaa.getIdentifierVar();
+                    String value = uaa.getValueVar();
+                    int indexToAssignTo = uaa.getIndexToAssign();
+
+
+                    if(procedure.getPrivateSymbolTable().containsKey(ident)){
+
+                        Symbol s = procedure.getPrivateSymbolTable().get(ident);
+
+
+                        if(indexToAssignTo >= s.getSizeArr()){
+                            Error.printOutOfBounds(ident, indexToAssignTo);
+                        }
+
+
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
+                    }
+                    else if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+
+                        if(indexToAssignTo >= s.getSizeArr()){
+                            Error.printOutOfBounds(ident, indexToAssignTo);
+                        }
+
+
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+                }
+                else if(innerStatement instanceof ternarAssign){
+                    ternarAssign ta = (ternarAssign) innerStatement;
+                    String ident = ta.getIdentifierVar();
+                    String cond = ta.getExprDecBoolCont();
+                    String trueVal = ta.getExprDecBoolTrueVal();
+                    String falseVal = ta.getExprDecBoolFalseVal();
+
+
+                    if(procedure.getPrivateSymbolTable().containsKey(ident)){
+
+                        Symbol s = procedure.getPrivateSymbolTable().get(ident);
+
+
+                        procedure.getInstructions().addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable, procedure.getPrivateSymbolTable()));
+                    }
+
+                    else if(globalSymbolTable.containsKey(ident)){
+
+                        Symbol s = globalSymbolTable.get(ident);
+
+                        procedure.getInstructions().addAll(TernaryAssignmentInstructions.generateInstructions(s, cond, trueVal, falseVal, -1, globalSymbolTable, procedure.getPrivateSymbolTable()));
+                    }
+                    else{
+                        Error.printVarNotFound(ident);
+                    }
+
+
+
+
+                }
+                else if(innerStatement instanceof procedureCall){
+                    procedureCall pc = (procedureCall) innerStatement;
+                    String name = pc.getIdentifierVar();
+
+
+                    // only in global
+                    if(globalSymbolTable.containsKey(name)){
+                        // we know such a procedure
+                        // check if number of arguments match
+
+                        procedureDefinition calledProc = null;
+                        for(procedureDefinition p : procedureDefinitions){
+                            if(p.getIdentifierVar().equals(name)){
+                                calledProc = p;
+                                break;
+                            }
+                        }
+
+                        if(calledProc == null){
+                            // todo brutal fatal error, but shouldn't occur
+                            break;
+                        }
+
+                        if(pc.getIndivArguments().size() != calledProc.getArgs().size()){
+                            Error.printUnmatchingArgs(calledProc.getIdentifierVar());
+                        }
+                        else {
+                            // set the values to the appropriate symbols - that ought to do it?
+
+                            for(int k = 0; k < calledProc.getArgs().size(); k++){
+                                Symbol s = calledProc.getArgs().get(k);
+                                String valInArg = pc.getIndivArguments().get(k);
+                                procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, calledProc.getPrivateSymbolTable(), true));
+                            }
+
+                            // and add the called procedure's instructions to the current procedure's instructions:
+                            procedure.getInstructions().addAll(calledProc.getInstructions());
+                        }
+
+                    }
+                    else{
+                        Error.printVarNotFound(name);
+                    }
+                }
             }
         }
     }

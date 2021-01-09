@@ -30,7 +30,15 @@ public class CycleInstructions {
         String end = cycle.getExprDecBool2(); //value of the variable in the end of the cycle (value after TO)
         //info relevant for forcycle - END
 
-        Symbol identifSym = table.get(identifier); //retrieve identifier data from table
+        Symbol identifSym = null; //retrieve identifier data from table
+        if(privTable.containsKey(identifier)){
+            identifSym = privTable.get(identifier);
+        }else if(table.containsKey(identifier)){
+            identifSym = table.get(identifier);
+        }else{
+            //todo error
+        }
+
         int identifAddr = identifSym.getAdr();
 
         ArrayList<Instruction> genInstrExpr = ExpressionParser.solveExpr(start, table, privTable); //define start of the cycle
