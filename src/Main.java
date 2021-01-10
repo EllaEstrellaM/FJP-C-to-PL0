@@ -2,8 +2,7 @@ import compiler.Compiler;
 import compiler.Instruction;
 import generated.ourCLexer;
 import generated.ourCParser;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import statementInterEnum.Istatement;
 import visitors.VarAssVisitor;
@@ -21,15 +20,37 @@ import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args){
-        String testFile = "testif.txt";
-        String filesPath = "testFiles";
-        String path = filesPath + File.separator + testFile;
+        if(args.length != 1){ //we should have 1 argument - filename
+            System.err.println("Wrong arguments number! Please start program with name of the file which you want to translate to PL/0.");
+            return;
+        }
 
+        if(!checkIfFileExists(args[0])){
+            System.err.println("File does not exist! Please start program with name of the file which you want to translate to PL/0.");
+            return;
+        }
+
+        String path = args[0];
         // load the contents of the file to a string:
         String content = loadContents(path);
 
         ourCLexer lexer = new ourCLexer(CharStreams.fromString(content)); //content
+        lexer.addErrorListener(new BaseErrorListener()  {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+                System.err.println("Invalid input.");
+                System.exit(0);
+            }
+        });
+
         ourCParser parser = new ourCParser(new CommonTokenStream(lexer));
+        parser.addErrorListener(new BaseErrorListener()  {
+            @Override
+            public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+                System.err.println("Invalid input.");
+                System.exit(0);
+            }
+        });
 
         ParseTree tree = null;
         tree = parser.start();
@@ -42,13 +63,26 @@ public class Main {
         Compiler compiler = new Compiler(encounteredStatements);
         ArrayList<Instruction> generatedInstructions = compiler.compile();
 
-
         // write the instructions to a file:
         try {
             writeToFile(generatedInstructions);
         } catch (IOException e) {
             System.err.println("Something went wrong with writing to file.");
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Checks whether file in the location exists or not.
+     * @param path path to file
+     * @return true if exists else false
+     */
+    private static boolean checkIfFileExists(String path){
+        File file = new File(path);
+        if(file.exists() && !file.isDirectory()){
+            return true;
+        }else{
+            return false;
         }
     }
 
