@@ -1,12 +1,22 @@
 
 procedure p1(int a, bool b){
-    int c = a * 4;
+    p1(a + 1, b);
+    if(true){
+        p1(a + 2, b);
+    }
+
+}
+
+procedure p2(){
+    int ahoj = 5;
+    p2();
 }
 
 procedure main(){
 
     int a = 99;
     p1(a, true);
+    p2();
 
 
 }

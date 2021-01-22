@@ -64,10 +64,14 @@ public class Compiler {
 
         for(int i = 0; i < procedureDefinitions.size(); i++){ //go through procedure definitions
             procedureDefinition procedure = procedureDefinitions.get(i); //get one procedure from the list
+//            // add a tag to show where the procedure starts
+//            procedure.getInstructions().add(new Instruction("" + procedure));
+
             ArrayList<Istatement> statements = procedure.getInnerStatements(); //get statements which are present in procedure
 
             HashMap<Istatement, EallStatementType> statementType = parseStatements(statements); //got outer statement list, ok -> parse them and get its content
             String currProc = procedure.getIdentifierVar();
+
 
             for(int j = 0; j < statements.size(); j++){ //go through statements present in the procedure
                 Istatement statement = statements.get(j); //get one statement present in the procedure
@@ -210,8 +214,34 @@ public class Compiler {
                                     procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, /*calledProc*/procedure.getPrivateSymbolTable(), true, false));
                                 }
 
-                                // and add the called procedure's instructions to the current procedure's instructions:
-                                procedure.getInstructions().addAll(calledProc.getInstructions());
+
+
+                                if(procedure.getIdentifierVar().equals(calledProc.getIdentifierVar())){
+                                    // same name - recursion
+
+                                    // add a tag to show where the procedure starts
+                                    if(procedure.getInstructions().size() > 0){
+                                        procedure.getInstructions().get(0).jmpRecurTag = "" + procedure;
+                                        //procedure.getInstructions().add(new Instruction("recursion " + calledProc));
+
+                                        Instruction newIn = new Instruction(EInstrSet.JMP, 0, -1);
+                                        newIn.jmpRecurTag = "recursion " + calledProc;
+                                        procedure.getInstructions().add(newIn);
+                                    }
+                                    else{
+                                        Instruction newIn = new Instruction(EInstrSet.JMP, 0, -1);
+                                        newIn.jmpRecurTag = "recursion here " + calledProc;
+                                        procedure.getInstructions().add(newIn);
+                                        //procedure.getInstructions().add(new Instruction("recursion here " + calledProc));
+                                    }
+
+
+
+                                }
+                                else{
+                                    // and add the called procedure's instructions to the current procedure's instructions:
+                                    procedure.getInstructions().addAll(calledProc.getInstructions());
+                                }
                             }
 
                         }
@@ -223,7 +253,7 @@ public class Compiler {
             }
         }
 
-        // find main:
+        // find main: todo it should be the last procedure def in the file
         boolean mainFound = false;
         for(procedureDefinition pd : procedureDefinitions){
             if(pd.getIdentifierVar().equals("main")){
@@ -239,6 +269,50 @@ public class Compiler {
         Instruction lastI = new Instruction(EInstrSet.RET, 0, 0);
         instructions.add(lastI);
 
+
+
+//        ArrayList<Instruction> newInstructions = new ArrayList<>();
+//        // remove tags for procedure starts
+//        for(int i = 0; i < instructions.size(); i++){
+//            Instruction currI = instructions.get(i);
+//            String tag = null;
+//            if(currI.getInstruction() == null && currI.getJmpAddr().contains("procedureDefinition") && !currI.getJmpAddr().contains("recursion")){
+//                // tag to jump to => i + 1
+//                tag = currI.getJmpAddr();
+//                //String tagToSearch = "recursion " + tag;
+//
+//                instructions.get(i + 1).jmpRecurTag = tag;
+//
+////                for(int j = i + i; j < instructions.size(); j++){
+////                    if(instructions.get(j).getInstruction() == null && instructions.get(j).getJmpAddr().equals(tagToSearch)){
+////                        // found it
+////                        instructions.get(i + 1).jmpRecurTag = tag;
+////                    }
+////                }
+//            }
+//            else{
+//                newInstructions.add(currI);
+//            }
+//        }
+//
+////        for(int i = newInstructions.size() - 1; i >= 0; i--){
+////            Instruction currI = newInstructions.get(i);
+////            if(currI.getInstruction() == null && currI.getJmpAddr().contains("recursion")){
+////
+////            }
+////        }
+
+
+
+
+
+//        System.out.println("---------------------------");
+//        for(Instruction i : newInstructions ){
+//            System.out.println(i);
+//        }
+
+
+
         ArrayList<Integer> startInstJMP = new ArrayList<>(); //original - where to JMP
         ArrayList<Integer> endInstrJMP = new ArrayList<>(); //original - where to JMP
 
@@ -252,6 +326,8 @@ public class Compiler {
             Instruction instr = instructions.get(i);
 
             if(instr.getInstruction() == null){ //found tagged instruction
+//                if(instr.getJmpAddr().contains("PROC_START"))
+//                    continue;
                 all.add(i);
                 instructs.add(instr);
             }
@@ -301,6 +377,42 @@ public class Compiler {
                 instructionsEdit.add(instructions.get(i));
             }
         }
+
+        // addresses setting for cycles and ifs is done
+        // now take care of recursive calls:
+
+
+        for(Instruction i : instructionsEdit){
+            System.out.println(i);
+        }
+
+
+        for(int i = instructionsEdit.size() - 1; i >= 0; i --){
+            Instruction currI = instructionsEdit.get(i);
+            if(currI.jmpRecurTag.contains("recursion")){
+                // something to change to jmp
+
+                if(currI.jmpRecurTag.contains("recursion here")){
+                    currI.setAddress(i);
+                }
+                else{
+                    // go up and get the address:
+                    // get the right tag:
+                    String tag = currI.jmpRecurTag.substring("recursion ".length());
+                    for(int j = i - 1; j >= 0; j --){
+                        if(instructionsEdit.get(j).jmpRecurTag.equals(tag)){
+                            // this is the address
+                            currI.setAddress(j);
+                        }
+                    }
+                }
+
+
+
+
+            }
+        }
+
 
         return instructionsEdit;
     }
@@ -764,11 +876,41 @@ public class Compiler {
                             for(int k = 0; k < calledProc.getArgs().size(); k++){
                                 Symbol s = calledProc.getArgs().get(k);
                                 String valInArg = pc.getIndivArguments().get(k);
-                                procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, calledProc.getPrivateSymbolTable(), true, false));
+                                procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true, false));
                             }
 
                             // and add the called procedure's instructions to the current procedure's instructions:
-                            procedure.getInstructions().addAll(calledProc.getInstructions());
+                            //procedure.getInstructions().addAll(calledProc.getInstructions());
+
+
+                            if(procedure.getIdentifierVar().equals(calledProc.getIdentifierVar())){
+                                // same name - recursion
+
+                                // add a tag to show where the procedure starts
+                                if(procedure.getInstructions().size() > 0){
+                                    procedure.getInstructions().get(0).jmpRecurTag = "" + procedure;
+                                    //procedure.getInstructions().add(new Instruction("recursion " + calledProc));
+
+                                    Instruction newIn = new Instruction(EInstrSet.JMP, 0, -1);
+                                    newIn.jmpRecurTag = "recursion " + calledProc;
+                                    procedure.getInstructions().add(newIn);
+                                }
+                                else{
+                                    Instruction newIn = new Instruction(EInstrSet.JMP, 0, -1);
+                                    newIn.jmpRecurTag = "recursion here " + calledProc;
+                                    procedure.getInstructions().add(newIn);
+                                    //procedure.getInstructions().add(new Instruction("recursion here " + calledProc));
+                                }
+
+
+
+                            }
+                            else{
+                                // and add the called procedure's instructions to the current procedure's instructions:
+                                procedure.getInstructions().addAll(calledProc.getInstructions());
+                            }
+
+
                         }
                     }
                     else{

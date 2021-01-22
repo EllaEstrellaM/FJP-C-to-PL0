@@ -8,6 +8,7 @@ public class Instruction {
     private int level;
     private int address;
     private String jmpAddr;
+    public String jmpRecurTag = "";
 
     /**
      * Constructor accepts instruction type, level and address.
@@ -31,6 +32,13 @@ public class Instruction {
         this.address = -1;
         this.level = -1;
     }
+
+//    public Instruction(EInstrSet instr, int first, int second, String jmpAddr){
+//        this.instruction = instr;
+//        this.level = first;
+//        this.address = second;
+//        this.jmpAddr = jmpAddr;
+//    }
 
     /**
      * Used for creating "deep copy".
@@ -78,6 +86,10 @@ public class Instruction {
 
     @Override
     public String toString() {
-        return "" + instruction + " " + level + " " + address;
+
+//        if(jmpAddr != null){
+//            return jmpAddr;
+//        }
+        return "" + instruction + " " + level + " " + address;// + " " + jmpRecurTag;
     }
 }
