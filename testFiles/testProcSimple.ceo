@@ -1,6 +1,10 @@
 
 procedure p1(int a, bool b){
-    p1(a + 1, b);
+    int i = 0;
+    for(i = 0 to 10){
+        p1(a + 1, b);
+    }
+
     if(true){
         p1(a + 2, b);
     }
