@@ -35,19 +35,19 @@ public class TernaryAssignmentInstructions {
             generatedInstructions.remove(generatedInstructions.size() - 1);
             generatedInstructions.add(new Instruction(EInstrSet.LIT, 0, 0));
             generatedInstructions.add(new Instruction(st + "JMC"));
-            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, globTable,privTable, false));
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, globTable,privTable, false, true));
             generatedInstructions.add(new Instruction(st + "JMC"));
 
             // now follow instructions for assigning when false:
-            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, globTable, privTable, true));
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, globTable, privTable, true, true));
         }
         else { // false
             // now follow instructions for assigning when true:
-            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, globTable,privTable, false));
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valTrue, indexToAssignTo, globTable,privTable, false, true));
             generatedInstructions.add(new Instruction(st + "JMC"));
 
             // now follow instructions for assigning when false:
-            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, globTable, privTable,true));
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(s, valFalse, indexToAssignTo, globTable, privTable,true, true));
         }
         return generatedInstructions;
     }

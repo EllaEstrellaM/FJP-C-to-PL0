@@ -20,7 +20,7 @@ public class VarAssignmentInstructions {
      * @param assignToSymbol to which symbol we should assign
      * @return variable assignment instructions
      */
-    public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable, boolean assignToSymbol){
+    public static ArrayList<Instruction> generateInstructions(Symbol s, String value, int indexToAssignTo, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable, boolean assignToSymbol, boolean checkNameOfSymb){
         ArrayList<Instruction> generatedInstructions = new ArrayList<Instruction>();
 
         int addr = s.getAdr(); // the address to store the new value to
@@ -201,30 +201,37 @@ public class VarAssignmentInstructions {
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr));
             if(assignToSymbol){
 
-                if(globTable.containsKey(s.getName())){
-                    globTable.get(s.getName()).setValue(actualVal);
+                if(checkNameOfSymb){
+                    if(globTable.containsKey(s.getName())){
+                        globTable.get(s.getName()).setValue(actualVal);
+                    }
+                    else if(privTable.containsKey(s.getName())){
+                        privTable.get(s.getName()).setValue(actualVal);
+                    }
+                    else{
+                        Error.printVarNotFound(s.getName());
+                    }
                 }
-                else if(privTable.containsKey(s.getName())){
-                    privTable.get(s.getName()).setValue(actualVal);
-                }
-                else{
-                    Error.printVarNotFound(s.getName());
-                }
+
 
             }
         }
         else{
             generatedInstructions.add(new Instruction(EInstrSet.STO, level, addr + indexToAssignTo));
             if(assignToSymbol){
-                if(globTable.containsKey(s.getName())){
-                    globTable.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+                if(checkNameOfSymb){
+                    if(globTable.containsKey(s.getName())){
+                        globTable.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+                    }
+                    else if(privTable.containsKey(s.getName())){
+                        privTable.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
+                    }
+                    else{
+                        Error.printVarNotFound(s.getName());
+                    }
+
                 }
-                else if(privTable.containsKey(s.getName())){
-                    privTable.get(s.getName()).getArrayElements().set(indexToAssignTo, Integer.parseInt(actualVal));
-                }
-                else{
-                    Error.printVarNotFound(s.getName());
-                }
+
 
             }
 

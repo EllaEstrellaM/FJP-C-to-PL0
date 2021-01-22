@@ -1,0 +1,12 @@
+
+procedure p1(int a, bool b){
+    int c = a * 4;
+}
+
+procedure main(){
+
+    int a = 99;
+    p1(a, true);
+
+
+}

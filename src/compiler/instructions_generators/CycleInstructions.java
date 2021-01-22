@@ -128,7 +128,7 @@ public class CycleInstructions {
 
             generatedInstructions.add(new Instruction(EInstrSet.INT, 0, 1));
             table.put(name, sysS);
-            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(sysS, sysS.getValue(), -1, table, privTable, true));
+            generatedInstructions.addAll(VarAssignmentInstructions.generateInstructions(sysS, sysS.getValue(), -1, table, privTable, true, true));
         }
 
         Symbol traverseHlp = table.get("SYSTEM_RESERVED_1"); //go through array, keep current index

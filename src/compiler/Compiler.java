@@ -60,6 +60,8 @@ public class Compiler {
             }
         }
 
+        // todo check which procedures will even be called?
+
         for(int i = 0; i < procedureDefinitions.size(); i++){ //go through procedure definitions
             procedureDefinition procedure = procedureDefinitions.get(i); //get one procedure from the list
             ArrayList<Istatement> statements = procedure.getInnerStatements(); //get statements which are present in procedure
@@ -124,11 +126,11 @@ public class Compiler {
                         if(procedure.getPrivateSymbolTable().containsKey(ident)){ // look in the local table first
                             Symbol s = procedure.getPrivateSymbolTable().get(ident);
 
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true, true));
                         }
                         else if(globalSymbolTable.containsKey(ident)){
                             Symbol s = globalSymbolTable.get(ident);
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable,procedure.getPrivateSymbolTable(), true, true));
                         }
                         else{
                             Error.printVarNotFound(ident);
@@ -146,14 +148,14 @@ public class Compiler {
                             if(indexToAssignTo >= s.getSizeArr()){
                                 Error.printOutOfBounds(ident, indexToAssignTo);
                             }
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, procedure.getPrivateSymbolTable(), true, true));
                         }
                         else if(globalSymbolTable.containsKey(ident)){
                             Symbol s = globalSymbolTable.get(ident);
                             if(indexToAssignTo >= s.getSizeArr()){
                                 Error.printOutOfBounds(ident, indexToAssignTo);
                             }
-                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
+                            procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable,procedure.getPrivateSymbolTable(), true, true));
                         }
                         else{
                             Error.printVarNotFound(ident);
@@ -205,7 +207,7 @@ public class Compiler {
                                 for(int k = 0; k < calledProc.getArgs().size(); k++){
                                     Symbol s = calledProc.getArgs().get(k);
                                     String valInArg = pc.getIndivArguments().get(k);
-                                    procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, calledProc.getPrivateSymbolTable(), true));
+                                    procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, /*calledProc*/procedure.getPrivateSymbolTable(), true, false));
                                 }
 
                                 // and add the called procedure's instructions to the current procedure's instructions:
@@ -572,7 +574,7 @@ public class Compiler {
                 instrs.add(new Instruction(EInstrSet.INT, 0, intWhat));
             if(!(st instanceof arrBoolDeclaration) && !(st instanceof arrIntDeclaration)){
                 // array declaration doesn't produce any instructions
-                instrs.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, globalSymbolTable, symbolTable, true));
+                instrs.addAll(VarAssignmentInstructions.generateInstructions(symb, symb.getValue(), -1, globalSymbolTable, symbolTable, true, true));
 
                 symb.setHasBeenDeclared(true);
 
@@ -681,11 +683,11 @@ public class Compiler {
                     if(procedure.getPrivateSymbolTable().containsKey(ident)){ // look in the local table first
                         Symbol s = procedure.getPrivateSymbolTable().get(ident);
 
-                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable, procedure.getPrivateSymbolTable(), true, true));
                     }
                     else if(globalSymbolTable.containsKey(ident)){
                         Symbol s = globalSymbolTable.get(ident);
-                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, -1, globalSymbolTable,procedure.getPrivateSymbolTable(), true, true));
                     }
                     else{
                         Error.printVarNotFound(ident);
@@ -703,14 +705,14 @@ public class Compiler {
                         if(indexToAssignTo >= s.getSizeArr()){
                             Error.printOutOfBounds(ident, indexToAssignTo);
                         }
-                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, procedure.getPrivateSymbolTable(), true));
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable, procedure.getPrivateSymbolTable(), true, true));
                     }
                     else if(globalSymbolTable.containsKey(ident)){
                         Symbol s = globalSymbolTable.get(ident);
                         if(indexToAssignTo >= s.getSizeArr()){
                             Error.printOutOfBounds(ident, indexToAssignTo);
                         }
-                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable,procedure.getPrivateSymbolTable(), true));
+                        procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, value, indexToAssignTo, globalSymbolTable,procedure.getPrivateSymbolTable(), true, true));
                     }
                     else{
                         Error.printVarNotFound(ident);
@@ -762,7 +764,7 @@ public class Compiler {
                             for(int k = 0; k < calledProc.getArgs().size(); k++){
                                 Symbol s = calledProc.getArgs().get(k);
                                 String valInArg = pc.getIndivArguments().get(k);
-                                procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, calledProc.getPrivateSymbolTable(), true));
+                                procedure.getInstructions().addAll(VarAssignmentInstructions.generateInstructions(s, valInArg, -1, globalSymbolTable, calledProc.getPrivateSymbolTable(), true, false));
                             }
 
                             // and add the called procedure's instructions to the current procedure's instructions:
