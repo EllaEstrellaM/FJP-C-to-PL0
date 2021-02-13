@@ -149,6 +149,9 @@ public class ExpressionParser {
      * @return PL/0 instructions
      */
     public static ArrayList<Operation> parseExprDecBool(String exprDecBool, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
+
+        // todo check if valid
+
         ArrayList<Operation> statementOrder = new ArrayList<Operation>();
 
         char[] splitted = exprDecBool.toCharArray(); //split to indiv "letters" (numbers + operators)
