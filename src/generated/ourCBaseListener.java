@@ -64,18 +64,6 @@ public class ourCBaseListener implements ourCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSign_whole_num(ourCParser.Sign_whole_numContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSign_whole_num(ourCParser.Sign_whole_numContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterMulti_assign(ourCParser.Multi_assignContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -45,13 +45,6 @@ public class ourCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements o
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitSign_whole_num(ourCParser.Sign_whole_numContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitMulti_assign(ourCParser.Multi_assignContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

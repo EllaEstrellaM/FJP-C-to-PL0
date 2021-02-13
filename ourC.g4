@@ -84,13 +84,13 @@ bool_val
     | BOOL_FALSE;
 
 dec_val
-    : sign_whole_num? DEC_NUM;
+    : /*sign_whole_num?*/ DEC_NUM;
 
 string_val
     : STRING_DEC;
-sign_whole_num
-    : OP_PLUS
-    | OP_MINUS;
+//sign_whole_num
+//    : OP_PLUS
+//    | OP_MINUS;
 multi_assign
     : ASSIGN identifier_var;
 
@@ -105,9 +105,9 @@ expr_dec_bool
     | expr_dec_bool op=(OPER_AND | OPER_OR) expr_dec_bool
     | expr_string (COMP_IDENT | COMP_NOT_IDENT) expr_string ((OPER_AND | OPER_OR) expr_dec_bool)?
     | LEFT_BASIC_BRACK expr_dec_bool RIGHT_BASIC_BRACK
-    | NEGATION expr_dec_bool
-    | OP_PLUS expr_dec_bool
-    | OP_MINUS expr_dec_bool;
+    | NEGATION expr_dec_bool;
+//    | OP_PLUS expr_dec_bool
+//    | OP_MINUS expr_dec_bool;
 
 expr_string
     : string_val
@@ -120,7 +120,7 @@ bool_var_dec
     : BOOL identifier_var (multi_assign)* ASSIGN expr_dec_bool;
 
 decimal_var_dec
-    : INT identifier_var (multi_assign)* ASSIGN sign_whole_num? expr_dec_bool;
+    : INT identifier_var (multi_assign)* ASSIGN /*sign_whole_num?*/ expr_dec_bool;
 
 string_var_dec
     : STRING identifier_var (multi_assign)* ASSIGN expr_string;

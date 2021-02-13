@@ -35,12 +35,6 @@ public interface ourCVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitString_val(ourCParser.String_valContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ourCParser#sign_whole_num}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSign_whole_num(ourCParser.Sign_whole_numContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ourCParser#multi_assign}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

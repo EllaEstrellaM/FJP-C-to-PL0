@@ -82,4 +82,12 @@ public class Error {
         System.err.println("Number of arguments doesn't match in procedure call of " + proc + ".");
         System.exit(0);
     }
+
+    /**
+     * Expression input is not valid
+     */
+    public static void printExprNotValid(String expr){
+        System.err.println("Multiple signs in a row are not supported (use parentheses): " + expr + ".");
+        System.exit(0);
+    }
 }

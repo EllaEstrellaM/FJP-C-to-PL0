@@ -48,16 +48,6 @@ public interface ourCListener extends ParseTreeListener {
 	 */
 	void exitString_val(ourCParser.String_valContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ourCParser#sign_whole_num}.
-	 * @param ctx the parse tree
-	 */
-	void enterSign_whole_num(ourCParser.Sign_whole_numContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ourCParser#sign_whole_num}.
-	 * @param ctx the parse tree
-	 */
-	void exitSign_whole_num(ourCParser.Sign_whole_numContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ourCParser#multi_assign}.
 	 * @param ctx the parse tree
 	 */

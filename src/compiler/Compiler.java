@@ -382,9 +382,9 @@ public class Compiler {
         // now take care of recursive calls:
 
 
-        for(Instruction i : instructionsEdit){
-            System.out.println(i);
-        }
+//        for(Instruction i : instructionsEdit){
+//            System.out.println(i);
+//        }
 
 
         for(int i = instructionsEdit.size() - 1; i >= 0; i --){

@@ -313,7 +313,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
     public Object visitVar_non_const_dec_command(ourCParser.Var_non_const_dec_commandContext ctx) {
         /* info relevant to variable declaration - START */
         String declVarName; //name of the NEW variable
-        boolean declVarMinusSign; //true if minus sign is present; else false
+        boolean declVarMinusSign = false; //true if minus sign is present; else false
         String declVarValue; //value of the NEW variable (int, bool or string) -> convert after...
         /* info relevant to variable declaration - END */
 
@@ -328,15 +328,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
             declVarName = treeItem1.identifier_var().IDENT().getText(); //name of the variable
             declVarValue = treeItem1.expr_dec_bool().getText(); //value of the variable
 
-            if(treeItem1.sign_whole_num() != null){ //plus or minus sign
-                if(treeItem1.sign_whole_num().getText().equals("+")){
-                    declVarMinusSign = false;
-                }else{
-                    declVarMinusSign = true;
-                }
-            }else{
-                declVarMinusSign = false;
-            }
+//            if(treeItem1.sign_whole_num() != null){ //plus or minus sign
+//                if(treeItem1.sign_whole_num().getText().equals("+")){
+//                    declVarMinusSign = false;
+//                }else{
+//                    declVarMinusSign = true;
+//                }
+//            }else{
+//                declVarMinusSign = false;
+//            }
 
             intDeclaration intDeclar = new intDeclaration();
             intDeclar.setIdentifierVar(declVarName);
@@ -422,7 +422,7 @@ public class VarAssVisitor extends ourCBaseVisitor {
     public Object visitVar_const_dec_command(ourCParser.Var_const_dec_commandContext ctx) {
         /* info relevant to variable declaration - START */
         String declVarName; //name of the NEW const variable
-        boolean declVarMinusSign; //true if minus sign is present; else false
+        boolean declVarMinusSign = false; //true if minus sign is present; else false
         String declVarValue; //value of the NEW const variable (int, bool or string) -> convert after...
         /* info relevant to variable declaration - END */
 
@@ -437,15 +437,15 @@ public class VarAssVisitor extends ourCBaseVisitor {
             declVarName = treeItem1.identifier_var().IDENT().getText(); //name of the const variable
             declVarValue = treeItem1.expr_dec_bool().getText(); //value of the const variable
 
-            if(treeItem1.sign_whole_num() != null){ //plus or minus sign
-                if(treeItem1.sign_whole_num().getText().equals("+")){
-                    declVarMinusSign = false;
-                }else{
-                    declVarMinusSign = true;
-                }
-            }else{
-                declVarMinusSign = false;
-            }
+//            if(treeItem1.sign_whole_num() != null){ //plus or minus sign
+//                if(treeItem1.sign_whole_num().getText().equals("+")){
+//                    declVarMinusSign = false;
+//                }else{
+//                    declVarMinusSign = true;
+//                }
+//            }else{
+//                declVarMinusSign = false;
+//            }
 
             constIntDeclaration constIntDeclar = new constIntDeclaration();
             constIntDeclar.setIdentifierVar(declVarName);

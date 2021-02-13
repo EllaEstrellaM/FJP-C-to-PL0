@@ -141,6 +141,28 @@ public class ExpressionParser {
         return generatedInstructions;
     }
 
+//    private static boolean isSign(char c){
+//        return c == '-' || c == '+';
+//    }
+//
+//    private static boolean checkValidity(String expr){
+//
+//        for(int i = 0; i < expr.length() - 1; i++){
+//
+//            char curr = expr.charAt(i);
+//            char currAfter = expr.charAt(i + 1);
+//
+//
+//            if(isSign(curr) && isSign(currAfter)){
+//                return false;
+//            }
+//        }
+//
+//
+//        return true;
+//    }
+
+
     /**
      * Parses given expression and returns corresponding PL/0 instructions.
      * @param exprDecBool expression specified by user
@@ -150,7 +172,10 @@ public class ExpressionParser {
      */
     public static ArrayList<Operation> parseExprDecBool(String exprDecBool, HashMap<String, Symbol> globTable, HashMap<String, Symbol> privTable) {
 
-        // todo check if valid
+
+//        if (!checkValidity(exprDecBool)){
+//            Error.printExprNotValid(exprDecBool);
+//        }
 
         ArrayList<Operation> statementOrder = new ArrayList<Operation>();
 
