@@ -1,6 +1,6 @@
 
 
-int x = 3 -- 3;
+int x = 3 - 3;
 
 procedure p1(int a){
 	p1(a+2);
